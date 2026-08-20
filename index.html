@@ -133,23 +133,12 @@
     box-shadow:0 0 0 1px rgba(255,255,255,0.18) inset;
   }
 
-  /* Portrait/mobile is fully supported; the rotate prompt is retained only as a hidden fallback. */
   .rotate-msg{
     position:absolute; inset:0; z-index:50; display:none;
     flex-direction:column; align-items:center; justify-content:center; gap:10px;
     background:var(--bg0); text-align:center; padding:30px;
   }
-
-  @media (orientation:portrait) and (max-width:700px){
-    #hud{ padding:8px 10px; }
-    #hudMid{ gap:8px; }
-    .hud-label{ font-size:8px; letter-spacing:1px; }
-    .hud-value{ font-size:15px; }
-    #moonWrap{ top:8px; width:min(52vw,210px); }
-    #powerTag{ bottom:10px; font-size:11px; padding:5px 11px; }
-    #eventBanner{ top:20%; font-size:clamp(18px,6vw,28px); }
-    #comboTag{ top:30%; font-size:clamp(17px,6vw,28px); }
-  }
+  .rotate-msg.show{ display:flex; }
 
   .breakdown{ display:flex; flex-direction:column; gap:3px; font-size:13px; color:var(--dim); min-width:220px; }
   .breakdown .row{ display:flex; justify-content:space-between; gap:24px; }
@@ -245,7 +234,7 @@
       <div class="instr-row"><b>← ↑ ↓ →</b> MOVE</div>
       <div class="instr-row">AUTO FIRE</div>
       <div class="instr-row">DON'T GET HIT</div>
-    <div class="sub" style="margin-top:4px;">Touch & drag anywhere to maneuver.</div>
+    <div class="sub" style="margin-top:4px;">Touch anywhere to maneuver on iPad.</div>
     </div>
     <div class="countdown" id="countdownText">3</div>
   </div>
@@ -336,10 +325,12 @@ window.addEventListener('orientationchange', ()=>setTimeout(resize,60));
 const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
 
 function checkOrientation(){
-  // Phones can now play natively in portrait. Keep the function for compatibility
-  // with the existing resize flow, but never block gameplay with a rotate screen.
   const rotateMsg = document.getElementById('rotateMsg');
-  rotateMsg.classList.remove('show');
+  if(isTouch && window.innerHeight > window.innerWidth && window.innerWidth < 700){
+    rotateMsg.classList.add('show');
+  } else {
+    rotateMsg.classList.remove('show');
+  }
 }
 
 /* ============ AUDIO (synth, no external files) ============ */
@@ -511,6 +502,8 @@ let shakeMag=0;
 let eventState=null, eventCooldown=10;
 let cinematicT=0, curePlayed=false;
 let gamePaused=false;
+let profitRain = [];
+let profitRainTimer = 0;
 const TOTAL_TIME = 82; // seconds of ideal survival to reach 100% Moon progress (density scaling, not raw speed, is what makes this hard)
 
 function resetGame(){
@@ -524,6 +517,7 @@ function resetGame(){
   megaSpawned=false; finalApproachTriggered=false; bestChaseTriggered=false; shakeMag=0;
   eventState=null; eventCooldown=10+Math.random()*4;
   cinematicT=0; curePlayed=false; touchTargetX=null; touchTargetY=null; gamePaused=false;
+  profitRain = []; profitRainTimer = 0;
   updateNoHitHud();
   updateBombHud();
   bgStars = makeStars();
@@ -875,44 +869,58 @@ function applyPowerup(type){
     else { overdriveEnd=now+6000; showPowerTag('marginOverdrive'); SFX.weaponUp(); }
     updateWeaponHud();
   }
+  else if(type==='bomb'){
+    triggerBaggerBlast();
+  }
 }
 let powerTagTimer=null;
-function triggerBomb(){
-  if(bombs<=0) return;
-  bombs--;
-  updateBombHud();
+function triggerBaggerBlast(){
+  showPowerTag('bomb');
   SFX.bomb();
-  shakeMag=Math.max(shakeMag,10);
-  const cx=player.x, cy=Math.max(H*0.18, player.y-H*0.22), radius=Math.min(W,H)*0.32;
-  bombBlasts.push({x:cx,y:cy,r:10,maxR:radius,life:0.55,maxLife:0.55});
-  addParticles(cx,cy,'#ffe36b',36,240,0.65);
-  addParticles(cx,cy,'#a855f7',24,190,0.55);
+  shakeMag=Math.max(shakeMag,11);
+
+  const cx=player.x;
+  const cy=Math.max(H*0.18, player.y-H*0.20);
+  const radius=Math.min(W,H)*0.60;
+  bombBlasts.push({x:cx,y:cy,r:10,maxR:radius,life:0.72,maxLife:0.72});
+
+  // Big financial-win feedback: coins raining through the space background.
+  profitRainTimer = 3.0;
+  profitRain = [];
+  for(let i=0;i<42;i++){
+    profitRain.push({
+      x:Math.random()*W,
+      y:-Math.random()*H*0.9,
+      vy:70+Math.random()*150,
+      rot:Math.random()*Math.PI*2,
+      vr:(Math.random()-0.5)*7,
+      scale:0.75+Math.random()*0.75,
+      tw:Math.random()*Math.PI*2,
+      delay:Math.random()*0.35
+    });
+  }
+
+  // Clear every asteroid currently on-screen and pay a chunky bonus.
   let cleared=0;
-  for(let i=asteroids.length-1;i>=0;i--){
-    const a=asteroids[i];
-    if(Math.hypot(a.x-cx,a.y-cy)<=radius){
-      if(a.mega){
-        a.hp=Math.max(0,a.hp-10); a.flash=1;
-        addParticles(a.x,a.y,'#ffe08a',18,160,0.45);
-        if(a.hp<=0){ sAsteroids+=5000; score+=5000; registerKill(); asteroids.splice(i,1); }
-      } else {
-        const pts=a.maxHp>1?180:90; sAsteroids+=pts; score+=pts; registerKill();
-        addParticles(a.x,a.y,'#ffd76a',16,170,0.55);
-        asteroids.splice(i,1);
-      }
-      cleared++;
-    }
+  let bonus=1000;
+  for(const a of asteroids){
+    cleared++;
+    bonus += a.mega ? 600 : (a.maxHp>1 ? 180 : 120);
+    addParticles(a.x,a.y,a.mega?'#ffe08a':'#ffd76a',a.mega?30:18,a.mega?220:170,0.7);
   }
-  for(let i=satellites.length-1;i>=0;i--){
-    const sat=satellites[i];
-    if(Math.hypot(sat.x-cx,sat.y-cy)<=radius){
-      sSatellites+=130; score+=130; registerKill();
-      addParticles(sat.x,sat.y,'#7fe0c9',16,180,0.55);
-      satellites.splice(i,1); cleared++;
-    }
+  asteroids.length=0;
+
+  if(cleared>0){
+    sAsteroids += bonus;
+    score += bonus;
   }
-  score += cleared*50;
-  if(cleared>=2) showEventBanner(cleared+'× BLAST CLEAR', '#FFD76A');
+  // Extra flat win bonus even if the screen happens to be clear.
+  score += 500;
+  sPowerups += 100;
+
+  showEventBanner(cleared>0 ? 'BAGGER  +'+fmt(bonus+500) : 'BAGGER  +500', '#FFD76A');
+  addParticles(cx,cy,'#ffe36b',54,300,0.8);
+  addParticles(cx,cy,'#a855f7',34,220,0.65);
 }
 
 function showPowerTag(type){
@@ -923,7 +931,7 @@ function showPowerTag(type){
     reksadana:['REKSADANA — SHIELD','#7fd8ff'],
     margin: weaponLevel<5? ['MARGIN — WEAPON LV.'+weaponLevel, '#0EA5E9'] : ['MARGIN — OVERDRIVE', '#FFD76A'],
     marginOverdrive:['MARGIN — OVERDRIVE','#FFD76A'],
-    bomb:['BOMB','#FFD76A']
+    bomb:['BAGGER','#FFD76A']
   };
   const [txt,color] = map[type] || ['POWER-UP','#eef1ff'];
   el.textContent = txt; el.style.color = color; el.style.opacity='1';
@@ -1031,6 +1039,19 @@ function update(dt){
   }
 
   updateEvents(dt);
+
+  // Profit rain effect after BAGGER pickup.
+  if(profitRainTimer>0){
+    profitRainTimer=Math.max(0,profitRainTimer-dt);
+    for(const c of profitRain){
+      if(c.delay>0){ c.delay-=dt; continue; }
+      c.y += c.vy*dt;
+      c.rot += c.vr*dt;
+      if(c.y>H+32) c.y=-20-Math.random()*80;
+    }
+  } else if(profitRain.length){
+    profitRain=[];
+  }
 
   // auto fire — pattern driven by weapon level
   const fireInterval = Math.max(0.12, 0.30 - (weaponLevel-1)*0.02) * (now<moonBuffEnd?0.6:1) * (now<overdriveEnd?0.58:1);
@@ -1234,6 +1255,30 @@ function drawBackground(dt){
     ctx.beginPath();
     ctx.arc(s.x*W, s.y*H, s.s, 0, Math.PI*2);
     ctx.fill();
+  }
+
+  // Pixel-art profit coins: a short celebratory rain effect after BAGGER.
+  if(profitRainTimer>0){
+    ctx.save();
+    const alpha=Math.min(1,profitRainTimer/0.5);
+    ctx.globalAlpha=alpha*0.9;
+    for(const c of profitRain){
+      if(c.delay>0) continue;
+      ctx.save();
+      ctx.translate(c.x,c.y);
+      ctx.rotate(c.rot);
+      const r=6*c.scale;
+      // deliberately blocky / pixel-arcade coin.
+      ctx.fillStyle='#FFD76A';
+      ctx.fillRect(-r*0.65,-r,r*1.3,r*2);
+      ctx.fillRect(-r,-r*0.65,r*2,r*1.3);
+      ctx.fillStyle='#FFF1A8';
+      ctx.fillRect(-r*0.25,-r*0.8,r*0.5,r*1.6);
+      ctx.fillStyle='rgba(124,58,237,0.55)';
+      ctx.fillRect(-r*0.12,-r*0.45,r*0.24,r*0.9);
+      ctx.restore();
+    }
+    ctx.restore();
   }
 
   // Earth: visible early, fades out by ~22% progress (Earth -> Space -> Moon read)

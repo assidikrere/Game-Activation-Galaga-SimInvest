@@ -326,11 +326,9 @@ const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
 
 function checkOrientation(){
   const rotateMsg = document.getElementById('rotateMsg');
-  if(isTouch && window.innerHeight > window.innerWidth && window.innerWidth < 700){
-    rotateMsg.classList.add('show');
-  } else {
-    rotateMsg.classList.remove('show');
-  }
+  // Allow touch devices to play in portrait for mobile testing/smaller screens.
+  // Keep the overlay disabled rather than blocking gameplay.
+  rotateMsg.classList.remove('show');
 }
 
 /* ============ AUDIO (synth, no external files) ============ */

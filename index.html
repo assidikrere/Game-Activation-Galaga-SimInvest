@@ -133,12 +133,23 @@
     box-shadow:0 0 0 1px rgba(255,255,255,0.18) inset;
   }
 
+  /* Portrait/mobile is fully supported; the rotate prompt is retained only as a hidden fallback. */
   .rotate-msg{
     position:absolute; inset:0; z-index:50; display:none;
     flex-direction:column; align-items:center; justify-content:center; gap:10px;
     background:var(--bg0); text-align:center; padding:30px;
   }
-  .rotate-msg.show{ display:flex; }
+
+  @media (orientation:portrait) and (max-width:700px){
+    #hud{ padding:8px 10px; }
+    #hudMid{ gap:8px; }
+    .hud-label{ font-size:8px; letter-spacing:1px; }
+    .hud-value{ font-size:15px; }
+    #moonWrap{ top:8px; width:min(52vw,210px); }
+    #powerTag{ bottom:10px; font-size:11px; padding:5px 11px; }
+    #eventBanner{ top:20%; font-size:clamp(18px,6vw,28px); }
+    #comboTag{ top:30%; font-size:clamp(17px,6vw,28px); }
+  }
 
   .breakdown{ display:flex; flex-direction:column; gap:3px; font-size:13px; color:var(--dim); min-width:220px; }
   .breakdown .row{ display:flex; justify-content:space-between; gap:24px; }
@@ -234,7 +245,7 @@
       <div class="instr-row"><b>← ↑ ↓ →</b> MOVE</div>
       <div class="instr-row">AUTO FIRE</div>
       <div class="instr-row">DON'T GET HIT</div>
-    <div class="sub" style="margin-top:4px;">Touch anywhere to maneuver on iPad.</div>
+    <div class="sub" style="margin-top:4px;">Touch & drag anywhere to maneuver.</div>
     </div>
     <div class="countdown" id="countdownText">3</div>
   </div>
@@ -325,12 +336,10 @@ window.addEventListener('orientationchange', ()=>setTimeout(resize,60));
 const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
 
 function checkOrientation(){
+  // Phones can now play natively in portrait. Keep the function for compatibility
+  // with the existing resize flow, but never block gameplay with a rotate screen.
   const rotateMsg = document.getElementById('rotateMsg');
-  if(isTouch && window.innerHeight > window.innerWidth && window.innerWidth < 700){
-    rotateMsg.classList.add('show');
-  } else {
-    rotateMsg.classList.remove('show');
-  }
+  rotateMsg.classList.remove('show');
 }
 
 /* ============ AUDIO (synth, no external files) ============ */

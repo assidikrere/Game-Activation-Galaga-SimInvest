@@ -308,7 +308,7 @@
 /* ============ SETUP ============ */
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-  // Embedded SimInvest-branded rocket sprite (offline-ready).
+  // SimInvest-branded rocket sprite loaded from local assets/.
   const ROCKET_SPRITE = new Image();
   ROCKET_SPRITE.src = 'assets/siminvest-rocket.png';
   // External game assets (keep all paths relative to index.html).
@@ -506,8 +506,8 @@ function refreshTitleBest(){
 }
 
 /* ============ GAME OBJECTS ============ */
-let player, projectiles, asteroids, satellites, particles, powerups, bombBlasts, enemyProjectiles, coinRain;
-let elapsed=0, lastTime=0, spawnAsteroidTimer=0, spawnSatTimer=0, spawnPowerTimer=0, fireTimer=0;
+let player, projectiles, asteroids, satellites, particles, powerups, bombBlasts, enemyProjectiles, coinRain, blackHoles;
+let elapsed=0, lastTime=0, spawnAsteroidTimer=0, spawnSatTimer=0, spawnPowerTimer=0, fireTimer=0, spawnBlackHoleTimer=0;
 let score=0, sDistance=0, sAsteroids=0, sSatellites=0, sPowerups=0, sMoonBonus=0, sComboBonus=0, sNearMiss=0, sNoHit=0, bombs=0;
 let scoreMultiplierEnd=0, shieldEnd=0, turboEnd=0, moonBuffEnd=0, overdriveEnd=0;
 let weaponLevel=1;
@@ -525,9 +525,9 @@ const TOTAL_TIME = 82; // seconds of ideal survival to reach 100% Moon progress 
 
 function resetGame(){
   player = { x: W/2, y: H*0.78, w: 32, h: 56, vx:0, vy:0, alive:true, tilt:0, pitch:0 };
-  projectiles = []; asteroids = []; satellites = []; particles = []; powerups = []; bombBlasts = []; enemyProjectiles = []; coinRain = [];
+  projectiles = []; asteroids = []; satellites = []; particles = []; powerups = []; bombBlasts = []; enemyProjectiles = []; coinRain = []; blackHoles = [];
   miniBear=null; finalBoss=null; bearMiniSpawned=false; finalBossSpawned=false; stockSplitEnd=0;
-  elapsed=0; spawnAsteroidTimer=0; spawnSatTimer=1.5; spawnPowerTimer=6.5; fireTimer=0;
+  elapsed=0; spawnAsteroidTimer=0; spawnSatTimer=1.5; spawnPowerTimer=6.5; fireTimer=0; spawnBlackHoleTimer=12;
   score=0; sDistance=0; sAsteroids=0; sSatellites=0; sPowerups=0; sMoonBonus=0; sComboBonus=0; sNearMiss=0; sNoHit=0; bombs=0;
   scoreMultiplierEnd=0; shieldEnd=0; turboEnd=0; moonBuffEnd=0; overdriveEnd=0;
   weaponLevel=1; combo=0; comboTimer=0; comboMultiplier=1;
@@ -638,6 +638,15 @@ function spawnSatellite(){
   const vy = (phase===1?58:phase===2?82:phase===3?108:phase===4?130:150)+Math.random()*22;
   const amp = phase<=1? 18 : phase===2? 46 : phase===3? 75 : phase===4? 105 : 130;
   satellites.push({x, y:-h, w, h, vy, baseX:x, amp, freq:(Math.random()*1.2+0.6), t:Math.random()*10, rot:0, nearMissed:false});
+}
+function spawnBlackHole(){
+  if(currentPhase()<3) return;
+  const r=58;
+  const x=pickSafeX(r+18);
+  if(x===null) return;
+  const phase=currentPhase();
+  const vy=phase>=5?115:90;
+  blackHoles.push({x,y:-r, r, vy, rot:Math.random()*Math.PI*2, rotSpeed:(Math.random()<.5?-1:1)*(0.35+Math.random()*0.35), age:0, life:7.5});
 }
 function spawnPowerup(){
   const r = Math.random();
@@ -1195,6 +1204,11 @@ function update(dt){
     spawnSatTimer = satInterval*(0.75+Math.random()*0.5);
     spawnSatellite();
   }
+  spawnBlackHoleTimer -= dt;
+  if(spawnBlackHoleTimer<=0 && phase>=3){
+    spawnBlackHoleTimer = 13 + Math.random()*9;
+    if(Math.random()<0.72) spawnBlackHole();
+  }
   spawnPowerTimer -= dt;
   if(spawnPowerTimer<=0){
     spawnPowerTimer = 8+Math.random()*5;
@@ -1296,6 +1310,43 @@ function update(dt){
         }
       } else {
         tryNearMiss(s, Math.max(s.w,s.h)*0.6);
+      }
+    }
+  }
+
+  // black holes: moving gravity hazards using the supplied galaxy artwork.
+  for(let i=blackHoles.length-1;i>=0;i--){
+    const bh=blackHoles[i];
+    bh.y += bh.vy*dt; bh.rot += bh.rotSpeed*dt; bh.age += dt; bh.life -= dt;
+    if(bh.y>H+bh.r*2 || bh.life<=0){ blackHoles.splice(i,1); continue; }
+    if(player.alive){
+      const dx=bh.x-player.x, dy=bh.y-player.y;
+      const dist=Math.hypot(dx,dy)||1;
+      const field=bh.r*2.7;
+      if(dist<field){
+        const strength=(1-dist/field);
+        const pull=(95 + 360*strength*strength);
+        player.x += (dx/dist)*pull*dt;
+        player.y += (dy/dist)*pull*dt;
+        player.x = Math.max(player.w*0.55+8, Math.min(W-(player.w*0.55+8), player.x));
+        player.y = Math.max(player.h*0.52+8, Math.min(H-(player.h*0.52+6), player.y));
+        if(dist<bh.r*0.42){
+          resetNoHit();
+          killPlayer();
+        }
+      }
+      if(dist<field*0.72 && Math.random()<0.18){
+        addParticles(player.x,player.y,'#A855F7',1,25,0.22);
+      }
+    }
+    // Shooting the outer galaxy only weakens it; the core remains lethal.
+    for(let j=projectiles.length-1;j>=0;j--){
+      const p=projectiles[j];
+      if(rectCircleHit(p.x,p.y,7,18,bh.x,bh.y,bh.r*0.9)){
+        projectiles.splice(j,1);
+        addParticles(bh.x,bh.y,'#c9a3ff',6,100,0.3);
+        bh.life -= 0.9;
+        break;
       }
     }
   }
@@ -1423,15 +1474,16 @@ function drawRocket(){
   const x=player.x,y=player.y;
   const now = Date.now();
 
-  // The sprite is intentionally larger than the collision hitbox.
-  // This makes the branded rocket highly visible without making the game unfair.
+  // The supplied artwork is diagonally oriented. Rotate it once into upright flight.
+  // Keep its aspect ratio and do not compound the artwork's own diagonal with full player rotation.
   const visualH = 64;
-  const visualW = visualH / 2.1625;
+  const visualW = ROCKET_SPRITE.naturalHeight ? visualH*(ROCKET_SPRITE.naturalWidth/ROCKET_SPRITE.naturalHeight) : 59;
+  const spriteRotation = -Math.PI/4 + player.tilt*0.18 + player.pitch*0.08;
   const lvlBoost = (weaponLevel-1)*0.18;
 
   ctx.save();
   ctx.translate(x,y);
-  ctx.rotate(player.tilt*0.55 + player.pitch*0.16);
+  ctx.rotate(spriteRotation);
 
   // Engine flame remains procedural so power-ups still visibly affect thrust.
   const flameLen = visualH*0.22 + lvlBoost*visualH*0.22 + Math.random()*7 + (now<turboEnd?18:0);
@@ -1524,21 +1576,36 @@ function drawRocket(){
 }
 
 function drawAsteroid(a){
-  // Asteroids are now represented as collectible-looking arcade coins.
+  // Classic arcade asteroid: keep the obstacle unmistakably dangerous.
   ctx.save();
-  ctx.translate(a.x,a.y); ctx.rotate(a.rot*0.25);
-  const r=a.size*(a.mega?0.92:0.82);
-  ctx.shadowColor=a.mega?'rgba(255,215,106,0.95)':'rgba(255,215,106,0.65)';
-  ctx.shadowBlur=a.mega?24:12;
-  const g=ctx.createLinearGradient(0,-r,0,r);
-  g.addColorStop(0,'#fff0a8'); g.addColorStop(0.25,'#ffd76a'); g.addColorStop(0.72,'#e8a91a'); g.addColorStop(1,'#9a6510');
-  ctx.fillStyle=g;
-  ctx.beginPath(); ctx.ellipse(0,0,r*0.78,r,0,0,Math.PI*2); ctx.fill();
+  ctx.translate(a.x,a.y); ctx.rotate(a.rot);
+  const r=a.size*(a.mega?0.95:0.82);
+  const grad=ctx.createRadialGradient(-r*0.28,-r*0.3,r*0.08,0,0,r);
+  if(a.mega){ grad.addColorStop(0,'#b88963'); grad.addColorStop(0.55,'#76513a'); grad.addColorStop(1,'#2f241d'); }
+  else { grad.addColorStop(0,'#9a8067'); grad.addColorStop(0.5,'#62513f'); grad.addColorStop(1,'#29231f'); }
+  ctx.fillStyle=grad;
+  ctx.shadowColor=a.mega?'rgba(255,120,70,.45)':'rgba(180,150,120,.18)';
+  ctx.shadowBlur=a.mega?18:6;
+  ctx.beginPath();
+  const pts=a.mega?11:9;
+  for(let i=0;i<pts;i++){
+    const ang=(i/pts)*Math.PI*2;
+    const rr=r*(0.78+((i*37)%17)/100);
+    const px=Math.cos(ang)*rr, py=Math.sin(ang)*rr;
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.closePath(); ctx.fill();
   ctx.shadowBlur=0;
-  ctx.strokeStyle='rgba(255,250,210,0.75)'; ctx.lineWidth=Math.max(1.5,r*0.08); ctx.stroke();
-  ctx.fillStyle='#7a4c08'; ctx.font=`900 ${Math.max(10,r*0.75)}px monospace`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('$',0,1);
-  if(a.flash>0){ ctx.globalAlpha=Math.max(0,a.flash); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.ellipse(0,0,r*0.78,r,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
-  if(a.mega){ ctx.strokeStyle='rgba(255,110,80,0.8)'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(0,0,r+6,0,Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle='rgba(35,27,22,.42)';
+  [[-.28,-.25,.16],[.25,-.08,.11],[-.08,.28,.13],[.34,.25,.08]].forEach(([ox,oy,sz])=>{
+    ctx.beginPath(); ctx.arc(ox*r,oy*r,sz*r,0,Math.PI*2); ctx.fill();
+  });
+  ctx.strokeStyle='rgba(205,174,145,.28)'; ctx.lineWidth=Math.max(1,r*.035); ctx.stroke();
+  if(a.flash>0){ ctx.globalAlpha=Math.max(0,a.flash); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(0,0,r*.9,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+  if(a.mega){
+    ctx.strokeStyle='rgba(255,110,80,.75)'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.arc(0,0,r+7,0,Math.PI*2); ctx.stroke();
+  }
   ctx.restore();
 }
 function drawSatellite(s){
@@ -1598,28 +1665,55 @@ function drawPowerup(pu){
 
 function drawBear(b, final=false){
   if(!b) return;
-  ctx.save(); ctx.translate(b.x,b.y);
-  const sc=final?1.35:1;
+  ctx.save();
+  ctx.translate(b.x,b.y);
+  const sc=final?1.0:1;
   ctx.scale(sc,sc);
-  if(b.flash>0) ctx.globalAlpha=0.55;
-  // Pixel-ish astronaut bear: helmet, ears, face, suit, cockpit cue.
-  ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.fillRect(-34,-30,68,46);
-  ctx.fillStyle='#a9b3c9'; ctx.fillRect(-39,-35,78,12);
-  ctx.fillStyle='#7b879e'; ctx.fillRect(-31,-24,62,38);
-  ctx.fillStyle='#8b5a3c'; ctx.beginPath(); ctx.arc(-15,-8,16,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(15,-8,16,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#b8794e'; ctx.beginPath(); ctx.arc(0,-2,23,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#161524'; ctx.fillRect(-15,-7,7,7); ctx.fillRect(8,-7,7,7); ctx.fillRect(-4,2,8,4);
-  ctx.fillStyle='#d8e7ff'; ctx.fillRect(-27,18,54,24);
-  ctx.fillStyle='#7C3AED'; ctx.fillRect(-15,22,30,8);
-  ctx.fillStyle='#ff5b63'; ctx.fillRect(-30,24,8,5); ctx.fillRect(22,24,8,5);
-  if(final){
-    ctx.fillStyle='#18233b'; ctx.fillRect(-105,-55,210,36); ctx.fillStyle='rgba(126,224,255,0.28)'; ctx.fillRect(-88,-48,176,20);
-    ctx.fillStyle='#475569'; ctx.fillRect(-112,-22,224,72); ctx.fillStyle='#7C3AED'; ctx.fillRect(-70,34,140,9);
-    ctx.fillStyle='#ff5b63'; ctx.fillRect(-130,-10,18,8); ctx.fillRect(112,-10,18,8);
+  if(b.flash>0) ctx.globalAlpha=.55;
+
+  // Retro arcade astronaut bear — clean silhouette, readable at small scale.
+  if(!final){
+    // backpack / suit
+    ctx.fillStyle='#d8e7ff'; ctx.fillRect(-30,2,60,34);
+    ctx.fillStyle='#7C3AED'; ctx.fillRect(-18,18,36,8);
+    ctx.fillStyle='#334155'; ctx.fillRect(-34,10,7,22); ctx.fillRect(27,10,7,22);
+    // helmet
+    ctx.fillStyle='#e9eef8'; ctx.beginPath(); ctx.arc(0,-13,31,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#6b7280'; ctx.beginPath(); ctx.arc(0,-13,25,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#8fdfff'; ctx.beginPath(); ctx.arc(0,-13,21,0,Math.PI*2); ctx.fill();
+    // ears + bear face
+    ctx.fillStyle='#8b5a3c'; ctx.beginPath(); ctx.arc(-12,-17,12,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(12,-17,12,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#b8794e'; ctx.beginPath(); ctx.arc(0,-10,19,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#171522'; ctx.fillRect(-10,-14,5,5); ctx.fillRect(5,-14,5,5); ctx.fillRect(-3,-5,6,4);
+    // helmet highlight + red warning light
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.fillRect(-17,-31,13,3);
+    ctx.fillStyle='#ff5b63'; ctx.fillRect(21,-31,5,5);
+  } else {
+    // Final boss ship: broad retro fighter silhouette with a clearly visible bear cockpit.
+    ctx.shadowColor='rgba(124,58,237,.55)'; ctx.shadowBlur=18;
+    ctx.fillStyle='#202b45';
+    ctx.beginPath(); ctx.moveTo(-118,-4); ctx.lineTo(-72,-48); ctx.lineTo(-30,-39); ctx.lineTo(0,-57); ctx.lineTo(30,-39); ctx.lineTo(72,-48); ctx.lineTo(118,-4); ctx.lineTo(92,30); ctx.lineTo(48,38); ctx.lineTo(0,52); ctx.lineTo(-48,38); ctx.lineTo(-92,30); ctx.closePath(); ctx.fill();
+    ctx.shadowBlur=0;
+    // wings / purple armor
+    ctx.fillStyle='#7C3AED'; ctx.fillRect(-100,3,52,16); ctx.fillRect(48,3,52,16);
+    ctx.fillStyle='#a855f7'; ctx.fillRect(-78,19,32,7); ctx.fillRect(46,19,32,7);
+    // cockpit glass
+    ctx.fillStyle='#0b1730'; ctx.beginPath(); ctx.ellipse(0,-9,48,30,0,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#8fdfff'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='rgba(143,223,255,.24)'; ctx.beginPath(); ctx.ellipse(0,-13,39,21,0,0,Math.PI*2); ctx.fill();
+    // bear visible inside cockpit
+    ctx.save(); ctx.scale(.78,.78); ctx.translate(0,7);
+    ctx.fillStyle='#8b5a3c'; ctx.beginPath(); ctx.arc(-9,-12,9,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(9,-12,9,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#b8794e'; ctx.beginPath(); ctx.arc(0,-5,15,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#171522'; ctx.fillRect(-8,-9,4,4); ctx.fillRect(4,-9,4,4); ctx.fillRect(-2,-2,4,3);
+    ctx.restore();
+    // engines / red lights
+    ctx.fillStyle='#ff5b63'; ctx.fillRect(-108,-2,14,8); ctx.fillRect(94,-2,14,8);
+    ctx.fillStyle='#ffd76a'; ctx.fillRect(-24,40,12,5); ctx.fillRect(12,40,12,5);
   }
   ctx.restore();
   // HP bar
-  const bw=final?220:110, bh=5, x=b.x-bw/2, y=b.y+(final?70:48);
+  const bw=final?220:110, bh=5, x=b.x-bw/2, y=b.y+(final?64:48);
   ctx.fillStyle='rgba(255,255,255,.15)'; ctx.fillRect(x,y,bw,bh);
   ctx.fillStyle='#ff5b63'; ctx.fillRect(x,y,bw*Math.max(0,b.hp/b.maxHp),bh);
 }
@@ -1654,6 +1748,24 @@ function draw(dt){
   drawBackground(dt);
   if(coinRain && coinRain.length) drawCoinRain();
   if(state===STATE.PLAYING || state===STATE.CINEMATIC){
+    for(const bh of blackHoles){
+      ctx.save();
+      ctx.translate(bh.x,bh.y);
+      ctx.rotate(bh.rot);
+      const pulse=1+Math.sin(elapsed*5+bh.x)*0.035;
+      const d=bh.r*2.5*pulse;
+      ctx.shadowColor='rgba(168,85,247,.72)'; ctx.shadowBlur=26;
+      if(GALAXY_SPRITE.complete && GALAXY_SPRITE.naturalWidth){
+        ctx.globalAlpha=0.94;
+        ctx.drawImage(GALAXY_SPRITE,-d/2,-d/2,d,d);
+      }
+      ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(0,0,0,.88)';
+      ctx.beginPath(); ctx.arc(0,0,bh.r*0.42,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='rgba(168,85,247,.45)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(0,0,bh.r*1.12,0,Math.PI*2); ctx.stroke();
+      ctx.restore();
+    }
     for(const a of asteroids) drawAsteroid(a);
     for(const s of satellites) drawSatellite(s);
     for(const pu of powerups) drawPowerup(pu);

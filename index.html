@@ -1322,10 +1322,12 @@ function update(dt){
     if(player.alive){
       const dx=bh.x-player.x, dy=bh.y-player.y;
       const dist=Math.hypot(dx,dy)||1;
-      const field=bh.r*2.7;
+      // Long-range black-hole gravity: the pull starts well before the sprite
+      // reaches the visible vortex, so the player must actively swipe away.
+      const field=bh.r*4.8;
       if(dist<field){
         const strength=(1-dist/field);
-        const pull=(95 + 360*strength*strength);
+        const pull=(120 + 620*Math.pow(strength,1.65));
         player.x += (dx/dist)*pull*dt;
         player.y += (dy/dist)*pull*dt;
         player.x = Math.max(player.w*0.55+8, Math.min(W-(player.w*0.55+8), player.x));
@@ -1335,7 +1337,7 @@ function update(dt){
           killPlayer();
         }
       }
-      if(dist<field*0.72 && Math.random()<0.18){
+      if(dist<field*0.92 && Math.random()<0.22){
         addParticles(player.x,player.y,'#A855F7',1,25,0.22);
       }
     }
@@ -1754,6 +1756,13 @@ function draw(dt){
       ctx.rotate(bh.rot);
       const pulse=1+Math.sin(elapsed*5+bh.x)*0.035;
       const d=bh.r*2.5*pulse;
+      const field=bh.r*4.8;
+      ctx.save();
+      ctx.strokeStyle='rgba(168,85,247,0.10)';
+      ctx.lineWidth=1.5;
+      ctx.setLineDash([5,7]);
+      ctx.beginPath(); ctx.arc(0,0,field,0,Math.PI*2); ctx.stroke();
+      ctx.restore();
       ctx.shadowColor='rgba(168,85,247,.72)'; ctx.shadowBlur=26;
       if(GALAXY_SPRITE.complete && GALAXY_SPRITE.naturalWidth){
         ctx.globalAlpha=0.94;

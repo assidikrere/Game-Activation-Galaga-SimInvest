@@ -1476,11 +1476,11 @@ function drawRocket(){
   const x=player.x,y=player.y;
   const now = Date.now();
 
-  // The supplied artwork has been pre-oriented upright. Keep its natural aspect ratio
-  // and apply only a very small flight tilt so the rocket never looks twisted/distorted.
+  // Keep the supplied rocket artwork upright, with only a subtle fixed arcade lean.
+  // Do NOT distort or dynamically tilt the sprite with movement.
   const visualH = 64;
   const visualW = ROCKET_SPRITE.naturalHeight ? visualH*(ROCKET_SPRITE.naturalWidth/ROCKET_SPRITE.naturalHeight) : 27;
-  const spriteRotation = player.tilt*0.08 + player.pitch*0.04;
+  const spriteRotation = -10 * Math.PI / 180;
   const lvlBoost = (weaponLevel-1)*0.18;
 
   ctx.save();

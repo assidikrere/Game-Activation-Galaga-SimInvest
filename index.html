@@ -1474,11 +1474,11 @@ function drawRocket(){
   const x=player.x,y=player.y;
   const now = Date.now();
 
-  // The supplied artwork is diagonally oriented. Rotate it once into upright flight.
-  // Keep its aspect ratio and do not compound the artwork's own diagonal with full player rotation.
+  // The supplied artwork has been pre-oriented upright. Keep its natural aspect ratio
+  // and apply only a very small flight tilt so the rocket never looks twisted/distorted.
   const visualH = 64;
-  const visualW = ROCKET_SPRITE.naturalHeight ? visualH*(ROCKET_SPRITE.naturalWidth/ROCKET_SPRITE.naturalHeight) : 59;
-  const spriteRotation = -Math.PI/4 + player.tilt*0.18 + player.pitch*0.08;
+  const visualW = ROCKET_SPRITE.naturalHeight ? visualH*(ROCKET_SPRITE.naturalWidth/ROCKET_SPRITE.naturalHeight) : 27;
+  const spriteRotation = player.tilt*0.08 + player.pitch*0.04;
   const lvlBoost = (weaponLevel-1)*0.18;
 
   ctx.save();

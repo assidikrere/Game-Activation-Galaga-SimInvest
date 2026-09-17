@@ -2579,6 +2579,12 @@ function draw(dt){
 
 /* ============ MAIN LOOP ============ */
 function loop(ts){
+  if(TV_MODE){
+    // TV mode is a pure leaderboard display; the game simulation stays stopped.
+    renderTVLeaderboard(centralRows);
+    requestAnimationFrame(loop);
+    return;
+  }
   if(!lastTime) lastTime = ts;
   let dt = (ts-lastTime)/1000;
   dt = Math.min(dt, 0.05);
@@ -2633,12 +2639,12 @@ resetGame();
 refreshTitleBest();
 requestAnimationFrame(loop);
 
-})();
-
   // Central leaderboard is optional at runtime: gameplay remains usable offline.
   refreshTitleBest();
   initCentralRealtime();
   bootTVMode();
+
+})();
 </script>
 </body>
 </html>

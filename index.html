@@ -170,6 +170,17 @@
   #nameOverlay input:focus{ outline:none; box-shadow:0 0 0 1.5px var(--skyblue) inset; }
 
   #noHitTag{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-size:clamp(16px,4vw,26px);font-weight:900;letter-spacing:1.8px;color:#f8fbff;opacity:0;transition:opacity .18s ease,transform .35s ease;text-shadow:0 0 18px rgba(255,215,106,.7);z-index:6;pointer-events:none;text-align:center;}
+
+  /* Mobile analog joystick: fixed to a screen corner so the thumb stays clear of the rocket. */
+  #joystickWrap{position:fixed;left:20px;bottom:20px;width:118px;height:118px;z-index:30;display:none;pointer-events:none;}
+  #joystickWrap.right{left:auto;right:20px;}
+  #joystickWrap.show{display:block;}
+  #joystickBase{position:absolute;inset:0;border-radius:50%;background:rgba(10,8,24,.44);box-shadow:0 0 0 2px rgba(255,255,255,.14) inset,0 8px 24px rgba(0,0,0,.26);backdrop-filter:blur(2px);pointer-events:auto;touch-action:none;}
+  #joystickBase::after{content:"";position:absolute;inset:19px;border-radius:50%;border:1px solid rgba(255,255,255,.10);}
+  #joystickKnob{position:absolute;width:56px;height:56px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(145deg,rgba(168,85,247,.92),rgba(14,165,233,.88));box-shadow:0 0 0 2px rgba(255,255,255,.16) inset,0 6px 18px rgba(0,0,0,.28);pointer-events:none;}
+  #joystickSideBtn{position:absolute;left:50%;top:-27px;transform:translateX(-50%);width:34px;height:24px;border:0;border-radius:12px;background:rgba(10,8,24,.58);color:var(--ink);font:700 11px/1 inherit;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;pointer-events:auto;touch-action:manipulation;opacity:.82;}
+  @media (max-width:700px){#joystickWrap{left:16px;bottom:16px;}#joystickWrap.right{left:auto;right:16px;}}
+
   #adminToast{
     position:absolute; bottom:10px; left:10px; z-index:40; font-size:11px; color:var(--dim);
     background:rgba(10,8,24,0.7); padding:5px 10px; border-radius:8px; opacity:0; transition:opacity .3s ease;
@@ -217,6 +228,10 @@
   <div id="eventBanner"></div>
   <div id="nearMissTag">NEAR MISS +100</div>
   <div id="adminToast"></div>
+  <div id="joystickWrap" aria-hidden="true">
+    <div id="joystickBase"><div id="joystickKnob"></div></div>
+    <button id="joystickSideBtn" type="button" aria-label="Switch joystick side">↔</button>
+  </div>
   <div id="noHitTag"></div>
   <div id="pauseOverlay" class="overlay hidden" style="z-index:45; background:rgba(5,4,12,0.72);">
     <div class="wordmark t2" style="font-size:clamp(26px,6vw,40px)">PAUSED</div>
@@ -435,22 +450,32 @@ function flashAdminToast(msg){
   setTimeout(()=>{ el.style.opacity='0'; }, 1400);
 }
 
-// Full-screen Fruit-Ninja-style touch: rocket follows finger position in BOTH axes.
-let touchTargetX = null, touchTargetY = null;
-function handleTouch(e){
-  if(state!==STATE.PLAYING) return;
-  e.preventDefault();
-  const t = e.touches && e.touches[0] ? e.touches[0] : e;
-  touchTargetX = t.clientX;
-  touchTargetY = t.clientY;
+// Mobile analog joystick: fixed-corner control with full 2D direction.
+const joystickWrap = document.getElementById('joystickWrap');
+const joystickBase = document.getElementById('joystickBase');
+const joystickKnob = document.getElementById('joystickKnob');
+const joystickSideBtn = document.getElementById('joystickSideBtn');
+let joyActive=false, joyPointerId=null, joyX=0, joyY=0;
+let joystickSide = localStorage.getItem('simoon_joystick_side')==='right' ? 'right' : 'left';
+function applyJoystickSide(){ joystickWrap.classList.toggle('right',joystickSide==='right'); }
+function setJoystickVisible(){ joystickWrap.classList.toggle('show',isTouch&&state===STATE.PLAYING); applyJoystickSide(); }
+function resetJoystick(){ joyActive=false; joyPointerId=null; joyX=0; joyY=0; joystickKnob.style.transform='translate(-50%,-50%)'; }
+function updateJoystick(clientX,clientY){
+  const r=joystickBase.getBoundingClientRect();
+  const dx=clientX-(r.left+r.width/2), dy=clientY-(r.top+r.height/2);
+  const max=r.width*.35, len=Math.hypot(dx,dy), scale=len>max?max/len:1;
+  const kx=dx*scale, ky=dy*scale;
+  joyX=Math.max(-1,Math.min(1,kx/max)); joyY=Math.max(-1,Math.min(1,ky/max));
+  joystickKnob.style.transform=`translate(calc(-50% + ${kx}px),calc(-50% + ${ky}px))`;
 }
-canvas.addEventListener('touchstart', handleTouch, {passive:false});
-canvas.addEventListener('touchmove', handleTouch, {passive:false});
-canvas.addEventListener('touchend', e=>{ e.preventDefault(); touchTargetX=null; touchTargetY=null; }, {passive:false});
-canvas.addEventListener('touchcancel', e=>{ e.preventDefault(); touchTargetX=null; touchTargetY=null; }, {passive:false});
-document.getElementById('stage').addEventListener('touchmove', e=>{ e.preventDefault(); }, {passive:false});
+joystickBase.addEventListener('pointerdown',e=>{ if(!isTouch||state!==STATE.PLAYING)return; e.preventDefault(); joyActive=true; joyPointerId=e.pointerId; try{joystickBase.setPointerCapture(e.pointerId)}catch(_){} updateJoystick(e.clientX,e.clientY); });
+joystickBase.addEventListener('pointermove',e=>{ if(!joyActive||e.pointerId!==joyPointerId)return; e.preventDefault(); updateJoystick(e.clientX,e.clientY); });
+function endJoystick(e){ if(e.pointerId!==joyPointerId)return; resetJoystick(); }
+joystickBase.addEventListener('pointerup',endJoystick); joystickBase.addEventListener('pointercancel',endJoystick);
+joystickSideBtn.addEventListener('click',e=>{ e.preventDefault(); joystickSide=joystickSide==='left'?'right':'left'; localStorage.setItem('simoon_joystick_side',joystickSide); applyJoystickSide(); });
+document.getElementById('stage').addEventListener('touchmove',e=>{e.preventDefault();},{passive:false});
 
-function setGamePaused(v){ if(state!==STATE.PLAYING) return; gamePaused=v; if(v){input.left=false;input.right=false;} }
+function setGamePaused(v){ if(state!==STATE.PLAYING) return; gamePaused=v; if(v){input.left=false;input.right=false;resetJoystick();} }
 document.addEventListener('visibilitychange',()=>setGamePaused(document.visibilityState!=='visible'));
 window.addEventListener('blur',()=>setGamePaused(true));
 window.addEventListener('focus',()=>setGamePaused(false));
@@ -534,7 +559,7 @@ function resetGame(){
   noHitElapsed=0; noHitMilestones=new Set();
   megaSpawned=false; finalApproachTriggered=false; bestChaseTriggered=false; shakeMag=0;
   eventState=null; eventCooldown=10+Math.random()*4;
-  cinematicT=0; curePlayed=false; touchTargetX=null; touchTargetY=null; gamePaused=false;
+  cinematicT=0; curePlayed=false; resetJoystick(); gamePaused=false;
   updateNoHitHud();
   updateBombHud();
   bgStars = makeStars();
@@ -1108,6 +1133,7 @@ function updateBearBosses(dt){
 
 /* ============ UPDATE ============ */
 function update(dt){
+  setJoystickVisible();
   if(gamePaused && state===STATE.PLAYING) return;
   if(state!==STATE.PLAYING && state!==STATE.CINEMATIC) return;
 
@@ -1133,22 +1159,17 @@ function update(dt){
   // player movement — full 2D maneuvering
   const marginX=player.w*0.55+8;
   const marginY=player.h*0.52+8;
-  if(isTouch && touchTargetX!==null && touchTargetY!==null){
-    const targetX=Math.max(marginX,Math.min(W-marginX,touchTargetX));
-    const targetY=Math.max(marginY+10,Math.min(H-marginY-8,touchTargetY));
-    const followSpeed=Math.min(1,dt*11);
-    player.x += (targetX-player.x)*followSpeed;
-    player.y += (targetY-player.y)*followSpeed;
-    player.vx = (targetX-player.x);
-    player.vy = (targetY-player.y);
+  if(isTouch && joyActive){
+    const speed=(turbo?680:480)*Math.max(0.8,Math.min(1.25,W/900));
+    player.vx=joyX*speed; player.vy=joyY*speed;
+    player.x += player.vx*dt; player.y += player.vy*dt;
   } else {
-    const speed = (turbo? 680:480) * Math.max(0.8,Math.min(1.25,W/900));
-    player.vx = (input.right?1:0) - (input.left?1:0);
-    player.vy = (input.down?1:0) - (input.up?1:0);
+    const speed=(turbo?680:480)*Math.max(0.8,Math.min(1.25,W/900));
+    player.vx=(input.right?1:0)-(input.left?1:0);
+    player.vy=(input.down?1:0)-(input.up?1:0);
     if(player.vx!==0 || player.vy!==0){
       const len=Math.hypot(player.vx,player.vy)||1;
-      player.vx = player.vx/len*speed;
-      player.vy = player.vy/len*speed;
+      player.vx=player.vx/len*speed; player.vy=player.vy/len*speed;
     } else {
       player.vx*=0.82; player.vy*=0.82;
     }

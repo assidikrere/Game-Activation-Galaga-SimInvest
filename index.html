@@ -1430,11 +1430,30 @@ function update(dt){
   } else if(isTouch && controlMode==='drag' && touchTargetX!==null && touchTargetY!==null){
     const targetX=Math.max(marginX,Math.min(W-marginX,touchTargetX));
     const targetY=Math.max(marginY+10,Math.min(H-marginY-8,touchTargetY));
-    // Direct 1:1 finger tracking: no easing ceiling, no catch-up lag.
-    player.vx = (targetX-player.x)/Math.max(dt,0.001);
-    player.vy = (targetY-player.y)/Math.max(dt,0.001);
-    player.x = targetX;
-    player.y = targetY;
+
+    // Pilot-control model:
+    // the finger does NOT teleport/lock the rocket to its position anymore.
+    // Instead, the pilot applies a bounded control force toward the finger.
+    // Black-hole gravity can therefore keep pulling even while the finger is held.
+    const dx=targetX-player.x;
+    const dy=targetY-player.y;
+    const dist=Math.hypot(dx,dy)||1;
+    const controlGain=12.5;
+    const maxPilotSpeed=760;
+    const desiredVX=Math.max(-maxPilotSpeed,Math.min(maxPilotSpeed,dx*controlGain));
+    const desiredVY=Math.max(-maxPilotSpeed,Math.min(maxPilotSpeed,dy*controlGain));
+
+    const response=Math.min(1,dt*9.5);
+    player.vx += (desiredVX-player.vx)*response;
+    player.vy += (desiredVY-player.vy)*response;
+
+    // Keep the finger responsive without overriding external forces.
+    if(dist<3){
+      player.vx*=0.96;
+      player.vy*=0.96;
+    }
+    player.x += player.vx*dt;
+    player.y += player.vy*dt;
   } else {
     const speed = (turbo? 680:480) * Math.max(0.8,Math.min(1.25,W/900));
     player.vx = (input.right?1:0) - (input.left?1:0);
@@ -1549,9 +1568,9 @@ function update(dt){
       const dist=Math.hypot(dx,dy)||1;
       const nx=dx/dist, ny=dy/dist;
       const tx=-ny, ty=nx;
-      const near=Math.max(0,1-dist/(bh.r*4.8));
-      const pull = Math.min(920, (55 + 52000/Math.pow(dist+190,0.95)) * (1 + 1.65*Math.pow(near,1.7)));
-      const swirl = 18 + 150*Math.pow(near,1.5);
+      const near=Math.max(0,1-dist/(bh.r*5.2));
+      const pull = Math.min(980, (70 + 62000/Math.pow(dist+190,0.93)) * (1 + 1.85*Math.pow(near,1.7)));
+      const swirl = 24 + 175*Math.pow(near,1.45);
 
       // Asteroids get dragged into the black hole, creating a moving hazard field.
       a.vx += (nx*pull + tx*swirl)*dt;
@@ -1679,15 +1698,31 @@ function update(dt){
       const nx=dx/dist, ny=dy/dist;
       const tx=-ny, ty=nx;
 
-      // TRUE GLOBAL GRAVITY: never zero. Far away it gently drags;
-      // near the core it becomes a dominant force.
-      const phaseBoost = currentPhase()>=5 ? 1.24 : currentPhase()===4 ? 1.12 : 1.0;
-      const near = Math.max(0, 1 - dist/(bh.r*4.2));
-      const pull = Math.min(1150, (90 + 70000/Math.pow(dist+180,0.92)) * (1 + 1.15*Math.pow(near,1.8)) * phaseBoost);
-      const swirl = (22 + 250*Math.pow(near,1.55)) * phaseBoost;
+      // TRUE GLOBAL GRAVITY: never zero.
+      // The black hole is a constant external force, so even a held finger
+      // cannot "cancel" it. Near the core it becomes extremely dominant.
+      const phaseBoost = currentPhase()>=5 ? 1.28 : currentPhase()===4 ? 1.14 : 1.0;
+      const near = Math.max(0,1 - dist/(bh.r*4.8));
 
-      player.x += (nx*pull + tx*swirl)*dt;
-      player.y += (ny*pull + ty*swirl)*dt;
+      // Far-field pull is always present. Close to the core it ramps sharply.
+      const farPull = 135 + 92000/Math.pow(dist+260,0.88);
+      const coreMultiplier = 1 + 2.1*Math.pow(near,1.9);
+      const pull = Math.min(1450, farPull*coreMultiplier*phaseBoost);
+      const swirl = (28 + 310*Math.pow(near,1.45))*phaseBoost;
+
+      // Apply gravity as velocity/force, not as a positional snap.
+      // This is the key fix for Touch Drag: holding the finger gives pilot
+      // control, while gravity simultaneously pulls the rocket away.
+      player.vx += (nx*pull + tx*swirl)*dt;
+      player.vy += (ny*pull + ty*swirl)*dt;
+      const maxBHSpeed = 1050;
+      const speedNow=Math.hypot(player.vx,player.vy);
+      if(speedNow>maxBHSpeed){
+        const s=maxBHSpeed/speedNow;
+        player.vx*=s; player.vy*=s;
+      }
+      player.x += player.vx*dt;
+      player.y += player.vy*dt;
 
       // One haptic cue when gravity becomes strongly noticeable.
       if(!bh.grabbed && near>0.22){
@@ -2126,14 +2161,33 @@ function draw(dt){
         strongestBH=Math.max(strongestBH, Math.max(0,1-dist/field));
       }
     }
-    if(strongestBH>0.35){
+    if(strongestBH>0.18){
       ctx.save();
-      const a=Math.min(0.16,(strongestBH-0.35)*0.32);
-      const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.28,W/2,H/2,Math.max(W,H)*0.78);
+      const a=Math.min(0.19,0.045+strongestBH*0.22);
+      const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.24,W/2,H/2,Math.max(W,H)*0.82);
       g.addColorStop(0,'rgba(168,85,247,0)');
+      g.addColorStop(0.62,'rgba(124,58,237,0)');
       g.addColorStop(1,`rgba(124,58,237,${a})`);
       ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
       ctx.restore();
+
+      // Subtle directional streaks toward the strongest black hole.
+      if(strongestBH>0.48){
+        ctx.save();
+        ctx.globalAlpha=Math.min(0.13,(strongestBH-0.48)*0.28);
+        ctx.strokeStyle='#A855F7';
+        ctx.lineWidth=1;
+        const sx=W/2, sy=H/2;
+        for(let k=0;k<8;k++){
+          const ang=elapsed*0.35 + k*Math.PI/4;
+          const len=Math.min(W,H)*(0.10+0.02*k);
+          ctx.beginPath();
+          ctx.moveTo(sx-Math.cos(ang)*len, sy-Math.sin(ang)*len);
+          ctx.lineTo(sx,sy);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
     }
     for(const bh of blackHoles){
       ctx.save();

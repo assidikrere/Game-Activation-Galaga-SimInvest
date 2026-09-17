@@ -831,12 +831,31 @@ function spawnSatellite(){
 }
 function spawnBlackHole(){
   if(currentPhase()<3) return;
-  const r=58;
-  const x=pickSafeX(r+18);
-  if(x===null) return;
+  const r=62;
   const phase=currentPhase();
-  const vy=phase>=5?115:90;
-  blackHoles.push({x,y:-r, r, vy, rot:Math.random()*Math.PI*2, rotSpeed:(Math.random()<.5?-1:1)*(0.35+Math.random()*0.35), age:0, life:7.5});
+
+  // Make the black hole relevant to the player instead of spawning harmlessly far away.
+  // Still keep a minimum horizontal offset so it never feels like a scripted instant hit.
+  let x=null;
+  for(let attempt=0; attempt<8; attempt++){
+    const offset=(Math.random()<0.5?-1:1)*(W*(0.12+Math.random()*0.22));
+    const candidate=Math.max(r+18,Math.min(W-r-18,player.x+offset));
+    if(Math.abs(candidate-player.x)>r*1.7 && pickSafeX(r+18)!==null){ x=candidate; break; }
+  }
+  if(x===null) x=pickSafeX(r+18);
+  if(x===null) return;
+
+  const vy=phase>=5?118:phase===4?104:92;
+  // Stronger in later phases: the field is large enough to force active maneuvering.
+  const field=phase>=5?r*6.4:phase===4?r*6.0:r*5.5;
+  blackHoles.push({
+    x,y:-r,r,vy,
+    vx:(Math.random()-0.5)*(phase>=4?34:24),
+    field,
+    rot:Math.random()*Math.PI*2,
+    rotSpeed:(Math.random()<.5?-1:1)*(0.45+Math.random()*0.4),
+    age:0,life:8.6,grabbed:false
+  });
 }
 function spawnPowerup(){
   const r = Math.random();
@@ -1421,8 +1440,10 @@ function update(dt){
   }
   spawnBlackHoleTimer -= dt;
   if(spawnBlackHoleTimer<=0 && phase>=3){
-    spawnBlackHoleTimer = 13 + Math.random()*9;
-    if(Math.random()<0.72) spawnBlackHole();
+    if(phase===3) spawnBlackHoleTimer = 10 + Math.random()*5;
+    else if(phase===4) spawnBlackHoleTimer = 7.5 + Math.random()*3.5;
+    else spawnBlackHoleTimer = 6 + Math.random()*3;
+    if(Math.random() < (phase===3?0.82:phase===4?0.90:0.96) && blackHoles.length<2) spawnBlackHole();
   }
   spawnPowerTimer -= dt;
   if(spawnPowerTimer<=0){
@@ -1532,31 +1553,51 @@ function update(dt){
     }
   }
 
-  // black holes: moving gravity hazards using the supplied galaxy artwork.
+  // black holes: heavy gravity hazards using the supplied galaxy artwork.
   for(let i=blackHoles.length-1;i>=0;i--){
     const bh=blackHoles[i];
-    bh.y += bh.vy*dt; bh.rot += bh.rotSpeed*dt; bh.age += dt; bh.life -= dt;
+    bh.y += bh.vy*dt;
+    bh.x += (bh.vx||0)*dt;
+    bh.rot += bh.rotSpeed*dt;
+    bh.age += dt;
+    bh.life -= dt;
+    if(bh.x<bh.r){ bh.x=bh.r; bh.vx=Math.abs(bh.vx||0); }
+    if(bh.x>W-bh.r){ bh.x=W-bh.r; bh.vx=-Math.abs(bh.vx||0); }
     if(bh.y>H+bh.r*2 || bh.life<=0){ blackHoles.splice(i,1); continue; }
     if(player.alive){
       const dx=bh.x-player.x, dy=bh.y-player.y;
       const dist=Math.hypot(dx,dy)||1;
-      // Long-range black-hole gravity: the pull starts well before the sprite
-      // reaches the visible vortex, so the player must actively swipe away.
-      const field=bh.r*4.8;
+      const field=bh.field || bh.r*5.5;
+
       if(dist<field){
-        const strength=(1-dist/field);
-        const pull=(120 + 620*Math.pow(strength,1.65));
-        player.x += (dx/dist)*pull*dt;
-        player.y += (dy/dist)*pull*dt;
+        const strength=1-dist/field;
+
+        // Strong radial pull + a light orbital component. The combination makes
+        // the player fight the gravity instead of simply holding one direction.
+        const pull=(230 + 1120*Math.pow(strength,1.8));
+        const swirl=(70 + 190*Math.pow(strength,1.25));
+        const nx=dx/dist, ny=dy/dist;
+        const tx=-ny, ty=nx;
+        player.x += (nx*pull + tx*swirl)*dt;
+        player.y += (ny*pull + ty*swirl)*dt;
+
+        // Once grabbed, give one subtle haptic cue instead of vibrating every frame.
+        if(!bh.grabbed && dist<field*0.92){
+          bh.grabbed=true;
+          haptic([18,18,28]);
+        }
+
         player.x = Math.max(player.w*0.55+8, Math.min(W-(player.w*0.55+8), player.x));
         player.y = Math.max(player.h*0.52+8, Math.min(H-(player.h*0.52+6), player.y));
-        if(dist<bh.r*0.42){
+
+        // Core is intentionally more unforgiving than the old 42% radius.
+        if(dist<bh.r*0.46){
           resetNoHit();
           killPlayer();
         }
       }
-      if(dist<field*0.92 && Math.random()<0.22){
-        addParticles(player.x,player.y,'#A855F7',1,25,0.22);
+      if(dist<field*0.90 && Math.random()<0.26){
+        addParticles(player.x,player.y,'#A855F7',1,28,0.24);
       }
     }
     // Shooting the outer galaxy only weakens it; the core remains lethal.
@@ -1974,12 +2015,17 @@ function draw(dt){
       ctx.rotate(bh.rot);
       const pulse=1+Math.sin(elapsed*5+bh.x)*0.035;
       const d=bh.r*2.5*pulse;
-      const field=bh.r*4.8;
+      const field=bh.field || bh.r*5.5;
+      const fieldPulse=field*(1+Math.sin(elapsed*4.5+bh.age*2.2)*0.018);
       ctx.save();
-      ctx.strokeStyle='rgba(168,85,247,0.10)';
-      ctx.lineWidth=1.5;
-      ctx.setLineDash([5,7]);
-      ctx.beginPath(); ctx.arc(0,0,field,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle='rgba(168,85,247,0.15)';
+      ctx.lineWidth=1.6;
+      ctx.setLineDash([6,8]);
+      ctx.beginPath(); ctx.arc(0,0,fieldPulse,0,Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle='rgba(168,85,247,0.07)';
+      ctx.lineWidth=6;
+      ctx.beginPath(); ctx.arc(0,0,fieldPulse*0.72,0,Math.PI*2); ctx.stroke();
       ctx.restore();
       ctx.shadowColor='rgba(168,85,247,.72)'; ctx.shadowBlur=26;
       if(GALAXY_SPRITE.complete && GALAXY_SPRITE.naturalWidth){

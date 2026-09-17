@@ -313,7 +313,87 @@
     #moonBarOuter{ height:5px; }
   }
 
+
+  /* ============ CENTRAL LEADERBOARD ============ */
+  #centralStatus{
+    position:absolute; bottom:10px; right:10px; z-index:40;
+    font-size:10px; letter-spacing:.8px; color:var(--dim);
+    background:rgba(10,8,24,.68); padding:5px 9px; border-radius:8px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08) inset;
+    pointer-events:none; opacity:0; transition:opacity .2s ease;
+  }
+  #centralStatus.online{ color:#9fe7cf; }
+  #centralStatus.offline{ color:#ffb4c0; }
+
+  /* TV / spectator mode: same index.html with ?tv=1 */
+  #tvScreen{
+    position:absolute; inset:0; z-index:80;
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:flex-start; text-align:center;
+    padding:clamp(28px,5vh,60px) clamp(20px,5vw,70px);
+    background:
+      radial-gradient(ellipse at 50% 14%, rgba(124,58,237,.24), rgba(5,4,12,.94) 62%),
+      #05040c;
+    overflow:hidden;
+  }
+  #tvScreen.hidden{ display:none !important; }
+  .tv-brand{
+    font-size:clamp(14px,1.7vw,22px);
+    font-weight:800; letter-spacing:4px;
+    color:var(--dim); text-transform:uppercase;
+  }
+  .tv-title{
+    margin-top:4px; font-size:clamp(30px,5vw,64px);
+    font-weight:900; letter-spacing:3px;
+    background:linear-gradient(90deg,var(--purple),var(--blue) 45%,var(--teal));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .tv-date{
+    margin-top:8px; font-size:clamp(11px,1.3vw,17px);
+    color:var(--dim); letter-spacing:2px; text-transform:uppercase;
+  }
+  .tv-table{
+    width:min(92vw,1100px); margin-top:clamp(20px,3vh,34px);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:22px; overflow:hidden;
+    background:rgba(255,255,255,.035);
+    box-shadow:0 0 0 1px rgba(124,58,237,.08) inset, 0 16px 45px rgba(0,0,0,.28);
+  }
+  .tv-row{
+    display:grid; grid-template-columns:90px 1fr 220px;
+    align-items:center; gap:18px;
+    min-height:clamp(54px,7vh,78px);
+    padding:0 clamp(16px,2.5vw,32px);
+    border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  .tv-row:last-child{ border-bottom:none; }
+  .tv-head{
+    color:var(--dim); font-size:clamp(9px,1vw,13px);
+    font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    background:rgba(255,255,255,.025);
+  }
+  .tv-rank{ text-align:left; color:var(--dim); font-size:clamp(18px,2vw,28px); font-weight:800; }
+  .tv-name{ text-align:left; color:var(--ink); font-size:clamp(18px,2.2vw,31px); font-weight:800; letter-spacing:1px; }
+  .tv-score{ text-align:right; color:var(--gold); font-size:clamp(18px,2.2vw,31px); font-weight:900; font-variant-numeric:tabular-nums; }
+  .tv-row.top1 .tv-rank,.tv-row.top1 .tv-name,.tv-row.top1 .tv-score{ text-shadow:0 0 18px rgba(255,215,106,.28); }
+  #tvFlash{
+    margin-top:clamp(14px,2vh,24px);
+    min-height:24px; font-size:clamp(12px,1.5vw,18px);
+    font-weight:800; letter-spacing:2px; color:var(--gold);
+    opacity:0; transition:opacity .2s ease;
+  }
+  #tvUpdated{
+    margin-top:auto; padding-top:16px;
+    color:var(--dim); font-size:11px; letter-spacing:1.5px;
+  }
+
+  @media (max-width:700px){
+    .tv-row{ grid-template-columns:48px 1fr 125px; gap:8px; }
+    .tv-table{ width:94vw; border-radius:14px; }
+  }
+
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div id="stage">
@@ -364,6 +444,7 @@
   <div id="eventBanner"></div>
   <div id="nearMissTag">NEAR MISS +100</div>
   <div id="adminToast"></div>
+  <div id="centralStatus"></div>
   <div id="noHitTag"></div>
   <div id="pauseOverlay" class="overlay hidden" style="z-index:40; background:rgba(5,4,12,0.72);">
     <div class="wordmark t2" style="font-size:clamp(26px,6vw,40px)">PAUSED</div>
@@ -463,6 +544,22 @@
     <button class="btn" id="btnNameOk">CONFIRM</button>
   </div>
 
+
+  <!-- TV SPECTATOR MODE: open the same page with ?tv=1 -->
+  <div id="tvScreen" class="hidden">
+    <div class="tv-brand">SIMINVEST</div>
+    <div class="tv-title">TO THE MOON</div>
+    <div class="tv-date" id="tvDate">TODAY'S LEADERBOARD</div>
+    <div class="tv-table">
+      <div class="tv-row tv-head">
+        <div>#</div><div style="text-align:left;">PLAYER</div><div style="text-align:right;">SCORE</div>
+      </div>
+      <div id="tvRows"></div>
+    </div>
+    <div id="tvFlash">NEW HIGH SCORE</div>
+    <div id="tvUpdated">LIVE • CONNECTING...</div>
+  </div>
+
   <div class="rotate-msg" id="rotateMsg">
     <div class="wordmark t2" style="font-size:26px;">ROTATE YOUR DEVICE</div>
     <div class="sub">SimInvest — To The Moon plays best in landscape.</div>
@@ -472,6 +569,194 @@
 <script>
 (function(){
 "use strict";
+
+  /* ============ CENTRAL LEADERBOARD / SUPABASE ============ */
+  const SUPABASE_URL = 'https://fomrafdtfafvmhnovkrd.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_zYUv9ya7fwqhHCbKhunu_w_4bnFv8QM';
+  const supabaseClient = (window.supabase && window.supabase.createClient)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+    : null;
+
+  const CENTRAL_DEVICE_KEY = 'simoon_central_device_id_v1';
+  const CENTRAL_TZ = 'Asia/Jakarta';
+  const TV_MODE = new URLSearchParams(window.location.search).get('tv') === '1';
+  let centralRows = [];
+  let centralLoaded = false;
+  let centralSubmitting = false;
+  let tvRealtimeChannel = null;
+
+  function getCentralDeviceId(){
+    try{
+      let id=localStorage.getItem(CENTRAL_DEVICE_KEY);
+      if(!id){
+        id=(crypto && crypto.randomUUID) ? 'device-'+crypto.randomUUID() : 'device-'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+        localStorage.setItem(CENTRAL_DEVICE_KEY,id);
+      }
+      return id;
+    }catch(e){
+      return 'device-'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+    }
+  }
+
+  function centralToday(){
+    return new Intl.DateTimeFormat('en-CA',{
+      timeZone:CENTRAL_TZ, year:'numeric', month:'2-digit', day:'2-digit'
+    }).format(new Date());
+  }
+
+  function centralDateLabel(){
+    return new Intl.DateTimeFormat('en-ID',{
+      timeZone:CENTRAL_TZ, day:'2-digit', month:'long', year:'numeric'
+    }).format(new Date()).toUpperCase();
+  }
+
+  function setCentralStatus(message, online){
+    const el=document.getElementById('centralStatus');
+    if(el){
+      el.textContent=message;
+      el.classList.toggle('online',!!online);
+      el.classList.toggle('offline',!online);
+      el.style.opacity = (state===STATE.PLAYING || TV_MODE) ? '1' : '0';
+    }
+  }
+
+  function renderCentralGameBoards(rows){
+    const mapped=(rows||[]).map(r=>({name:String(r.player_name||'PLAYER'),score:Number(r.score)||0}));
+    renderBoard(document.getElementById('boardScores'), mapped, false);
+    renderBoard(document.getElementById('boardScores2'), mapped, false);
+  }
+
+  function centralHigh(){
+    return centralRows.length ? Number(centralRows[0].score)||0 : 0;
+  }
+
+  async function fetchCentralScores(limit=10){
+    if(!supabaseClient) throw new Error('Supabase client unavailable');
+    const today=centralToday();
+    const {data,error}=await supabaseClient
+      .from('daily_scores')
+      .select('player_name,score,played_at,event_date')
+      .eq('event_date',today)
+      .order('score',{ascending:false})
+      .order('played_at',{ascending:true})
+      .limit(limit);
+    if(error) throw error;
+    return data||[];
+  }
+
+  async function refreshCentralLeaderboard(options={}){
+    try{
+      const rows=await fetchCentralScores(options.limit||10);
+      centralRows=rows;
+      centralLoaded=true;
+      setCentralStatus('CENTRAL • LIVE',true);
+      refreshTitleBest();
+      renderCentralGameBoards(rows);
+      if(TV_MODE) renderTVLeaderboard(rows);
+      return rows;
+    }catch(error){
+      console.warn('Central leaderboard fetch failed:',error);
+      setCentralStatus('CENTRAL • OFFLINE',false);
+      return null;
+    }
+  }
+
+  async function submitCentralScore(playerName, finalScore){
+    if(!supabaseClient) throw new Error('Supabase client unavailable');
+    const cleanName=(String(playerName||'PLAYER').toUpperCase().trim().slice(0,10)||'PLAYER');
+    const cleanScore=Math.max(0,Math.round(Number(finalScore)||0));
+    const payload={
+      player_name:cleanName,
+      score:cleanScore,
+      device_id:getCentralDeviceId()
+      // event_date / played_at are intentionally omitted:
+      // database defaults define them centrally.
+    };
+    const {error}=await supabaseClient.from('daily_scores').insert(payload);
+    if(error) throw error;
+    return cleanScore;
+  }
+
+  function renderTVLeaderboard(rows){
+    const wrap=document.getElementById('tvRows');
+    if(!wrap) return;
+    wrap.innerHTML='';
+    const list=(rows||[]).slice(0,10);
+    for(let i=0;i<10;i++){
+      const r=list[i];
+      const row=document.createElement('div');
+      row.className='tv-row'+(i===0?' top1':'');
+      const rank=document.createElement('div');
+      rank.className='tv-rank'; rank.textContent=(i+1);
+      const name=document.createElement('div');
+      name.className='tv-name'; name.textContent=r ? String(r.player_name||'PLAYER') : '—';
+      const sc=document.createElement('div');
+      sc.className='tv-score'; sc.textContent=r ? (Number(r.score)||0).toLocaleString() : '';
+      row.append(rank,name,sc);
+      wrap.appendChild(row);
+    }
+    const d=document.getElementById('tvDate');
+    if(d) d.textContent='TODAY • '+centralDateLabel();
+    const u=document.getElementById('tvUpdated');
+    if(u) u.textContent='LIVE • UPDATED '+new Intl.DateTimeFormat('en-ID',{timeZone:CENTRAL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
+  }
+
+  function tvFlash(text){
+    const el=document.getElementById('tvFlash');
+    if(!el) return;
+    el.textContent=text;
+    el.style.opacity='1';
+    clearTimeout(tvFlash._timer);
+    tvFlash._timer=setTimeout(()=>el.style.opacity='0',2200);
+  }
+
+  function initCentralRealtime(){
+    if(!supabaseClient) return;
+    // A realtime INSERT refreshes every connected player/TV immediately.
+    tvRealtimeChannel=supabaseClient
+      .channel('daily-scores-live')
+      .on('postgres_changes',
+        {event:'INSERT',schema:'public',table:'daily_scores'},
+        async (payload)=>{
+          const before=centralRows.length ? Number(centralRows[0].score)||0 : 0;
+          const rows=await refreshCentralLeaderboard();
+          const incoming=Number(payload?.new?.score)||0;
+          if(TV_MODE && rows){
+            if(incoming>before) tvFlash('NEW HIGH SCORE • '+incoming.toLocaleString());
+            else tvFlash('NEW SCORE • '+incoming.toLocaleString());
+          }
+        })
+      .subscribe((status)=>{
+        if(status==='SUBSCRIBED'){
+          setCentralStatus('CENTRAL • LIVE',true);
+          const u=document.getElementById('tvUpdated');
+          if(TV_MODE && u) u.textContent='LIVE • CONNECTED';
+        }
+      });
+
+    // 60-second fallback in case a realtime socket reconnects late.
+    setInterval(()=>refreshCentralLeaderboard({limit:10}),60000);
+    refreshCentralLeaderboard({limit:10});
+    window.addEventListener('online',()=>refreshCentralLeaderboard({limit:10}));
+    window.addEventListener('offline',()=>setCentralStatus('CENTRAL • OFFLINE',false));
+  }
+
+  function bootTVMode(){
+    if(!TV_MODE) return false;
+    ['screenTitle','screenInstr','screenOver','screenMoon','nameOverlay','pauseOverlay','controlOverlay'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.classList.add('hidden');
+    });
+    document.getElementById('hud')?.classList.add('hidden');
+    document.getElementById('moonWrap')?.classList.add('hidden');
+    document.getElementById('virtualJoystick')?.style.setProperty('display','none');
+    document.getElementById('joystickHint')?.style.setProperty('display','none');
+    document.getElementById('controlSettingsBtn')?.style.setProperty('display','none');
+    document.getElementById('muteBtn')?.style.setProperty('display','none');
+    document.getElementById('game')?.style.setProperty('display','none');
+    document.getElementById('tvScreen')?.classList.remove('hidden');
+    return true;
+  }
+
 
 /* ============ SETUP ============ */
 const canvas = document.getElementById('game');
@@ -757,6 +1042,7 @@ function addMoonRunner(name){
   return list.slice(0,10);
 }
 function getHigh(){
+  if(centralLoaded) return centralHigh();
   const list = getScores();
   return list.length? list[0].score : 0;
 }
@@ -1089,19 +1375,45 @@ function showNameEntry(reachedMoon){
   overlay.classList.remove('hidden');
   setTimeout(()=>document.getElementById('nameInput').focus(), 50);
 }
-function confirmName(){
+async function confirmName(){
+  if(centralSubmitting) return;
+  centralSubmitting=true;
+
+  const btn=document.getElementById('btnNameOk');
+  const originalLabel=btn ? btn.textContent : 'CONFIRM';
+  if(btn){ btn.disabled=true; btn.textContent='SYNCING...'; }
+
   let name = (document.getElementById('nameInput').value||'PLAYER').toUpperCase().trim().slice(0,10);
   if(!name) name='PLAYER';
-  const prevHigh = getHigh();
-  const scores = addScore(name, Math.round(score));
-  const isNewHigh = Math.round(score) >= prevHigh && Math.round(score) > 0;
-  if(pendingMoon){
-    const runners = addMoonRunner(name);
-    showMoonScreen(scores, runners);
-  } else {
-    showOverScreen(scores, isNewHigh);
+
+  const finalScore=Math.max(0,Math.round(score));
+  const prevHigh=getHigh();
+  let scores=[];
+  let isNewHigh=false;
+
+  try{
+    await submitCentralScore(name,finalScore);
+    await refreshCentralLeaderboard({limit:10});
+    scores=(centralRows||[]).map(r=>({name:r.player_name,score:Number(r.score)||0}));
+    isNewHigh = finalScore>prevHigh && finalScore>0;
+  }catch(error){
+    console.warn('Central submit failed; keeping local fallback:',error);
+    const localScores=addScore(name,finalScore);
+    scores=localScores;
+    isNewHigh=finalScore>=prevHigh && finalScore>0;
+    setCentralStatus('CENTRAL • OFFLINE',false);
   }
+
+  if(pendingMoon){
+    const runners=addMoonRunner(name);
+    showMoonScreen(scores,runners);
+  }else{
+    showOverScreen(scores,isNewHigh);
+  }
+
   document.getElementById('nameOverlay').classList.add('hidden');
+  centralSubmitting=false;
+  if(btn){ btn.disabled=false; btn.textContent=originalLabel; }
 }
 document.getElementById('btnNameOk').addEventListener('click', confirmName);
 document.getElementById('nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') confirmName(); });
@@ -2322,6 +2634,11 @@ refreshTitleBest();
 requestAnimationFrame(loop);
 
 })();
+
+  // Central leaderboard is optional at runtime: gameplay remains usable offline.
+  refreshTitleBest();
+  initCentralRealtime();
+  bootTVMode();
 </script>
 </body>
 </html>

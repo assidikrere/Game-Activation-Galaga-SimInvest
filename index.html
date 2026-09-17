@@ -858,11 +858,22 @@ function hideAllScreens(){
   });
 }
 
+// Optional mobile haptics: active only when the browser/device exposes Vibration API.
+// Visuals stay unchanged so haptics add impact without clutter or motion overload.
+function haptic(pattern){
+  try{
+    if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function'){
+      navigator.vibrate(pattern);
+    }
+  }catch(e){}
+}
+
 function killPlayer(){
   if(!player.alive) return;
   resetNoHit();
   player.alive=false;
   SFX.explosion();
+  haptic([140,45,220]);
   shakeMag = Math.max(shakeMag, 9);
   addParticles(player.x,player.y,'#ff8a65',26,180,0.7);
   addParticles(player.x,player.y,'#ffd76a',16,120,0.6);
@@ -873,6 +884,12 @@ function applyPowerup(type){
   const now = Date.now();
   showPowerTag(type);
   sPowerups += 60; score += 60;
+  if(type==='xtramurah') haptic(22);
+  else if(type==='starpoin') haptic([28,22,45]);
+  else if(type==='reksadana') haptic([40,25,55]);
+  else if(type==='margin' || type==='marginOverdrive') haptic([25,20,50]);
+  else if(type==='stocksplit') haptic([35,25,35,25,70]);
+  else if(type==='bomb') haptic([35,25,45,25,90]);
 
   if(type==='reksadana'){
     shieldEnd = now+3500;
@@ -1026,8 +1043,10 @@ function bearCandle(x,y,tx,ty,speed=310){
 function hitBoss(b, damage, points){
   if(!b) return;
   b.hp-=damage; b.flash=0.12;
+  haptic(22);
   addParticles(b.x,b.y,'#ff6b73',5,90,0.25);
   if(b.hp<=0){
+    haptic([80,30,120]);
     addParticles(b.x,b.y,'#ffd76a',34,190,0.7);
     score+=points; sAsteroids+=points; registerKill();
     SFX.bigExplosion(); shakeMag=Math.max(shakeMag,8);
@@ -1239,6 +1258,7 @@ function update(dt){
         if(a.hp<=0){
           if(a.mega){
             SFX.bigExplosion();
+            haptic(70);
             shakeMag = Math.max(shakeMag, 8);
             addParticles(a.x,a.y,'#e8b25a',34,190,0.7);
             addParticles(a.x,a.y,'#c9a3ff',18,150,0.6);
@@ -1248,6 +1268,7 @@ function update(dt){
             showEventBanner('MOON APPROACH', COLORS.sky);
           } else {
             SFX.hitAsteroid();
+            haptic(16);
             addParticles(a.x,a.y,'#e8b25a',12,140,0.5);
             const pts = a.maxHp>1? 180:90;
             sAsteroids += pts*mult; score += pts*mult;
@@ -1289,6 +1310,7 @@ function update(dt){
       if(rectRectHit(p.x,p.y,9,18, s.x,s.y,s.w,s.h)){
         projectiles.splice(j,1);
         SFX.hitSatellite();
+        haptic(14);
         addParticles(s.x,s.y,'#7fe0c9',12,130,0.5);
         sSatellites += 130*mult; score += 130*mult;
         registerKill();

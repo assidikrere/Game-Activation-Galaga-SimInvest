@@ -217,6 +217,9 @@
     background:rgba(255,255,255,.045); color:var(--ink); cursor:pointer; font:700 12px inherit; letter-spacing:.6px;
   }
   .control-option.active{ border-color:rgba(14,165,233,.75); box-shadow:0 0 0 1px rgba(14,165,233,.22) inset; background:rgba(14,165,233,.09); }
+  .title-control-picker{ margin:8px auto 10px; width:min(94vw,620px); }
+  .control-options.compact{ gap:6px; }
+  .control-options.compact .control-option{ min-width:0; flex:1 1 150px; padding:8px 9px; font-size:10px; min-height:34px; }
   @media (max-width:700px){
     #virtualJoystick{ width:108px; height:108px; bottom:16px; left:14px; }
     #virtualJoystick.right{ right:14px; }
@@ -304,6 +307,14 @@
       <div class="val" id="todaysBestVal">0</div>
       <div class="cta" id="todaysBestCta">BE THE FIRST TODAY</div>
     </div>
+    <div class="title-control-picker" id="titleControlPicker">
+      <div class="lbl" style="margin-bottom:6px;">HOW DO YOU WANT TO PLAY?</div>
+      <div class="control-options compact">
+        <button class="control-option" data-control="joystick-left">JOYSTICK · LEFT</button>
+        <button class="control-option" data-control="joystick-right">JOYSTICK · RIGHT</button>
+        <button class="control-option" data-control="drag">USE FINGER · NO JOYSTICK</button>
+      </div>
+    </div>
     <button class="btn" id="btnStart">START</button>
     <div class="tagline">Real Growth, Start Here.</div>
   </div>
@@ -315,7 +326,7 @@
       <div class="instr-row"><b>← ↑ ↓ →</b> MOVE</div>
       <div class="instr-row">AUTO FIRE</div>
       <div class="instr-row">DON'T GET HIT</div>
-    <div class="sub" style="margin-top:4px;">Use the selected touch control to maneuver.</div>
+    <div class="sub" id="controlInstruction" style="margin-top:4px;">Use the selected touch control to maneuver.</div>
     </div>
     <div class="countdown" id="countdownText">3</div>
   </div>
@@ -505,19 +516,25 @@ function flashAdminToast(msg){
   setTimeout(()=>{ el.style.opacity='0'; }, 1400);
 }
 
+let controlOverlayFromGame=false;
 function applyControlMode(mode){
   controlMode=mode;
   try{ localStorage.setItem(CONTROL_KEY,mode); }catch(e){}
   refreshControlUI();
 }
 document.getElementById('controlSettingsBtn').addEventListener('click',()=>{
-  if(state!==STATE.TITLE) return;
+  controlOverlayFromGame = (state===STATE.PLAYING);
+  if(controlOverlayFromGame) setGamePaused(true);
   document.getElementById('controlOverlay').classList.remove('hidden');
   refreshControlUI();
 });
-document.querySelectorAll('.control-option').forEach(btn=>btn.addEventListener('click',()=>applyControlMode(btn.dataset.control)));
+document.querySelectorAll('.control-option').forEach(btn=>btn.addEventListener('click',()=>{
+  applyControlMode(btn.dataset.control);
+}));
 document.getElementById('btnControlDone').addEventListener('click',()=>{
   document.getElementById('controlOverlay').classList.add('hidden');
+  if(controlOverlayFromGame && state===STATE.PLAYING) setGamePaused(false);
+  controlOverlayFromGame=false;
 });
 
 // Touch controls: configurable virtual joystick or the original full-screen touch-drag mode.
@@ -534,6 +551,10 @@ function refreshControlUI(){
   joystick.style.display = (isTouch && isJoystickMode() && state===STATE.PLAYING) ? 'block' : 'none';
   document.getElementById('joystickHint').style.opacity = (isTouch && isJoystickMode() && state===STATE.PLAYING) ? '1' : '0';
   document.querySelectorAll('.control-option').forEach(btn=>btn.classList.toggle('active',btn.dataset.control===controlMode));
+  const ins=document.getElementById('controlInstruction');
+  if(ins){
+    ins.textContent = controlMode==='joystick-left' ? 'Virtual joystick on the left.' : controlMode==='joystick-right' ? 'Virtual joystick on the right.' : 'Touch & drag with your finger.';
+  }
 }
 function resetJoystick(){
   joyPointerId=null; joyInputX=0; joyInputY=0;

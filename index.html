@@ -1,3 +1,242 @@
+NAH IYA. Yang tadi gue terlalu fokus ke copy/legend, padahal kita sebelumnya sudah bahas bahwa power-up harus terasa impactful saat dimainkan, bukan cuma kelihatan di layar.
+
+Jadi wrap-up finalnya gue revisi: kita punya 2 layer perubahan power-up — onboarding di homepage + gameplay feedback.
+
+POWER-UP — BIKIN “BERASA”
+⚡ XTRA MURAH — TURBO
+
+Homepage
+
+XTRA MURAH
+PALING MURAH DI INDONESIA*
+BUY 0,1403% • SELL 0,2403%
+TURBO
+
+Saat pickup
+
+Rocket langsung terasa lebih cepat
+Ada visual TURBO ACTIVE
+HUD menampilkan countdown
+Movement dibuat terasa lebih agresif, bukan sekadar angka speed naik
+
+Jadi player langsung ngeh: “Oh shit, gua dapet boost.”
+
+⭐ STARPOIN — 2× SCORE
+
+Homepage
+
+STARPOIN
+Tambah Beruntung dengan StarPoin
+2× SCORE
+
+Saat pickup
+
+Visual 2× SCORE yang obvious
+Timer aktif di HUD
+Setiap kill selama aktif kasih feedback ×2
+Score terasa melonjak secara visual
+
+Karena kalau cuma multiplier di background, player nggak bakal merasa dapat power-up spesial.
+
+🛡 REKSADANA — SHIELD
+
+Homepage
+
+REKSADANA
+Investasi Reksadana di SimInvest
+SHIELD
+
+Saat pickup
+
+Shield langsung kelihatan mengelilingi rocket
+Ada status SHIELD ACTIVE
+Saat shield menyerap hit → ada impact yang jelas
+Setelah hit, player tahu shield sudah habis
+
+Ini harus punya feedback paling intuitive:
+“Gua aman satu hit.”
+
+🔫 MARGIN — FIREPOWER
+
+Homepage
+
+MARGIN
+Tingkatkan Transaksimu dengan Margin
+FIREPOWER
+
+Saat pickup
+
+Weapon level langsung naik
+HUD berubah WEAPON LV.2 → LV.3 → ...
+Projectile jadi makin brutal/ramai
+Saat mencapai LV.5 → OVERDRIVE
+Overdrive punya visual treatment sendiri + timer
+
+Jadi Margin bukan terasa seperti pickup biasa, tapi progression power.
+
+🚀 STOCK SPLIT — 2 ROCKETS
+
+Homepage
+
+STOCK SPLIT
+Mendapatkan Stock Split Saham
+2 ROCKETS
+
+Saat pickup
+
+Rocket kedua langsung muncul
+Keduanya menembak bersamaan
+Status 2 ROCKETS
+Countdown 10 sec jelas
+Saat habis, balik ke satu rocket
+
+Ini harus jadi salah satu power-up yang bikin player refleks:
+“WOAH, gua sekarang dua.”
+
+Dan karena rare, efeknya memang harus terasa spesial.
+
+💥 BAGGER — CLEAR SCREEN
+
+Homepage
+
+BAGGER
+Cuan Maksimal
+CLEAR SCREEN
+
+Saat pickup
+
+Bukan sekadar power-up aktif
+Instant trigger
+Semua asteroid + satellite di layar dihancurkan
+Score bonus langsung masuk
+BAGGER! besar muncul
+Coin/score rain arcade
+Haptic + SFX impact
+
+Ini jadi panic button / jackpot moment.
+
+Jadi secara keseluruhan, power-up system kita akan punya:
+1. Visual pickup
+
+Player langsung tahu dia mengambil apa.
+
+2. Effect visual
+
+Effect-nya kelihatan di rocket/gameplay, bukan cuma angka di kode.
+
+3. HUD status
+
+Ada indikator active + countdown untuk effect yang punya durasi.
+
+4. Moment-to-moment feedback
+
+Contoh:
+×2
+WEAPON LV.3
+OVERDRIVE
+2 ROCKETS
+BAGGER!
+
+5. Haptic / SFX
+
+Setiap power-up punya sensasi pickup yang beda, sejauh device mendukung.
+
+Jadi KNOW YOUR SPACE menjawab:
+
+“Apa ini?”
+
+Sedangkan gameplay menjawab:
+
+“ANJIR, ini efeknya segede ini.”
+
+Nah, ini baru power-up berasa. WKWKWK.
+
+Dan ini kita tambahkan ke scope coding tadi. Core mechanics yang sudah bagus tetap nggak kita bongkar; kita polish feedback dan presentation-nya.
+
+Teks yang ditempel (1)(20260917-102638).txt
+Dokumen
+Noted. Gas buat code-nya untuk yang paling baru ya.  Kita buat untuk versi terbarunya. Gaskennn...  
+
+GASKEUNNN. 🚀
+
+Gue sudah bikin versi terbaru vNext langsung dari file paling baru yang lo upload, jadi base-nya tetap centralized leaderboard + Supabase + TV mode yang sekarang.
+
+Yang sudah masuk:
+
+KNOW YOUR SPACE di homepage
+4 AVOID: Asteroid, Satellite, Black Hole, The Bear
+6 POWER-UPS dalam grid 3×2
+masing-masing ada USP/product explanation + gameplay effect
+XTRA MURAH highlight PALING MURAH DI INDONESIA* + BUY 0,1403% • SELL 0,2403% + TURBO
+Power-up dibuat lebih berasa
+active power-up HUD + countdown
+pickup burst / particles / shake / haptic
+power-up sprite lebih glowing + pulsing
+Turbo lebih terasa
+Shield, 2× Score, 2 Rockets, Overdrive lebih jelas statusnya
+Margin naik level ditunjukkan sebagai FIREPOWER • LV.X
+Moon Runner dibuang total
+Central Daily Top 10 + TV mode tetap dipertahankan
+Tagline tetap “Real Growth, Start Here.” tanpa alternatif lain
+File terbaru
+
+Download HTML vNext
+
+Download Package vNext
+
+Ini tinggal lo pakai sebagai index.html terbaru di repo GitHub Pages.
+
+index-siminvest-to-the-moon-vNext.html
+HTML
+Nah kan, terlalu pack bgt cuy. Mau mainnya di mana? Gabisa nih.
+
+WKWKWK IYA, screenshot-nya jelas banget — KNOW YOUR SPACE-nya sudah benar secara konsep, tapi homepage-nya kebanyakan makan vertical space. 😭
+
+Gue sudah revisi langsung dari vNext terbaru yang barusan lo kasih, bukan bikin dari versi lama. Base-nya tetap yang sekarang termasuk centralized leaderboard/Supabase.
+
+Yang gue ubah di vNext2
+
+Mobile homepage sekarang:
+
+Logo gambar SimInvest paling atas gue hide → karena sudah ada SIMINVEST text besar, jadi nggak double branding.
+SIMINVEST / TO THE MOON dipadatkan.
+Today's Best diperkecil.
+KNOW YOUR SPACE tetap lengkap:
+4 obstacle
+6 power-ups
+USP + effect tetap ada.
+Power-up cards dibuat jauh lebih pendek.
+3 pilihan control sekarang satu baris:
+JOYSTICK · LEFT
+JOYSTICK · RIGHT
+USE FINGER · NO JOYSTICK
+START dibuat lebih compact dan harusnya sudah kelihatan tanpa harus scroll.
+Ada extra compression untuk device dengan viewport pendek.
+Gameplay sama sekali nggak gue bongkar.
+
+Jadi targetnya sekarang:
+
+Branding
+↓
+Today's Best
+↓
+KNOW YOUR SPACE
+↓
+Control
+↓
+
+START
+
+Bukan homepage yang berasa kayak landing page lagi. Player datang → ngerti → pencet START → main.
+
+🚀 vNext2
+
+Download HTML — vNext2
+
+Download Package — vNext2
+
+Coba deploy vNext2 ini di GitHub Pages dan screenshot lagi di iPhone. Ini harus jauh lebih playable.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -470,6 +709,69 @@
   @media (max-width:700px){
     .tv-row{ grid-template-columns:48px 1fr 125px; gap:8px; }
     .tv-table{ width:94vw; border-radius:14px; }
+  }
+
+  /* ============ HOMEPAGE COMPACT MOBILE LAYOUT ============
+     Keep KNOW YOUR SPACE, but make the game immediately playable on phones.
+  */
+  @media (max-width:700px){
+    #screenTitle{
+      justify-content:flex-start;
+      padding:calc(8px + env(safe-area-inset-top)) 10px 14px;
+      gap:4px;
+    }
+    #screenTitle .title-logo{ display:none; }
+    #screenTitle .t1{ font-size:31px; line-height:.95; }
+    #screenTitle .t2{ font-size:23px; line-height:.95; margin-top:-1px; }
+    #screenTitle .sub{ font-size:12px; margin-top:1px; }
+    #screenTitle .tagline{ font-size:10px; letter-spacing:1.35px; margin-top:1px; }
+
+    #screenTitle .todaysbest{
+      margin-top:3px; padding:5px 16px; border-radius:12px;
+    }
+    #screenTitle .todaysbest .lbl{ font-size:8px; letter-spacing:1.7px; }
+    #screenTitle .todaysbest .val{ font-size:20px; line-height:1.05; }
+    #screenTitle .todaysbest .cta{ font-size:8px; letter-spacing:.8px; }
+
+    .title-knowledge{ width:100%; margin:2px auto 0; }
+    .knowledge-head{ font-size:9px; letter-spacing:2px; margin-bottom:4px; }
+    .knowledge-group-label{ font-size:7px; letter-spacing:1.45px; margin:2px 0 3px; }
+    .knowledge-grid.avoid-grid{ gap:4px; margin-bottom:5px; }
+    .knowledge-grid.power-grid{ gap:4px; }
+    .knowledge-card{ border-radius:9px; padding:5px 3px 5px; }
+    .knowledge-card .k-name{ font-size:9px; letter-spacing:.55px; }
+    .knowledge-card .k-copy{ margin-top:1px; font-size:6.6px; line-height:1.18; }
+    .knowledge-card .k-effect{ margin-top:2px; font-size:7.5px; letter-spacing:.65px; }
+    .knowledge-card.power-card{ padding:5px 3px 5px; min-height:76px; }
+    .knowledge-card.power-card .k-icon{ width:21px; height:21px; margin-bottom:2px; border-radius:6px; }
+    .knowledge-card.power-card .k-icon img{ width:19px; height:19px; }
+    .knowledge-note{ margin-top:3px; font-size:6.2px; }
+
+    .title-control-picker{ width:100%; margin:4px auto 2px; }
+    #titleControlPicker .lbl{ font-size:9px !important; letter-spacing:.9px; margin-bottom:3px !important; }
+    .control-options.compact{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; width:100%; }
+    .control-options.compact .control-option{
+      min-width:0; width:100%; flex:none; padding:7px 3px; min-height:34px;
+      font-size:7.2px; line-height:1.05; letter-spacing:.35px; border-radius:10px;
+    }
+    #btnStart{ margin-top:3px; padding:10px 34px; font-size:15px; min-height:42px; }
+  }
+
+  @media (max-width:700px) and (max-height:760px){
+    #screenTitle{ gap:3px; padding-top:calc(5px + env(safe-area-inset-top)); }
+    #screenTitle .t1{ font-size:28px; }
+    #screenTitle .t2{ font-size:21px; }
+    #screenTitle .sub{ font-size:11px; }
+    #screenTitle .todaysbest{ padding:4px 14px; margin-top:2px; }
+    #screenTitle .todaysbest .val{ font-size:18px; }
+    .knowledge-card.power-card{ min-height:70px; padding-top:4px; padding-bottom:4px; }
+    .knowledge-card.power-card .k-icon{ width:19px; height:19px; }
+    .knowledge-card.power-card .k-icon img{ width:17px; height:17px; }
+    .knowledge-card .k-name{ font-size:8.5px; }
+    .knowledge-card .k-copy{ font-size:6.2px; }
+    .knowledge-card .k-effect{ font-size:7px; }
+    .knowledge-note{ font-size:5.8px; }
+    #btnStart{ min-height:39px; padding:8px 32px; }
   }
 
 </style>
@@ -2822,3 +3124,5 @@ requestAnimationFrame(loop);
 </script>
 </body>
 </html>
+index-siminvest-to-the-moon-vNext2.html
+HTML

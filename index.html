@@ -207,8 +207,10 @@
     text-transform:uppercase; opacity:0; transition:opacity .2s ease;
   }
   #controlSettingsBtn{
-    margin-top:0; padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.13);
-    background:rgba(255,255,255,.045); color:var(--dim); font:700 11px inherit; letter-spacing:1px; cursor:pointer;
+    position:absolute; top:10px; left:10px; z-index:20;
+    margin:0; padding:7px 11px; border-radius:999px; border:1px solid rgba(255,255,255,.13);
+    background:rgba(20,16,40,.55); color:var(--dim); font:700 10px inherit; letter-spacing:1px; cursor:pointer;
+    box-shadow:0 0 0 1px rgba(255,255,255,.04) inset;
   }
   #controlSettingsBtn:active{ transform:scale(.97); }
   .control-options{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:2px; }
@@ -279,13 +281,14 @@
   <div id="nearMissTag">NEAR MISS +100</div>
   <div id="adminToast"></div>
   <div id="noHitTag"></div>
-  <div id="pauseOverlay" class="overlay hidden" style="z-index:45; background:rgba(5,4,12,0.72);">
+  <div id="pauseOverlay" class="overlay hidden" style="z-index:40; background:rgba(5,4,12,0.72);">
     <div class="wordmark t2" style="font-size:clamp(26px,6vw,40px)">PAUSED</div>
     <div class="sub">Resume the journey to continue.</div>
+    <button class="btn" id="btnResume" style="margin-top:4px;">RESUME</button>
   </div>
 
   <!-- CONTROL SETTINGS -->
-  <div id="controlOverlay" class="overlay hidden" style="z-index:42;">
+  <div id="controlOverlay" class="overlay hidden" style="z-index:50;">
     <div class="wordmark t2" style="font-size:clamp(24px,5.8vw,38px)">CONTROL</div>
     <div class="sub" style="max-width:420px;line-height:1.45;">Choose how touch controls work on mobile devices.</div>
     <div class="control-options">
@@ -528,6 +531,12 @@ document.getElementById('controlSettingsBtn').addEventListener('click',()=>{
   document.getElementById('controlOverlay').classList.remove('hidden');
   refreshControlUI();
 });
+document.getElementById('btnResume').addEventListener('click',()=>{
+  if(state===STATE.PLAYING){
+    setGamePaused(false);
+    controlOverlayFromGame=false;
+  }
+});
 document.querySelectorAll('.control-option').forEach(btn=>btn.addEventListener('click',()=>{
   applyControlMode(btn.dataset.control);
 }));
@@ -541,15 +550,18 @@ document.getElementById('btnControlDone').addEventListener('click',()=>{
 const CONTROL_KEY = 'simoon_control_mode_v1';
 let controlMode = localStorage.getItem(CONTROL_KEY) || 'joystick-right';
 let touchTargetX = null, touchTargetY = null;
+let dragOffsetX = 0, dragOffsetY = 0;
 const joystick = document.getElementById('virtualJoystick');
 const joystickKnob = joystick.querySelector('.joy-knob');
 let joyPointerId = null, joyInputX = 0, joyInputY = 0;
 
 function isJoystickMode(){ return controlMode==='joystick-left' || controlMode==='joystick-right'; }
 function refreshControlUI(){
+  const inGame = state===STATE.PLAYING;
   joystick.classList.toggle('right', controlMode==='joystick-right');
-  joystick.style.display = (isTouch && isJoystickMode() && state===STATE.PLAYING) ? 'block' : 'none';
-  document.getElementById('joystickHint').style.opacity = (isTouch && isJoystickMode() && state===STATE.PLAYING) ? '1' : '0';
+  joystick.style.display = (isTouch && isJoystickMode() && inGame && !gamePaused) ? 'block' : 'none';
+  document.getElementById('joystickHint').style.opacity = (isTouch && isJoystickMode() && inGame && !gamePaused) ? '1' : '0';
+  document.getElementById('controlSettingsBtn').style.display = inGame ? 'block' : 'none';
   document.querySelectorAll('.control-option').forEach(btn=>btn.classList.toggle('active',btn.dataset.control===controlMode));
   const ins=document.getElementById('controlInstruction');
   if(ins){
@@ -589,19 +601,46 @@ joystick.addEventListener('pointerup',endJoyPointer);
 joystick.addEventListener('pointercancel',endJoyPointer);
 joystick.addEventListener('lostpointercapture',()=>{ if(joyPointerId!==null) resetJoystick(); });
 
-function handleTouchDrag(e){
+function handleTouchDragStart(e){
   if(state!==STATE.PLAYING || controlMode!=='drag') return;
   e.preventDefault();
   const t=e.touches && e.touches[0] ? e.touches[0] : e;
-  touchTargetX=t.clientX; touchTargetY=t.clientY;
+  // Lock the finger-to-rocket relationship at touch start, then follow 1:1.
+  // This removes the previous easing/lag ceiling that made the rocket feel
+  // like it could not catch up to the player's hand.
+  dragOffsetX = player ? player.x - t.clientX : 0;
+  dragOffsetY = player ? player.y - t.clientY : 0;
+  touchTargetX=t.clientX + dragOffsetX;
+  touchTargetY=t.clientY + dragOffsetY;
 }
-canvas.addEventListener('touchstart',handleTouchDrag,{passive:false});
-canvas.addEventListener('touchmove',handleTouchDrag,{passive:false});
-canvas.addEventListener('touchend',e=>{ e.preventDefault(); touchTargetX=null; touchTargetY=null; },{passive:false});
-canvas.addEventListener('touchcancel',e=>{ e.preventDefault(); touchTargetX=null; touchTargetY=null; },{passive:false});
+function handleTouchDragMove(e){
+  if(state!==STATE.PLAYING || controlMode!=='drag') return;
+  e.preventDefault();
+  const t=e.touches && e.touches[0] ? e.touches[0] : e;
+  touchTargetX=t.clientX + dragOffsetX;
+  touchTargetY=t.clientY + dragOffsetY;
+}
+function handleTouchDragEnd(e){
+  e.preventDefault();
+  touchTargetX=null; touchTargetY=null;
+  dragOffsetX=0; dragOffsetY=0;
+}
+canvas.addEventListener('touchstart',handleTouchDragStart,{passive:false});
+canvas.addEventListener('touchmove',handleTouchDragMove,{passive:false});
+canvas.addEventListener('touchend',handleTouchDragEnd,{passive:false});
+canvas.addEventListener('touchcancel',handleTouchDragEnd,{passive:false});
 document.getElementById('stage').addEventListener('touchmove',e=>{ e.preventDefault(); },{passive:false});
 
-function setGamePaused(v){ if(state!==STATE.PLAYING) return; gamePaused=v; if(v){input.left=false;input.right=false;} }
+function setGamePaused(v){
+  if(state!==STATE.PLAYING) return;
+  gamePaused=v;
+  if(v){
+    input.left=false; input.right=false; input.up=false; input.down=false;
+    resetJoystick();
+    touchTargetX=null; touchTargetY=null;
+  }
+  refreshControlUI();
+}
 document.addEventListener('visibilitychange',()=>setGamePaused(document.visibilityState!=='visible'));
 window.addEventListener('blur',()=>setGamePaused(true));
 window.addEventListener('focus',()=>setGamePaused(false));
@@ -1293,11 +1332,11 @@ function update(dt){
   } else if(isTouch && controlMode==='drag' && touchTargetX!==null && touchTargetY!==null){
     const targetX=Math.max(marginX,Math.min(W-marginX,touchTargetX));
     const targetY=Math.max(marginY+10,Math.min(H-marginY-8,touchTargetY));
-    const followSpeed=Math.min(1,dt*11);
-    player.x += (targetX-player.x)*followSpeed;
-    player.y += (targetY-player.y)*followSpeed;
-    player.vx = (targetX-player.x);
-    player.vy = (targetY-player.y);
+    // Direct 1:1 finger tracking: no easing ceiling, no catch-up lag.
+    player.vx = (targetX-player.x)/Math.max(dt,0.001);
+    player.vy = (targetY-player.y)/Math.max(dt,0.001);
+    player.x = targetX;
+    player.y = targetY;
   } else {
     const speed = (turbo? 680:480) * Math.max(0.8,Math.min(1.25,W/900));
     player.vx = (input.right?1:0) - (input.left?1:0);
@@ -2016,6 +2055,7 @@ function startFlow(){
   hideAllScreens();
   document.getElementById('screenInstr').classList.remove('hidden');
   state = STATE.INSTR;
+  refreshControlUI();
   let n=3;
   document.getElementById('countdownText').textContent = n;
   clearInterval(countdownInterval);

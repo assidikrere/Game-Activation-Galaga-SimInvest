@@ -914,7 +914,7 @@ function spawnSatellite(){
   satellites.push({x, y:-h, w, h, vy, baseX:x, amp, freq:(Math.random()*1.2+0.6), t:Math.random()*10, rot:0, nearMissed:false});
 }
 function spawnBlackHole(){
-  if(currentPhase()<3) return;
+  if(currentPhase()<2) return;
   const r=62;
   const phase=currentPhase();
 
@@ -1518,11 +1518,13 @@ function update(dt){
     spawnSatellite();
   }
   spawnBlackHoleTimer -= dt;
-  if(spawnBlackHoleTimer<=0 && phase>=3){
-    if(phase===3) spawnBlackHoleTimer = 10 + Math.random()*5;
-    else if(phase===4) spawnBlackHoleTimer = 7.5 + Math.random()*3.5;
-    else spawnBlackHoleTimer = 6 + Math.random()*3;
-    if(Math.random() < (phase===3?0.82:phase===4?0.90:0.96) && blackHoles.length<2) spawnBlackHole();
+  if(spawnBlackHoleTimer<=0 && phase>=2){
+    if(phase===2) spawnBlackHoleTimer = 10 + Math.random()*4;
+    else if(phase===3) spawnBlackHoleTimer = 8.5 + Math.random()*3.5;
+    else if(phase===4) spawnBlackHoleTimer = 7 + Math.random()*3;
+    else spawnBlackHoleTimer = 5.5 + Math.random()*2.5;
+    const bhChance = phase===2?0.72:phase===3?0.88:phase===4?0.95:0.98;
+    if(Math.random() < bhChance && blackHoles.length<2) spawnBlackHole();
   }
   spawnPowerTimer -= dt;
   if(spawnPowerTimer<=0){
@@ -1537,14 +1539,42 @@ function update(dt){
     if(p.y< -20 || p.x<-20 || p.x>W+20) projectiles.splice(i,1);
   }
 
-  // update asteroids
+  // update asteroids + black-hole gravity
   for(let i=asteroids.length-1;i>=0;i--){
     const a = asteroids[i];
+
+    let consumedByBlackHole = false;
+    for(const bh of blackHoles){
+      const dx=bh.x-a.x, dy=bh.y-a.y;
+      const dist=Math.hypot(dx,dy)||1;
+      const nx=dx/dist, ny=dy/dist;
+      const tx=-ny, ty=nx;
+      const near=Math.max(0,1-dist/(bh.r*4.8));
+      const pull = Math.min(920, (55 + 52000/Math.pow(dist+190,0.95)) * (1 + 1.65*Math.pow(near,1.7)));
+      const swirl = 18 + 150*Math.pow(near,1.5);
+
+      // Asteroids get dragged into the black hole, creating a moving hazard field.
+      a.vx += (nx*pull + tx*swirl)*dt;
+      a.vy += (ny*pull + ty*swirl)*dt;
+
+      // Black-hole capture: an asteroid that reaches the core is consumed.
+      if(dist < bh.r*0.92){
+        addParticles(a.x,a.y,'#a855f7',12,110,0.42);
+        addParticles(a.x,a.y,'#2b193f',8,75,0.35);
+        consumedByBlackHole = true;
+        break;
+      }
+    }
+    if(consumedByBlackHole){
+      asteroids.splice(i,1);
+      continue;
+    }
+
     a.x += a.vx*dt; a.y += a.vy*dt; a.rot += a.rotSpeed*dt;
     if(a.flash>0) a.flash -= dt*4;
     if(a.x<a.size) { a.x=a.size; a.vx*=-1; }
     if(a.x>W-a.size){ a.x=W-a.size; a.vx*=-1; }
-    if(a.y > H+80){ asteroids.splice(i,1); continue; }
+    if(a.y > H+80 || a.y < -100){ asteroids.splice(i,1); continue; }
     for(let j=projectiles.length-1;j>=0;j--){
       const p = projectiles[j];
       if(rectCircleHit(p.x,p.y,7,18, a.x,a.y,a.size)){
@@ -1646,20 +1676,21 @@ function update(dt){
     if(player.alive){
       const dx=bh.x-player.x, dy=bh.y-player.y;
       const dist=Math.hypot(dx,dy)||1;
-      const field=bh.field || (Math.hypot(W,H)*1.35 + 180);
-
-      // GLOBAL GRAVITY: there is no "safe distance".
-      // Far away = noticeable drag. Near the core = overpowering pull.
-      const strength=Math.max(0,1-dist/field);
-      const pull=(75 + 1300*Math.pow(strength,1.6));
-      const swirl=(90 + 230*Math.pow(strength,1.2));
       const nx=dx/dist, ny=dy/dist;
       const tx=-ny, ty=nx;
+
+      // TRUE GLOBAL GRAVITY: never zero. Far away it gently drags;
+      // near the core it becomes a dominant force.
+      const phaseBoost = currentPhase()>=5 ? 1.24 : currentPhase()===4 ? 1.12 : 1.0;
+      const near = Math.max(0, 1 - dist/(bh.r*4.2));
+      const pull = Math.min(1150, (90 + 70000/Math.pow(dist+180,0.92)) * (1 + 1.15*Math.pow(near,1.8)) * phaseBoost);
+      const swirl = (22 + 250*Math.pow(near,1.55)) * phaseBoost;
+
       player.x += (nx*pull + tx*swirl)*dt;
       player.y += (ny*pull + ty*swirl)*dt;
 
-      // One haptic cue when the gravity becomes meaningfully intense.
-      if(!bh.grabbed && strength>0.58){
+      // One haptic cue when gravity becomes strongly noticeable.
+      if(!bh.grabbed && near>0.22){
         bh.grabbed=true;
         haptic([18,18,28]);
       }
@@ -1673,7 +1704,7 @@ function update(dt){
         killPlayer();
       }
 
-      if(strength>0.12 && Math.random()<0.30){
+      if(near>0.08 && Math.random()<0.28){
         addParticles(player.x,player.y,'#A855F7',1,32,0.24);
       }
     }
@@ -1816,7 +1847,7 @@ function drawRocket(){
   // Do NOT distort or dynamically tilt the sprite with movement.
   const visualH = 64;
   const visualW = ROCKET_SPRITE.naturalHeight ? visualH*(ROCKET_SPRITE.naturalWidth/ROCKET_SPRITE.naturalHeight) : 27;
-  const spriteRotation = -10 * Math.PI / 180;
+  const spriteRotation = 0;
   const lvlBoost = (weaponLevel-1)*0.18;
 
   ctx.save();

@@ -228,6 +228,86 @@
   .title-control-picker{ margin:8px auto 10px; width:min(94vw,620px); }
   .control-options.compact{ gap:6px; }
   .control-options.compact .control-option{ min-width:0; flex:1 1 150px; padding:8px 9px; font-size:10px; min-height:34px; }
+  /* ============ HOMEPAGE KNOW YOUR SPACE ============ */
+  .title-knowledge{
+    width:min(94vw,620px); margin:2px auto 0; padding:0;
+  }
+  .knowledge-head{
+    font-size:10px; letter-spacing:2.2px; color:var(--dim); font-weight:800;
+    text-transform:uppercase; margin-bottom:6px;
+  }
+  .knowledge-group-label{
+    font-size:8px; letter-spacing:1.6px; color:rgba(238,241,255,.58); font-weight:800;
+    text-transform:uppercase; margin:3px 0 5px;
+  }
+  .knowledge-grid.avoid-grid{
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; margin-bottom:7px;
+  }
+  .knowledge-grid.power-grid{
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px;
+  }
+  .knowledge-card{
+    min-width:0; border-radius:10px; padding:6px 5px 7px;
+    background:rgba(255,255,255,.035);
+    border:1px solid rgba(255,255,255,.09);
+    box-shadow:0 0 0 1px rgba(124,58,237,.05) inset;
+    text-align:center;
+  }
+  .knowledge-card .k-name{
+    font-size:10px; font-weight:900; letter-spacing:.8px; color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .knowledge-card .k-copy{
+    margin-top:2px; font-size:7.5px; line-height:1.25; color:var(--dim);
+    white-space:normal;
+  }
+  .knowledge-card .k-effect{
+    margin-top:3px; font-size:8px; line-height:1.1; font-weight:900; letter-spacing:.8px;
+    color:var(--skyblue); white-space:nowrap;
+  }
+  .knowledge-card.power-card{ padding-top:7px; }
+  .knowledge-card.power-card .k-icon{
+    width:25px; height:25px; margin:0 auto 3px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
+    overflow:hidden;
+  }
+  .knowledge-card.power-card .k-icon img{ width:22px; height:22px; object-fit:contain; }
+  .knowledge-card.xtra .k-effect{ color:#c59cff; }
+  .knowledge-card.star .k-effect{ color:#59d9b3; }
+  .knowledge-card.reksa .k-effect{ color:#8fe4ff; }
+  .knowledge-card.margin .k-effect{ color:#64c6ff; }
+  .knowledge-card.split .k-effect{ color:#59d9b3; }
+  .knowledge-card.bagger .k-effect{ color:#ffd76a; }
+  .knowledge-note{
+    margin-top:5px; font-size:7px; color:rgba(154,163,199,.72); letter-spacing:.2px; line-height:1.25;
+  }
+
+  /* ============ ACTIVE POWER-UP HUD ============ */
+  #activePowerups{
+    position:absolute; top:74px; left:50%; transform:translateX(-50%);
+    display:flex; gap:5px; align-items:center; justify-content:center; flex-wrap:wrap;
+    max-width:min(74vw,420px); z-index:6; pointer-events:none;
+  }
+  .active-power-chip{
+    min-width:68px; padding:4px 7px 5px; border-radius:999px;
+    background:rgba(10,8,24,.72); border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 0 0 1px rgba(255,255,255,.03) inset, 0 5px 14px rgba(0,0,0,.16);
+    backdrop-filter:blur(4px); text-align:center; line-height:1.05;
+  }
+  .active-power-chip .ap-name{ font-size:8px; font-weight:900; letter-spacing:1px; }
+  .active-power-chip .ap-time{ font-size:8px; color:var(--ink); margin-top:2px; font-weight:800; }
+  @media (max-width:900px){
+    #activePowerups{ top:70px; max-width:66vw; }
+    .active-power-chip{ min-width:60px; padding:4px 6px; }
+    .active-power-chip .ap-name,.active-power-chip .ap-time{ font-size:7px; }
+  }
+  @media (max-width:430px){
+    #activePowerups{ top:67px; max-width:70vw; gap:4px; }
+    .active-power-chip{ min-width:56px; padding:3px 5px 4px; }
+    .active-power-chip .ap-name,.active-power-chip .ap-time{ font-size:6.5px; }
+  }
+
   @media (max-width:700px){
     #virtualJoystick{ width:108px; height:108px; bottom:16px; left:14px; }
     #virtualJoystick.right{ right:14px; }
@@ -439,6 +519,7 @@
     <div id="moonLabel"><span>MOON DISTANCE</span><span id="moonPct">0%</span></div>
     <div id="moonBarOuter"><div id="moonBarInner"></div></div>
   </div>
+  <div id="activePowerups" aria-hidden="true"></div>
   <div id="powerTag"></div>
   <div id="comboTag"></div>
   <div id="eventBanner"></div>
@@ -470,11 +551,64 @@
     <div class="wordmark t1">SIMINVEST</div>
     <div class="wordmark t2">TO THE MOON</div>
     <div class="sub">The cure is waiting on the Moon.</div>
+    <div class="tagline">Real Growth, Start Here.</div>
     <div class="todaysbest" id="todaysBestBox">
       <div class="lbl">TODAY'S BEST</div>
       <div class="val" id="todaysBestVal">0</div>
       <div class="cta" id="todaysBestCta">BE THE FIRST TODAY</div>
     </div>
+
+    <div class="title-knowledge" id="titleKnowledge">
+      <div class="knowledge-head">KNOW YOUR SPACE</div>
+      <div class="knowledge-group-label">AVOID</div>
+      <div class="knowledge-grid avoid-grid">
+        <div class="knowledge-card"><div class="k-name">☄ ASTEROID</div><div class="k-copy">Watch your route</div></div>
+        <div class="knowledge-card"><div class="k-name">🛰 SATELLITE</div><div class="k-copy">Stay alert</div></div>
+        <div class="knowledge-card"><div class="k-name">🌀 BLACK HOLE</div><div class="k-copy">Fight the gravity</div></div>
+        <div class="knowledge-card"><div class="k-name">🐻 THE BEAR</div><div class="k-copy">Survive the attack</div></div>
+      </div>
+      <div class="knowledge-group-label">POWER-UPS</div>
+      <div class="knowledge-grid power-grid">
+        <div class="knowledge-card power-card xtra">
+          <div class="k-icon"><img data-power-icon="xtramurah" alt="Xtra Murah"></div>
+          <div class="k-name">XTRA MURAH</div>
+          <div class="k-copy"><strong>PALING MURAH DI INDONESIA*</strong><br>BUY 0,1403% • SELL 0,2403%</div>
+          <div class="k-effect">TURBO</div>
+        </div>
+        <div class="knowledge-card power-card star">
+          <div class="k-icon"><img data-power-icon="starpoin" alt="StarPoin"></div>
+          <div class="k-name">STARPOIN</div>
+          <div class="k-copy">Tambah Beruntung dengan StarPoin</div>
+          <div class="k-effect">2× SCORE</div>
+        </div>
+        <div class="knowledge-card power-card reksa">
+          <div class="k-icon"><img data-power-icon="reksadana" alt="Reksadana"></div>
+          <div class="k-name">REKSADANA</div>
+          <div class="k-copy">Investasi Reksadana di SimInvest</div>
+          <div class="k-effect">SHIELD</div>
+        </div>
+        <div class="knowledge-card power-card margin">
+          <div class="k-icon"><img data-power-icon="margin" alt="Margin"></div>
+          <div class="k-name">MARGIN</div>
+          <div class="k-copy">Tingkatkan Transaksimu dengan Margin</div>
+          <div class="k-effect">FIREPOWER</div>
+        </div>
+        <div class="knowledge-card power-card split">
+          <div class="k-icon"><img data-power-icon="stocksplit" alt="Stock Split"></div>
+          <div class="k-name">STOCK SPLIT</div>
+          <div class="k-copy">Mendapatkan Stock Split Saham</div>
+          <div class="k-effect">2 ROCKETS</div>
+        </div>
+        <div class="knowledge-card power-card bagger">
+          <div class="k-icon"><img data-power-icon="bomb" alt="Bagger"></div>
+          <div class="k-name">BAGGER</div>
+          <div class="k-copy">Cuan Maksimal</div>
+          <div class="k-effect">CLEAR SCREEN</div>
+        </div>
+      </div>
+      <div class="knowledge-note">*Claim berlaku sesuai periode, syarat, dan ketentuan yang berlaku.</div>
+    </div>
+
     <div class="title-control-picker" id="titleControlPicker">
       <div class="lbl" style="margin-bottom:6px;">HOW DO YOU WANT TO PLAY?</div>
       <div class="control-options compact">
@@ -484,7 +618,6 @@
       </div>
     </div>
     <button class="btn" id="btnStart">START</button>
-    <div class="tagline">Real Growth, Start Here.</div>
   </div>
 
   <!-- INSTRUCTIONS -->
@@ -510,10 +643,6 @@
         <h3>HIGH SCORE</h3>
         <ol id="boardScores"></ol>
       </div>
-      <div class="board-col">
-        <h3>MOON RUNNERS</h3>
-        <ol id="boardMoon"></ol>
-      </div>
     </div>
     <div class="tagline">Real Growth, Start Here.</div>
   </div>
@@ -529,10 +658,6 @@
       <div class="board-col">
         <h3>HIGH SCORE</h3>
         <ol id="boardScores2"></ol>
-      </div>
-      <div class="board-col">
-        <h3>MOON RUNNERS</h3>
-        <ol id="boardMoon2"></ol>
       </div>
     </div>
   </div>
@@ -622,8 +747,8 @@
 
   function renderCentralGameBoards(rows){
     const mapped=(rows||[]).map(r=>({name:String(r.player_name||'PLAYER'),score:Number(r.score)||0}));
-    renderBoard(document.getElementById('boardScores'), mapped, false);
-    renderBoard(document.getElementById('boardScores2'), mapped, false);
+    renderBoard(document.getElementById('boardScores'), mapped);
+    renderBoard(document.getElementById('boardScores2'), mapped);
   }
 
   function centralHigh(){
@@ -748,6 +873,7 @@
     });
     document.getElementById('hud')?.classList.add('hidden');
     document.getElementById('moonWrap')?.classList.add('hidden');
+    document.getElementById('activePowerups')?.style.setProperty('display','none');
     document.getElementById('virtualJoystick')?.style.setProperty('display','none');
     document.getElementById('joystickHint')?.style.setProperty('display','none');
     document.getElementById('controlSettingsBtn')?.style.setProperty('display','none');
@@ -781,6 +907,12 @@ const ctx = canvas.getContext('2d');
   const POWERUP_ICONS = Object.fromEntries(Object.entries(POWERUP_ICON_SRC).map(([key,src]) => {
     const img = new Image(); img.src = src; return [key, img];
   }));
+
+  // Reuse the exact in-game icon art inside the homepage KNOW YOUR SPACE cards.
+  document.querySelectorAll('[data-power-icon]').forEach(el=>{
+    const img=POWERUP_ICONS[el.getAttribute('data-power-icon')];
+    if(img) el.src=img.src;
+  });
 let W=0,H=0,DPR=1;
 function resize(){
   DPR = Math.min(window.devicePixelRatio||1, 2);
@@ -873,7 +1005,7 @@ window.addEventListener('keydown', e=>{
   if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='KeyI') input.up = true;
   if(e.code==='ArrowDown'||e.code==='KeyS'||e.code==='KeyK') input.down = true;
   if(e.code==='Space' && state===STATE.TITLE) startFlow();
-  if(e.ctrlKey && e.shiftKey && e.altKey && e.code==='KeyR'){ clearTimeout(window.__adminResetHold); window.__adminResetHold=setTimeout(()=>{ lsSet(scoreKey(),[]); lsSet(moonKey(),[]); refreshTitleBest(); flashAdminToast('Daily records reset'); },1000); }
+  if(e.ctrlKey && e.shiftKey && e.altKey && e.code==='KeyR'){ clearTimeout(window.__adminResetHold); window.__adminResetHold=setTimeout(()=>{ lsSet(scoreKey(),[]); refreshTitleBest(); flashAdminToast('Daily records reset'); },1000); }
 });
 window.addEventListener('keyup', e=>{
   if(e.code==='KeyR') clearTimeout(window.__adminResetHold);
@@ -1024,10 +1156,7 @@ function lsGet(key, fallback){
 }
 function lsSet(key,val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
 function scoreKey(){ return 'simoon_scores_'+todayKey(); }
-function moonKey(){ return 'simoon_moonrunners_'+todayKey(); }
-
 function getScores(){ return lsGet(scoreKey(), []); }
-function getMoonRunners(){ return lsGet(moonKey(), []); }
 function addScore(name, score){
   const list = getScores();
   list.push({name:name||'PLAYER', score});
@@ -1035,27 +1164,19 @@ function addScore(name, score){
   lsSet(scoreKey(), list.slice(0,10));
   return list.slice(0,10);
 }
-function addMoonRunner(name){
-  const list = getMoonRunners();
-  list.push(name||'PLAYER');
-  lsSet(moonKey(), list.slice(0,10));
-  return list.slice(0,10);
-}
 function getHigh(){
   if(centralLoaded) return centralHigh();
   const list = getScores();
   return list.length? list[0].score : 0;
 }
-function renderBoard(ol, list, isMoon){
+function renderBoard(ol, list){
+  if(!ol) return;
   ol.innerHTML='';
-  for(let i=0;i<Math.min(Math.max(list.length,3),5);i++){
+  const rows=Math.min(Math.max((list||[]).length,3),5);
+  for(let i=0;i<rows;i++){
     const li = document.createElement('li');
-    if(isMoon){
-      li.innerHTML = `<span class="rank">${i+1}.</span><span>${list[i]||'—'}</span>`;
-    } else {
-      const e = list[i];
-      li.innerHTML = `<span class="rank">${i+1}.</span><span>${e?e.name:'—'}</span><span>${e?e.score.toLocaleString():''}</span>`;
-    }
+    const e = list?.[i];
+    li.innerHTML = `<span class="rank">${i+1}.</span><span>${e?e.name:'—'}</span><span>${e?e.score.toLocaleString():''}</span>`;
     ol.appendChild(li);
   }
 }
@@ -1097,6 +1218,7 @@ function resetGame(){
   cinematicT=0; curePlayed=false; touchTargetX=null; touchTargetY=null; resetJoystick(); gamePaused=false;
   updateNoHitHud();
   updateBombHud();
+  updateActivePowerups(Date.now());
   bgStars = makeStars();
   updateWeaponHud();
   updateComboHud();
@@ -1405,8 +1527,7 @@ async function confirmName(){
   }
 
   if(pendingMoon){
-    const runners=addMoonRunner(name);
-    showMoonScreen(scores,runners);
+    showMoonScreen(scores);
   }else{
     showOverScreen(scores,isNewHigh);
   }
@@ -1432,11 +1553,10 @@ function showOverScreen(scores, isNewHigh){
     <div class="row total"><span>TOTAL</span><span>${fmt(score)}</span></div>
   `;
   document.getElementById('newHighTag').classList.toggle('hidden', !isNewHigh);
-  renderBoard(document.getElementById('boardScores'), scores, false);
-  renderBoard(document.getElementById('boardMoon'), getMoonRunners(), true);
+  renderBoard(document.getElementById('boardScores'), scores);
   refreshTitleBest();
 }
-function showMoonScreen(scores, runners){
+function showMoonScreen(scores){
   hideAllScreens();
   document.getElementById('screenMoon').classList.remove('hidden');
   document.getElementById('moonBreakdown').innerHTML = `
@@ -1447,8 +1567,7 @@ function showMoonScreen(scores, runners){
     <div class="row"><span>MOON BONUS</span><span>+${fmt(sMoonBonus)}</span></div>
     <div class="row total"><span>TOTAL</span><span>${fmt(score)}</span></div>
   `;
-  renderBoard(document.getElementById('boardScores2'), scores, false);
-  renderBoard(document.getElementById('boardMoon2'), runners, true);
+  renderBoard(document.getElementById('boardScores2'), scores);
   refreshTitleBest();
   SFX.cure();
 }
@@ -1485,23 +1604,38 @@ function applyPowerup(type){
   const now = Date.now();
   showPowerTag(type);
   sPowerups += 60; score += 60;
-  if(type==='xtramurah') haptic(22);
-  else if(type==='starpoin') haptic([28,22,45]);
-  else if(type==='reksadana') haptic([40,25,55]);
-  else if(type==='margin' || type==='marginOverdrive') haptic([25,20,50]);
+
+  const impactMap = {
+    xtramurah:{color:'#A855F7', shake:5, banner:'TURBO ACTIVE'},
+    starpoin:{color:'#10B981', shake:4, banner:'2× SCORE ACTIVE'},
+    reksadana:{color:'#7fd8ff', shake:5, banner:'SHIELD ACTIVE'},
+    margin:{color:'#0EA5E9', shake:4, banner:'FIREPOWER UP'},
+    marginOverdrive:{color:'#FFD76A', shake:7, banner:'OVERDRIVE'},
+    stocksplit:{color:'#10B981', shake:6, banner:'2 ROCKETS'},
+    bomb:{color:'#FFD76A', shake:9, banner:'BAGGER!'}
+  };
+  const impact=impactMap[type] || {color:'#eef1ff',shake:4,banner:'POWER-UP'};
+  shakeMag=Math.max(shakeMag,impact.shake);
+  addParticles(player.x,player.y,impact.color,type==='bomb'?30:20,type==='bomb'?250:170,type==='bomb'?0.8:0.55);
+  showEventBanner(impact.banner, impact.color);
+
+  if(type==='xtramurah') haptic([24,18,45]);
+  else if(type==='starpoin') haptic([28,22,45,20,60]);
+  else if(type==='reksadana') haptic([40,25,60]);
+  else if(type==='margin' || type==='marginOverdrive') haptic([25,20,50,20,70]);
   else if(type==='stocksplit') haptic([35,25,35,25,70]);
   else if(type==='bomb') haptic([35,25,45,25,90]);
 
   if(type==='reksadana'){
-    shieldEnd = now+3500;
+    shieldEnd = now+4500;
     SFX.power();
   }
   else if(type==='starpoin'){
-    scoreMultiplierEnd = now+5000;
+    scoreMultiplierEnd = now+6000;
     SFX.power();
   }
   else if(type==='xtramurah'){
-    turboEnd = now+4000;
+    turboEnd = now+5500;
     SFX.power();
   }
   else if(type==='stocksplit'){
@@ -1514,14 +1648,23 @@ function applyPowerup(type){
     SFX.weaponUp();
   }
   else if(type==='margin'){
-    // Keep the existing weapon progression, simply branded as MARGIN.
-    if(weaponLevel<5){ weaponLevel++; SFX.weaponUp(); }
-    else { overdriveEnd=now+6000; showPowerTag('marginOverdrive'); SFX.weaponUp(); }
+    // Existing weapon progression: each pickup raises the weapon by one level.
+    if(weaponLevel<5){
+      weaponLevel++;
+      showEventBanner('FIREPOWER • LV.'+weaponLevel, '#0EA5E9');
+      SFX.weaponUp();
+    } else {
+      overdriveEnd=now+6000;
+      showPowerTag('marginOverdrive');
+      showEventBanner('OVERDRIVE', '#FFD76A');
+      SFX.weaponUp();
+    }
     updateWeaponHud();
   }
   else if(type==='bomb'){
     triggerBagger();
   }
+  updateActivePowerups(now);
 }
 let powerTagTimer=null;
 function startCoinRain(){
@@ -1616,7 +1759,31 @@ function lerpColor(a,b,t){
   return `rgb(${r},${g},${bl})`;
 }
 
+let activePowerupSignature='';
+function updateActivePowerups(now=Date.now()){
+  const el=document.getElementById('activePowerups');
+  if(!el) return;
+  const items=[];
+  const left=(end)=>Math.max(0,(end-now)/1000);
+  if(now<turboEnd) items.push({name:'TURBO',sec:left(turboEnd),color:'#C59CFF'});
+  if(now<scoreMultiplierEnd) items.push({name:'2× SCORE',sec:left(scoreMultiplierEnd),color:'#59D9B3'});
+  if(now<shieldEnd) items.push({name:'SHIELD',sec:left(shieldEnd),color:'#8FE4FF'});
+  if(weaponLevel>1) items.push({name:'FIREPOWER LV.'+weaponLevel,sec:null,color:'#64C6FF'});
+  if(now<overdriveEnd) items.push({name:'OVERDRIVE',sec:left(overdriveEnd),color:'#FFD76A'});
+  if(now<stockSplitEnd) items.push({name:'2 ROCKETS',sec:left(stockSplitEnd),color:'#59D9B3'});
+
+  const sig=items.map(it=>it.name+':'+(it.sec===null?'∞':Math.ceil(it.sec))).join('|');
+  if(sig===activePowerupSignature) return;
+  activePowerupSignature=sig;
+  el.innerHTML=items.map(it=>{
+    const time=it.sec===null?'ACTIVE':Math.ceil(it.sec)+'S';
+    return `<div class="active-power-chip" style="border-color:${it.color}66"><div class="ap-name" style="color:${it.color}">${it.name}</div><div class="ap-time">${time}</div></div>`;
+  }).join('');
+  el.style.opacity=items.length?'1':'0';
+} 
+
 function updateHUD(){
+  updateActivePowerups(Date.now());
   document.getElementById('hudScore').textContent = fmt(score);
   document.getElementById('hudHigh').textContent = fmt(Math.max(getHigh(), score));
   const pct = moonPct();
@@ -1735,7 +1902,7 @@ function update(dt){
   const marginX=player.w*0.55+8;
   const marginY=player.h*0.52+8;
   if(isTouch && controlMode!=='drag' && isJoystickMode()){
-    const speed=(turbo? 680:480) * Math.max(0.8,Math.min(1.25,W/900));
+    const speed=(turbo? 720:480) * Math.max(0.8,Math.min(1.25,W/900));
     player.vx=joyInputX*speed;
     player.vy=joyInputY*speed;
     player.x += player.vx*dt; player.y += player.vy*dt;
@@ -1751,7 +1918,7 @@ function update(dt){
     const dy=targetY-player.y;
     const dist=Math.hypot(dx,dy)||1;
     const controlGain=12.5;
-    const maxPilotSpeed=760;
+    const maxPilotSpeed=turbo?900:760;
     const desiredVX=Math.max(-maxPilotSpeed,Math.min(maxPilotSpeed,dx*controlGain));
     const desiredVY=Math.max(-maxPilotSpeed,Math.min(maxPilotSpeed,dy*controlGain));
 
@@ -1767,7 +1934,7 @@ function update(dt){
     player.x += player.vx*dt;
     player.y += player.vy*dt;
   } else {
-    const speed = (turbo? 680:480) * Math.max(0.8,Math.min(1.25,W/900));
+    const speed = (turbo? 720:480) * Math.max(0.8,Math.min(1.25,W/900));
     player.vx = (input.right?1:0) - (input.left?1:0);
     player.vy = (input.down?1:0) - (input.up?1:0);
     if(player.vx!==0 || player.vy!==0){
@@ -2202,7 +2369,7 @@ function drawRocket(){
   ctx.rotate(spriteRotation);
 
   // Engine flame remains procedural so power-ups still visibly affect thrust.
-  const flameLen = visualH*0.22 + lvlBoost*visualH*0.22 + Math.random()*7 + (now<turboEnd?18:0);
+  const flameLen = visualH*0.22 + lvlBoost*visualH*0.22 + Math.random()*7 + (now<turboEnd?30:0);
   const flameY = visualH*0.34;
   const fg = ctx.createLinearGradient(0,flameY,0,flameY+flameLen);
   fg.addColorStop(0,'rgba(255,255,255,0.98)');
@@ -2354,17 +2521,24 @@ function drawPowerup(pu){
     bomb:'#FFD76A'
   };
   const color = colorMap[pu.type] || '#eef1ff';
+  const pulse=1+Math.sin(pu.age*8.5)*0.055;
+  const outer=21*pulse;
 
-  ctx.shadowColor=color; ctx.shadowBlur=18;
-  ctx.strokeStyle=color; ctx.lineWidth=2.5;
-  ctx.beginPath(); ctx.arc(0,0,18,0,Math.PI*2); ctx.stroke();
-  ctx.fillStyle='rgba(10,8,24,0.72)';
+  ctx.globalAlpha=0.18;
+  ctx.shadowColor=color; ctx.shadowBlur=26;
+  ctx.fillStyle=color;
+  ctx.beginPath(); ctx.arc(0,0,outer,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.shadowBlur=20;
+  ctx.strokeStyle=color; ctx.lineWidth=2.8;
+  ctx.beginPath(); ctx.arc(0,0,18*pulse,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle='rgba(10,8,24,0.78)';
   ctx.beginPath(); ctx.arc(0,0,18,0,Math.PI*2); ctx.fill();
   ctx.shadowBlur=0;
 
   const icon = POWERUP_ICONS[pu.type];
   if(icon && icon.complete && icon.naturalWidth){
-    const maxW=30, maxH=30;
+    const maxW=31, maxH=31;
     const scale=Math.min(maxW/icon.naturalWidth, maxH/icon.naturalHeight);
     const iw=icon.naturalWidth*scale, ih=icon.naturalHeight*scale;
     ctx.drawImage(icon,-iw/2,-ih/2,iw,ih);
@@ -2372,7 +2546,7 @@ function drawPowerup(pu){
     ctx.fillStyle=color;
     ctx.font='bold 12px Segoe UI, Arial';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    const glyph = pu.type==='margin'?'M':(pu.type==='stocksplit'?'S':'B');
+    const glyph = pu.type==='margin'?'M':(pu.type==='stocksplit'?'S':pu.type==='bomb'?'B':'P');
     ctx.fillText(glyph,0,1);
   }
   ctx.restore();

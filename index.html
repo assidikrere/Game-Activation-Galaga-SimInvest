@@ -656,6 +656,86 @@
     #screenTitle .participant-line{ grid-column:1 / -1; font-size:10px; }
   }
 
+
+  /* TV leaderboard with an embedded, offline-ready QR for the public game URL. */
+  #tvScreen{ padding:clamp(20px,3.4vh,40px) clamp(18px,4vw,64px); }
+  .tv-brand{ color:#fff; }
+  .tv-main{
+    width:min(100%,1680px); flex:1; min-height:0;
+    display:grid; grid-template-columns:minmax(0,1fr) clamp(250px,24vw,370px); grid-template-rows:minmax(0,1fr);
+    gap:clamp(18px,3vw,46px); margin-top:clamp(16px,2.6vh,30px);
+  }
+  #tvScreen .tv-table{ width:100%; margin-top:0; display:flex; flex-direction:column; min-height:0; }
+  #tvScreen .tv-row.tv-head{ flex-shrink:0; min-height:44px; }
+  #tvRows{ display:grid; grid-template-rows:repeat(10,minmax(0,1fr)); flex:1; min-height:0; }
+  #tvScreen .tv-row{ grid-template-columns:58px minmax(0,1fr) 170px; min-height:0; padding:0 clamp(12px,2vw,28px); }
+  #tvScreen .tv-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #tvScreen .tv-row.top1{ background:linear-gradient(90deg,rgba(124,58,237,.14),rgba(255,215,106,.055)); }
+  #tvFlash{ margin-top:8px; min-height:18px; font-size:clamp(10px,1.2vw,16px); }
+  #tvUpdated{ margin-top:0; padding-top:8px; flex-shrink:0; }
+  .tv-qr-card{
+    align-self:center; display:flex; flex-direction:column; align-items:center;
+    border:1px solid rgba(168,85,247,.3); border-radius:24px; padding:clamp(18px,2vw,30px);
+    background:linear-gradient(150deg,rgba(124,58,237,.16),rgba(14,165,233,.065));
+    box-shadow:0 20px 60px rgba(0,0,0,.2); text-align:center;
+  }
+  .tv-qr-eyebrow{ font-size:10px; font-weight:800; letter-spacing:2.5px; color:#b9a5ff; }
+  .tv-qr-card h2{ color:#fff; font-size:clamp(26px,2.4vw,42px); letter-spacing:1px; line-height:1.1; margin:10px 0 12px; }
+  .tv-qr-copy{ margin:0; font-size:clamp(12px,1vw,16px); line-height:1.55; color:#bdc3df; }
+  .tv-qr-link{ display:block; width:min(100%,286px); margin:24px 0 18px; border-radius:14px; overflow:hidden; background:#fff; line-height:0; }
+  .tv-qr-link:focus-visible{ outline:3px solid var(--skyblue); outline-offset:5px; }
+  .tv-qr-link img{ display:block; width:100%; height:auto; }
+  .tv-qr-label{ font-weight:800; font-size:13px; color:#fff; letter-spacing:.8px; }
+  .tv-qr-step{ color:var(--dim); font-size:11px; line-height:1.5; margin:8px 0 0; }
+  .tv-game-link{ color:#b9dfff; font-size:11px; margin-top:14px; text-decoration:underline; text-underline-offset:3px; }
+  @media(max-width:1100px){
+    #tvScreen .tv-row{ grid-template-columns:40px minmax(0,1fr) 120px; gap:10px; }
+    #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{ font-size:clamp(15px,2.4vw,26px); }
+  }
+  @media(max-height:850px) and (min-width:701px){
+    .tv-qr-card{ padding:20px; }
+    .tv-qr-card h2{ font-size:28px; }
+    .tv-qr-link{ width:200px; margin:16px 0 12px; }
+    .tv-qr-copy{ font-size:12px; }
+  }
+  @media(max-height:650px) and (min-width:701px){
+    #tvScreen{ padding:16px 24px; }
+    #tvScreen .tv-title{ font-size:32px; }
+    #tvScreen .tv-brand{ font-size:12px; }
+    #tvScreen .tv-date{ font-size:10px; margin-top:5px; }
+    .tv-main{ margin-top:12px; grid-template-columns:minmax(0,1fr) 240px; gap:18px; }
+    #tvScreen .tv-row.tv-head{ min-height:28px; font-size:9px; }
+    #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{ font-size:16px; }
+    .tv-qr-card{ padding:14px; border-radius:16px; }
+    .tv-qr-card h2{ font-size:22px; margin:6px 0; }
+    .tv-qr-eyebrow{ font-size:8px; }
+    .tv-qr-copy{ font-size:10px; }
+    .tv-qr-link{ width:142px; margin:10px 0; border-radius:8px; }
+    .tv-qr-label{ font-size:10px; }
+    .tv-qr-step,.tv-game-link{ font-size:9px; margin-top:5px; }
+    #tvFlash{ margin-top:4px; min-height:12px; }
+    #tvUpdated{ padding-top:4px; font-size:8px; }
+  }
+  @media(max-width:700px){
+    #tvScreen{ overflow-y:auto; touch-action:pan-y; padding:24px 16px; }
+    .tv-main{ display:flex; flex-direction:column; flex:none; width:100%; min-height:auto; gap:22px; margin-top:20px; }
+    #tvScreen .tv-table{ flex:none; min-height:auto; border-radius:14px; }
+    #tvRows{ display:block; flex:none; }
+    #tvScreen .tv-row{ min-height:44px; grid-template-columns:32px minmax(0,1fr) 100px; gap:8px; padding:0 12px; }
+    #tvScreen .tv-row.tv-head{ min-height:34px; font-size:9px; }
+    #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{ font-size:17px; }
+    .tv-qr-card{ width:min(100%,370px); padding:24px; }
+    .tv-qr-link{ width:240px; }
+    #tvUpdated{ padding-top:12px; font-size:9px; }
+  }
+  @media(max-height:480px) and (min-width:701px){
+    .tv-qr-card{ padding:10px; }
+    .tv-qr-card h2{ font-size:20px; margin:0; }
+    .tv-qr-link{ width:140px; margin:10px 0; }
+    .tv-qr-label{ font-size:9px; }
+    .tv-qr-eyebrow,.tv-qr-copy,.tv-qr-step,.tv-game-link{ display:none; }
+  }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 </head>
@@ -909,11 +989,24 @@
     <div class="tv-brand">SIMINVEST</div>
     <div class="tv-title">TO THE MOON</div>
     <div class="tv-date" id="tvDate">TODAY'S LEADERBOARD</div>
+    <div class="tv-main">
     <div class="tv-table">
       <div class="tv-row tv-head">
         <div>#</div><div style="text-align:left;">PLAYER</div><div style="text-align:right;">SCORE</div>
       </div>
       <div id="tvRows"></div>
+    </div>
+    <aside class="tv-qr-card" aria-labelledby="tvQrHeading">
+      <div class="tv-qr-eyebrow">YOUR JOURNEY STARTS HERE</div>
+      <h2 id="tvQrHeading">SCAN &amp; PLAY</h2>
+      <p class="tv-qr-copy">Siap masuk leaderboard?<br>Scan QR dan mulai perjalananmu.</p>
+      <a id="tvGameQrLink" class="tv-qr-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener" aria-label="Buka halaman main SimInvest To The Moon">
+        <img id="tvGameQr" src="data:image/png;base64,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" width="848" height="848" alt="QR menuju halaman main SimInvest To The Moon">
+      </a>
+      <div class="tv-qr-label">SCAN. DAFTAR. MELUNCUR.</div>
+      <p class="tv-qr-step">Buka kamera HP, lalu arahkan ke QR.</p>
+      <a class="tv-game-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener">Buka permainan ↗</a>
+    </aside>
     </div>
     <div id="tvFlash">NEW HIGH SCORE</div>
     <div id="tvUpdated">LIVE • CONNECTING...</div>

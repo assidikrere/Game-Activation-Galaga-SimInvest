@@ -567,7 +567,7 @@
   }
 
 
-  /* Required participant entry; data lives only in this page session. */
+  /* Required participant registration; confirmed by Supabase before entry. */
   #screenRegistration{
     z-index:60; justify-content:flex-start; text-align:left;
     padding:calc(24px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));
@@ -602,6 +602,11 @@
   }
   .risk-option input:checked+span{ border-color:#a68dff; background:rgba(124,58,237,.27); box-shadow:0 0 0 1px #a68dff; }
   .risk-option input:focus-visible+span{ outline:2px solid var(--skyblue); outline-offset:3px; }
+  .crm-consent{ display:flex; align-items:flex-start; gap:10px; margin-top:18px; font-size:12px; line-height:1.55; color:var(--ink); cursor:pointer; }
+  .crm-consent input{ flex-shrink:0; width:18px; height:18px; margin:2px 0 0; accent-color:var(--violet); }
+  .crm-consent input:focus-visible{ outline:2px solid var(--skyblue); outline-offset:3px; }
+  .crm-consent-hint{ margin-left:28px; }
+  .registration-status.error{ color:#ffb4c0; }
   .registration-status{ color:var(--dim); font-size:12px; line-height:1.5; min-height:18px; margin:16px 0 8px; }
   #btnRegistrationContinue{ width:100%; font-size:14px; margin:0; min-height:48px; }
   .btn:disabled{ opacity:.42; cursor:not-allowed; box-shadow:none; transform:none; }
@@ -652,7 +657,7 @@
   }
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 </head>
 <body>
 <div id="stage">
@@ -751,8 +756,14 @@
             <label class="risk-option"><input type="radio" name="riskProfile" value="agresif" required><span>Agresif</span></label>
           </div>
         </fieldset>
+        <label class="crm-consent" for="participantMarketingConsent">
+          <input id="participantMarketingConsent" name="marketingConsent" type="checkbox">
+          <span>Saya bersedia dihubungi SimInvest melalui telepon atau WhatsApp untuk informasi dan promosi produk investasi.</span>
+        </label>
+        <p class="field-hint crm-consent-hint">Opsional. Kamu tetap bisa bermain tanpa memilih persetujuan ini.</p>
         <p id="registrationStatus" class="registration-status" role="status">Lengkapi semua kolom untuk melanjutkan.</p>
-        <button id="btnRegistrationContinue" class="btn" type="submit" disabled>LANJUT KE PERMAINAN →</button>
+        <button id="btnRegistrationContinue" class="btn" type="submit" disabled>SIMPAN & LANJUT →</button>
+        <p class="registration-note">Data pendaftaran disimpan oleh SimInvest. Follow-up promosi hanya untuk peserta yang memilih persetujuan di atas.</p>
         <p class="registration-note">Kontrol default: gunakan jari untuk menggerakkan roket.</p>
       </form>
     </div>
@@ -3034,28 +3045,47 @@ function loop(ts){
   requestAnimationFrame(loop);
 }
 
-/* ============ REQUIRED PARTICIPANT DETAILS ============ */
-// No contact details are written to localStorage or the public leaderboard.
-// A refresh or a new-player action requires a new registration.
+/* ============ REQUIRED PARTICIPANT DETAILS / CRM ============ */
+// Contact details are stored in a dedicated insert-only table, never in the public leaderboard.
+const PARTICIPANT_TABLE = 'simoon_participants';
 let participant = null;
+let registrationSaving = false;
+let pendingRegistration = null;
+let registrationFailure = '';
 const participantForm = document.getElementById('participantForm');
 const participantName = document.getElementById('participantName');
 const participantPhone = document.getElementById('participantPhone');
+const participantMarketingConsent = document.getElementById('participantMarketingConsent');
 const riskLabels = {konservatif:'Konservatif', moderat:'Moderat', agresif:'Agresif'};
 function readParticipantForm(){
   const name = participantName.value.trim().replace(/\s+/g,' ');
   const phone = participantPhone.value.trim().replace(/[\s()-]/g,'');
   const riskProfile = participantForm.querySelector('input[name="riskProfile"]:checked')?.value || '';
-  return {name, phone, riskProfile};
+  return {name, phone, riskProfile, marketingOptIn:participantMarketingConsent.checked};
 }
 function validName(name){ return name.length>=2 && name.length<=60 && /\p{L}/u.test(name); }
 function validPhone(phone){ return /^(?:08\d{8,11}|\+?628\d{8,11})$/.test(phone); }
 function validParticipant(data){ return !!data && validName(data.name) && validPhone(data.phone) && Object.hasOwn(riskLabels,data.riskProfile); }
+function hasSavedParticipant(){ return validParticipant(participant) && participant.saved === true && !!participant.registrationId; }
+function normalizePhone(phone){ return phone.startsWith('0') ? '+62'+phone.slice(1) : '+'+phone.replace(/^\+/,''); }
+function registrationId(){
+  if(!window.crypto || !crypto.getRandomValues) throw new Error('secure_random_unavailable');
+  if(crypto.randomUUID) return crypto.randomUUID();
+  const bytes=crypto.getRandomValues(new Uint8Array(16));
+  bytes[6]=(bytes[6]&15)|64; bytes[8]=(bytes[8]&63)|128;
+  const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+  return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+}
 function refreshParticipantForm(){
   const data = readParticipantForm();
   const valid = validParticipant(data);
-  document.getElementById('btnRegistrationContinue').disabled = !valid;
-  document.getElementById('registrationStatus').textContent = valid ? 'Sudah lengkap. Kamu siap melanjutkan.' : 'Lengkapi nama, nomor HP yang valid, dan satu profil risiko.';
+  document.getElementById('btnRegistrationContinue').disabled = registrationSaving || !valid;
+  participantForm.querySelectorAll('input').forEach(field=>field.disabled=registrationSaving);
+  const status=document.getElementById('registrationStatus');
+  status.classList.toggle('error',!!registrationFailure);
+  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi nama, nomor HP yang valid, dan satu profil risiko.');
+  document.getElementById('btnRegistrationContinue').textContent=registrationSaving ? 'MENYIMPAN…' : registrationFailure ? 'COBA SIMPAN LAGI →' : 'SIMPAN & LANJUT →';
+  participantForm.setAttribute('aria-busy',String(registrationSaving));
   for(const [field,ok,msg] of [
     [participantName,validName(data.name),'Isi nama minimal 2 karakter.'],
     [participantPhone,validPhone(data.phone),'Masukkan nomor HP yang valid, diawali 08 atau +628.']
@@ -3066,32 +3096,87 @@ function refreshParticipantForm(){
   }
   return valid;
 }
-participantForm.addEventListener('input',refreshParticipantForm);
-participantForm.addEventListener('change',refreshParticipantForm);
+function onParticipantEdit(){
+  if(registrationSaving) return;
+  registrationFailure='';
+  refreshParticipantForm();
+}
+participantForm.addEventListener('input',onParticipantEdit);
+participantForm.addEventListener('change',onParticipantEdit);
 [participantName,participantPhone].forEach(field=>field.addEventListener('blur',()=>{
   field.dataset.touched='true'; refreshParticipantForm();
 }));
-participantForm.addEventListener('submit',event=>{
+async function saveParticipant(data){
+  if(!supabaseClient) throw new Error('client_unavailable');
+  const normalizedPhone=normalizePhone(data.phone);
+  const signature=JSON.stringify([data.name,normalizedPhone,data.riskProfile,data.marketingOptIn]);
+  // Keep one UUID across retries with unchanged inputs, including an ambiguous network timeout.
+  if(!pendingRegistration || pendingRegistration.signature!==signature){
+    pendingRegistration={id:registrationId(),signature};
+  }
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),20000);
+  try{
+    // Do not append .select(): the game has no read access to contact records.
+    const {error}=await supabaseClient.from(PARTICIPANT_TABLE).insert({
+      registration_id:pendingRegistration.id,
+      full_name:data.name,
+      phone_e164:normalizedPhone,
+      risk_profile:data.riskProfile,
+      marketing_opt_in:data.marketingOptIn,
+      device_id:getCentralDeviceId()
+    }).abortSignal(controller.signal);
+    if(error){
+      // This setup's only UNIQUE constraint is the client-generated registration UUID.
+      // A repeated UUID confirms an earlier retry was already committed, without reading PII.
+      const alreadySaved=error.code==='23505' && String(error.message||'').includes('simoon_participants_pkey');
+      if(!alreadySaved) throw error;
+    }
+    return {...data,phone:normalizedPhone,registrationId:pendingRegistration.id,saved:true};
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+function registrationErrorMessage(error){
+  if(['42P01','PGRST205'].includes(error.code)) return 'Pendaftaran belum tersedia. Hubungi petugas untuk mengaktifkannya.';
+  if(['42501','PGRST301'].includes(error.code)) return 'Pendaftaran belum bisa disimpan. Hubungi petugas untuk memeriksa akses.';
+  return 'Data belum terkonfirmasi tersimpan. Periksa koneksi, lalu coba simpan lagi. Isian kamu tetap ada.';
+}
+participantForm.addEventListener('submit',async event=>{
   event.preventDefault();
-  if(TV_MODE) return;
+  if(TV_MODE || registrationSaving) return;
   if(!refreshParticipantForm()){
     participantName.dataset.touched='true'; participantPhone.dataset.touched='true';
     refreshParticipantForm();
     (!validName(readParticipantForm().name) ? participantName : !validPhone(readParticipantForm().phone) ? participantPhone : participantForm.querySelector('input[name="riskProfile"]')).focus();
     return;
   }
-  participant = Object.freeze(readParticipantForm());
-  hideAllScreens();
-  state=STATE.TITLE;
-  document.getElementById('participantSummary').textContent = participant.name+' · '+riskLabels[participant.riskProfile];
-  document.getElementById('btnStart').disabled=false;
-  document.getElementById('screenTitle').classList.remove('hidden');
-  refreshControlUI();
-  requestAnimationFrame(fitTitleToViewport);
-  document.getElementById('btnStart').focus({preventScroll:true});
+  const data=readParticipantForm();
+  participant=null;
+  registrationFailure=''; registrationSaving=true;
+  refreshParticipantForm();
+  try{
+    participant = Object.freeze(await saveParticipant(data));
+    hideAllScreens();
+    state=STATE.TITLE;
+    document.getElementById('participantSummary').textContent = participant.name+' · '+riskLabels[participant.riskProfile];
+    document.getElementById('btnStart').disabled=false;
+    document.getElementById('screenTitle').classList.remove('hidden');
+    refreshControlUI();
+    requestAnimationFrame(fitTitleToViewport);
+    document.getElementById('btnStart').focus({preventScroll:true});
+  }catch(error){
+    // Show only a friendly error, never log contact details or raw database responses.
+    registrationFailure=registrationErrorMessage(error);
+    participant=null;
+  }finally{
+    registrationSaving=false;
+    refreshParticipantForm();
+  }
 });
 function showRegistration(clear=false){
-  if(TV_MODE) return;
+  if(TV_MODE || registrationSaving) return;
+  if(state===STATE.REGISTRATION && !clear){ refreshParticipantForm(); return; }
   clearInterval(countdownInterval);
   participant=null;
   state=STATE.REGISTRATION;
@@ -3100,6 +3185,7 @@ function showRegistration(clear=false){
   document.getElementById('moonWrap').classList.add('hidden');
   document.getElementById('btnStart').disabled=true;
   document.getElementById('screenRegistration').classList.remove('hidden');
+  registrationFailure=''; pendingRegistration=null;
   if(clear){
     participantForm.reset();
     delete participantName.dataset.touched; delete participantPhone.dataset.touched;
@@ -3115,7 +3201,7 @@ document.querySelectorAll('.change-player').forEach(button=>button.addEventListe
 let countdownInterval=null;
 function startFlow(){
   if(TV_MODE) return;
-  if(!validParticipant(participant)){ showRegistration(); return; }
+  if(!hasSavedParticipant()){ showRegistration(); return; }
   if(state!==STATE.TITLE && state!==STATE.GAMEOVER && state!==STATE.MOONSUCCESS) return;
   ensureAudio();
   if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
@@ -3138,7 +3224,7 @@ function startFlow(){
 }
 function launchGame(){
   if(TV_MODE) return;
-  if(!validParticipant(participant)){ showRegistration(); return; }
+  if(!hasSavedParticipant()){ showRegistration(); return; }
   hideAllScreens();
   resetGame();
   gamePaused=false;

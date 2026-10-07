@@ -1,15 +1,7 @@
--- Run in the SQL Editor of project fomrafdtfafvmhnovkrd before deploying this version.
+-- Optional stock/record setup for project fomrafdtfafvmhnovkrd.
 -- Preserves existing participants and their insert-only RLS policy.
+-- Game registration uses name, phone and risk; existing historical columns/data are preserved.
 begin;
-alter table public.simoon_participants add column if not exists email text;
-do $$ begin
- if not exists (select 1 from pg_constraint where conrelid='public.simoon_participants'::regclass and conname='simoon_participants_email_check') then
-  alter table public.simoon_participants add constraint simoon_participants_email_check
-  check (email is null or (char_length(email) <= 254 and email ~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$')) not valid;
- end if;
-end $$;
--- The existing contacts remain valid; new frontend registrations require email.
--- The existing INSERT table grant covers the new column. Public contact reads stay denied.
 
 -- Optional public inventory snapshot: only stock data, never participant contacts.
 create table if not exists public.simoon_reward_stock (

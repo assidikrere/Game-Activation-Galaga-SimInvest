@@ -564,7 +564,7 @@ window.addEventListener('message',event=>{
     track=m.track;authorizedSession=true;session.attempts=2-m.remaining;state='intro';ship.visible=false;moon.position.z=72;earth.position.z=-145;
     $('intro').hidden=false;$('result').hidden=$('hud').hidden=$('bossHud').hidden=true;
     $('trackLabel').textContent=track==='kyc'?'KYC VERIFIED · RETURN MISSION':'TRANSACT VERIFIED · PREMIUM RETURN';
-    $('rewardReminder').textContent=track==='kyc'?'KYC sudah dicek crew. Hadiah 10ml mengikuti ketersediaan event.':'Transaksi sudah dicek crew. Hadiah 50ml dan merchandise mengikuti ketersediaan event.';
+    $('rewardReminder').textContent=track==='kyc'?'KYC sudah dicek crew. Parfum 10ml + Sticker Pack. Jika parfum habis: Danamas Pasti Rp50.000.':'Transaksi sudah dicek crew. Parfum 50ml + merchandise tersedia. Jika parfum habis: Danamas Pasti Rp100.000.';
     $('preview').hidden=!m.preview;syncAttempts();
   }else if(m.type==='approved-start'&&state==='intro'&&authorizedSession&&typeof m.roundId==='string'&&Number.isInteger(m.remaining)){
     roundId=m.roundId;session.attempts=2-clamp(m.remaining,0,2);authorizedStart=true;start();

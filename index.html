@@ -739,6 +739,114 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <link rel="stylesheet" href="journey.css">
+<style id="tvDisplayStyles">
+/* Public display: equal leaderboard and reward-guide halves. */
+#tvScreen{padding:clamp(16px,2.4vh,30px) clamp(18px,2.2vw,40px);align-items:stretch;gap:14px;text-align:left}
+#tvScreen .tv-display-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex:none}
+#tvScreen .tv-brand{color:#fff;font-size:clamp(20px,2vw,30px);letter-spacing:-.7px;text-transform:none}
+#tvScreen .tv-display-tag{font-size:10px;letter-spacing:2px;color:#aca1cc}
+#tvScreen .tv-main{width:100%;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:clamp(16px,2.2vw,34px);margin:0}
+#tvScreen .tv-leaderboard-pane{min-width:0;min-height:0;display:flex;flex-direction:column;gap:14px}
+#tvScreen .tv-pane-heading{display:flex;flex-direction:column;gap:7px;flex:none}
+#tvScreen .tv-pane-eyebrow{font-size:clamp(9px,.85vw,13px);letter-spacing:1.6px;color:#c4b5fd;font-weight:800;margin:0}
+#tvScreen .tv-title{font-size:clamp(28px,3.6vw,58px);letter-spacing:2px;margin:5px 0 0;line-height:1.05}
+#tvScreen .tv-date{font-size:clamp(10px,.9vw,14px);letter-spacing:1.5px;margin:0;color:#aaa1bf}
+#tvScreen .tv-table{margin:0;flex:1;min-height:0;width:100%;border-radius:18px}
+#tvScreen .tv-row{grid-template-columns:32px minmax(0,1fr) 112px;gap:12px;padding:0 clamp(12px,1.5vw,24px);min-height:0}
+#tvScreen .tv-row.tv-head{min-height:38px;font-size:10px}
+#tvScreen #tvRows{display:grid;grid-template-rows:repeat(10,minmax(0,1fr));flex:1;min-height:0}
+#tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{font-size:clamp(19px,2.1vw,34px);line-height:1.1;letter-spacing:.3px}
+#tvScreen .tv-row.top1 .tv-name,#tvScreen .tv-row.top1 .tv-score{font-size:clamp(22px,2.3vw,37px)}
+#tvScreen .tv-board-status{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:17px;flex:none}
+#tvScreen #tvFlash{font-size:10px;min-height:0;margin:0;text-align:left}
+#tvScreen #tvUpdated{font-size:9px;letter-spacing:1px;margin:0;padding:0;text-align:right}
+#tvScreen .tv-guide-panel{min-width:0;min-height:0;display:flex;flex-direction:column;gap:clamp(9px,1.3vh,16px);padding:clamp(14px,1.5vw,24px);border:1px solid #9b71d840;border-radius:20px;background:linear-gradient(150deg,#7c3aed18,#0a132233);overflow:auto;touch-action:pan-y;overscroll-behavior:contain}
+#tvScreen .tv-guide-heading h2{font-size:clamp(23px,2.2vw,35px);line-height:1.1;letter-spacing:-.6px;margin:7px 0;color:#fff}
+#tvScreen .tv-guide-heading>p:last-child{font-size:clamp(11px,1vw,15px);color:#b6aecb;margin:0;line-height:1.5}
+#tvScreen .tv-reward-basics,#tvScreen .tv-dlc-rewards{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+#tvScreen .tv-reward-card{min-width:0;border:1px solid #b69de127;background:#ffffff03;border-radius:12px;padding:clamp(10px,1vw,16px)}
+#tvScreen .tv-reward-card.record{border-color:#ffd76a35;background:#ffd76a05}
+#tvScreen .tv-reward-card.kyc{border-color:#a855f74a;background:#7c3aed0c}
+#tvScreen .tv-reward-card.transact{border-color:#10b98148;background:#10b98107}
+#tvScreen .tv-reward-step{font-size:clamp(8px,.7vw,11px);font-weight:800;letter-spacing:.7px;color:#bda7ee;display:block}
+#tvScreen .record .tv-reward-step{color:#e3c379}
+#tvScreen .transact .tv-reward-step{color:#81d7bb}
+#tvScreen .tv-reward-card h3{font-size:clamp(12px,1.15vw,18px);line-height:1.35;margin:7px 0;color:#fff}
+#tvScreen .tv-reward-card>strong{display:block;font-size:clamp(14px,1.35vw,21px);line-height:1.3;color:#e7d7ff}
+#tvScreen .record>strong{color:#ffd76a}
+#tvScreen .transact>strong{color:#8ee5c8}
+#tvScreen .tv-reward-card p{font-size:clamp(10px,.86vw,13px);line-height:1.55;color:#b7afc9;margin:8px 0 0}
+#tvScreen .tv-reward-card small{display:block;font-size:clamp(10px,.8vw,12px);line-height:1.45;color:#c5b9d8;margin-top:8px}
+#tvScreen .tv-reward-card small b{font-weight:600;color:#eee5ff}
+#tvScreen .tv-dlc-note{display:flex;align-items:center;gap:10px;color:#baa9df;padding:0 3px}
+#tvScreen .tv-dlc-note>span{font-size:24px;color:#8ed9c8}
+#tvScreen .tv-dlc-note p{margin:0;font-size:clamp(10px,.8vw,12px);line-height:1.5}
+#tvScreen .tv-dlc-note b{color:#d8c8fa;font-weight:600}
+#tvScreen .tv-scan-zone{margin-top:0;display:flex;align-items:center;gap:clamp(12px,1.5vw,22px);padding:0 0 12px;border-bottom:1px solid #ffffff16}
+#tvScreen .tv-qr-link{display:block;flex:none;width:clamp(140px,14vw,220px);margin:0;border-radius:10px;background:#fff}
+#tvScreen .tv-qr-link img{width:100%;height:auto;display:block}
+#tvScreen .tv-scan-copy{min-width:0}
+#tvScreen .tv-scan-copy h2{font-size:clamp(20px,2vw,32px);line-height:1.1;margin:7px 0;color:#fff;letter-spacing:.3px}
+#tvScreen .tv-scan-copy>p:not(.tv-pane-eyebrow){font-size:clamp(10px,.9vw,14px);line-height:1.5;margin:7px 0;color:#b8b3cf}
+#tvScreen .tv-scan-copy .tv-scan-crew{color:#d6c8ef}
+#tvScreen .tv-game-link{font-size:clamp(10px,.85vw,13px);display:inline-block;margin-top:5px;color:#9dddcf;text-decoration:underline}
+#tvScreen .tv-reward-boundary{font-size:clamp(9px,.75vw,11px);line-height:1.5;color:#a29ab7;margin:0}
+@media(min-width:701px) and (max-height:720px){
+  #tvScreen{padding:14px 20px;gap:10px}
+  #tvScreen .tv-brand{font-size:20px}
+  #tvScreen .tv-display-tag{font-size:8px}
+  #tvScreen .tv-title{font-size:32px}
+  #tvScreen .tv-leaderboard-pane{gap:10px}
+  #tvScreen .tv-row.tv-head{min-height:30px}
+  #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{font-size:22px}
+  #tvScreen .tv-row.top1 .tv-name,#tvScreen .tv-row.top1 .tv-score{font-size:25px}
+  #tvScreen .tv-guide-panel{padding:12px;gap:8px;border-radius:16px}
+  #tvScreen .tv-guide-heading h2{font-size:23px;margin:5px 0}
+  #tvScreen .tv-guide-heading>p:last-child{font-size:10px}
+  #tvScreen .tv-reward-card{padding:9px}
+  #tvScreen .tv-reward-card h3{font-size:12px;margin:3px 0}
+  #tvScreen .tv-reward-card>strong{font-size:14px}
+  #tvScreen .tv-reward-card p,#tvScreen .tv-reward-card small{font-size:10px;margin-top:3px;line-height:1.4}
+  #tvScreen .tv-qr-link{width:128px}
+  #tvScreen .tv-scan-zone{padding-bottom:8px;gap:12px}
+  #tvScreen .tv-scan-copy h2{font-size:22px;margin:5px 0}
+  #tvScreen .tv-scan-copy>p:not(.tv-pane-eyebrow){font-size:10px;margin:5px 0}
+  #tvScreen .tv-reward-boundary{font-size:9px;line-height:1.4}
+  #tvScreen .tv-dlc-note p{font-size:9px;line-height:1.4}
+}
+@media(min-width:701px) and (max-width:900px){
+  #tvScreen{padding:20px 16px}
+  #tvScreen .tv-main{gap:14px}
+  #tvScreen .tv-title{font-size:28px}
+  #tvScreen .tv-guide-panel{padding:12px;gap:13px}
+  #tvScreen .tv-row{grid-template-columns:23px minmax(0,1fr) 83px;gap:8px;padding:0 10px}
+  #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{font-size:18px}
+  #tvScreen .tv-row.top1 .tv-name,#tvScreen .tv-row.top1 .tv-score{font-size:21px}
+  #tvScreen .tv-guide-heading h2{font-size:23px}
+  #tvScreen .tv-reward-card{padding:10px}
+  #tvScreen .tv-qr-link{width:128px}
+  #tvScreen .tv-scan-zone{gap:10px}
+  #tvScreen .tv-scan-copy h2{font-size:20px}
+}
+@media(max-width:700px){
+  #tvScreen{padding:20px 14px;overflow-y:auto;touch-action:pan-y}
+  #tvScreen .tv-display-tag{font-size:7px;letter-spacing:1px;max-width:145px;text-align:right}
+  #tvScreen .tv-main{display:flex;flex-direction:column;flex:none;min-height:auto;gap:22px}
+  #tvScreen .tv-leaderboard-pane{min-height:580px;flex:none}
+  #tvScreen .tv-guide-panel{flex:none;min-height:auto;overflow:visible;padding:16px;gap:13px}
+  #tvScreen .tv-row{min-height:40px;grid-template-columns:27px minmax(0,1fr) 100px}
+  #tvScreen #tvRows{display:grid;min-height:400px}
+  #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{font-size:20px}
+  #tvScreen .tv-qr-link{width:140px}
+  #tvScreen .tv-pane-eyebrow{display:block}
+  #tvScreen .tv-game-link{display:inline-block}
+}
+@media(min-width:701px) and (max-height:540px){
+  #tvScreen{overflow-y:auto;touch-action:pan-y}
+  #tvScreen .tv-main{flex:none;min-height:535px}
+}
+
+</style>
 </head>
 <body>
 <div id="stage">
@@ -835,7 +943,7 @@
       <div class="registration-brand">SimInvest</div>
       <div class="registration-eyebrow">TO THE MOON · SEBELUM MULAI</div>
       <h1 id="registrationHeading">Kenalan dulu,<br>baru meluncur.</h1>
-      <p class="registration-intro">Isi nama, nomor HP, email, dan pilih profil risiko kamu untuk melanjutkan ke permainan.</p>
+      <p class="registration-intro">Isi nama, nomor HP, dan pilih profil risiko kamu untuk melanjutkan ke permainan.</p>
       <form id="participantForm" novalidate>
         <div class="registration-field">
           <label for="participantName">Nama</label>
@@ -847,12 +955,6 @@
           <input id="participantPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" maxlength="22" required aria-describedby="participantPhoneHint participantPhoneError">
           <p class="field-hint" id="participantPhoneHint">Gunakan nomor HP Indonesia: 08… atau +628…</p>
           <p class="field-error" id="participantPhoneError" aria-live="polite"></p>
-        </div>
-
-        <div class="form-field">
-          <label for="participantEmail">Email</label>
-          <input id="participantEmail" name="email" type="email" autocomplete="email" placeholder="nama@email.com" maxlength="254" required aria-describedby="participantEmailError">
-          <p class="field-error" id="participantEmailError" aria-live="polite"></p>
         </div>
         <fieldset class="risk-field">
           <legend>Profil risiko</legend>
@@ -1012,30 +1114,35 @@
 
   <!-- TV SPECTATOR MODE: open the same page with ?tv=1 -->
   <div id="tvScreen" class="hidden">
-    <div class="tv-brand">SIMINVEST</div>
-    <div class="tv-title">TO THE MOON</div>
-    <div class="tv-date" id="tvDate">TODAY'S LEADERBOARD</div>
+    <header class="tv-display-topbar"><span class="tv-brand">SimInvest</span><span class="tv-display-tag">REAL GROWTH, START HERE.</span></header>
     <div class="tv-main">
-    <div class="tv-table">
-      <div class="tv-row tv-head">
-        <div>#</div><div style="text-align:left;">PLAYER</div><div style="text-align:right;">SCORE</div>
-      </div>
-      <div id="tvRows"></div>
-    </div>
-    <aside class="tv-qr-card" aria-labelledby="tvQrHeading">
-      <div class="tv-qr-eyebrow">YOUR JOURNEY STARTS HERE</div>
-      <h2 id="tvQrHeading">SCAN &amp; PLAY</h2>
-      <p class="tv-qr-copy">Siap masuk leaderboard?<br>Scan QR dan mulai perjalananmu.</p>
-      <a id="tvGameQrLink" class="tv-qr-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener" aria-label="Buka halaman main SimInvest To The Moon">
+      <section class="tv-leaderboard-pane" aria-label="Leaderboard Galaga hari ini">
+        <header class="tv-pane-heading"><div><p class="tv-pane-eyebrow">LIVE LEADERBOARD · TOP 10</p><h1 class="tv-title">TO THE MOON</h1></div><div class="tv-date" id="tvDate">TODAY'S LEADERBOARD</div></header>
+        <div class="tv-table">
+          <div class="tv-row tv-head"><div>#</div><div style="text-align:left;">PLAYER</div><div style="text-align:right;">SCORE</div></div>
+          <div id="tvRows"></div>
+        </div>
+        <footer class="tv-board-status"><div id="tvFlash">NEW HIGH SCORE</div><div id="tvUpdated">LIVE · CONNECTING...</div></footer>
+      </section>
+      <aside class="tv-guide-panel" aria-labelledby="tvQrHeading">
+        <section class="tv-scan-zone" aria-labelledby="tvQrHeading">
+          <a id="tvGameQrLink" class="tv-qr-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener" aria-label="Buka halaman main SimInvest To The Moon">
         <img id="tvGameQr" src="data:image/png;base64,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" width="848" height="848" alt="QR menuju halaman main SimInvest To The Moon">
       </a>
-      <div class="tv-qr-label">SCAN. DAFTAR. MELUNCUR.</div>
-      <p class="tv-qr-step">Buka kamera HP, lalu arahkan ke QR.</p>
-      <a class="tv-game-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener">Buka permainan ↗</a>
-    </aside>
+          <div class="tv-scan-copy"><p class="tv-pane-eyebrow">CARA MAIN &amp; HADIAH</p><h2 id="tvQrHeading">SCAN &amp; PLAY</h2><p>Scan QR → isi data → mulai main.<br>Geser jari untuk mengendalikan roket.</p><a class="tv-game-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener">Buka permainan ↗</a></div>
+        </section>
+        <div class="tv-reward-basics">
+          <article class="tv-reward-card"><span class="tv-reward-step">01 · DOWNLOAD + DATA</span><h3>Download SimInvest</h3><strong>Sticker Pack<br>+ Parfum 5ml</strong><p>Isi data peserta dan tunjukkan download aplikasi ke crew.</p></article>
+          <article class="tv-reward-card record"><span class="tv-reward-step">02 · BID HIGHEST SCORE</span><h3>Pecahkan rekor<br>Galaga hari ini</h3><strong>Parfum 10ml</strong><p>Jalur hadiah tersendiri dari KYC. Crew memeriksa rekor dan klaim.</p></article>
+        </div>
+        <div class="tv-dlc-rewards">
+          <article class="tv-reward-card kyc"><span class="tv-reward-step">03 · COMPLETE KYC</span><h3>Selesaikan KYC</h3><strong>Parfum 10ml<br>+ Sticker Pack</strong><p>Selesaikan KYC dan minta crew memeriksa statusnya.</p><small>Jika parfum habis: <b>Danamas Pasti Rp50.000.</b></small></article>
+          <article class="tv-reward-card transact"><span class="tv-reward-step">04 · TRANSACT</span><h3>Lakukan transaksi</h3><strong>Parfum 50ml<br>+ merchandise tersedia</strong><p>Transaksi mengikuti ketentuan event dan diperiksa crew.</p><small>Jika parfum habis: <b>Danamas Pasti Rp100.000.</b></small></article>
+        </div>
+        <div class="tv-dlc-note"><span>↗</span><p><b>KYC / Transact membuka DLC 3D.</b><br>Roket yang sama, bulan → Bumi. 2 kesempatan per jalur.</p></div>
+        <p class="tv-reward-boundary">Hadiah dan merchandise mengikuti stok. Hak hadiah dari KYC / Transact tidak bergantung pada kemenangan DLC.</p>
+      </aside>
     </div>
-    <div id="tvFlash">NEW HIGH SCORE</div>
-    <div id="tvUpdated">LIVE • CONNECTING...</div>
   </div>
 
   <div class="rotate-msg" id="rotateMsg">
@@ -3196,19 +3303,17 @@ let registrationFailure = '';
 const participantForm = document.getElementById('participantForm');
 const participantName = document.getElementById('participantName');
 const participantPhone = document.getElementById('participantPhone');
-const participantEmail = document.getElementById('participantEmail');
 const participantMarketingConsent = document.getElementById('participantMarketingConsent');
 const riskLabels = {konservatif:'Konservatif', moderat:'Moderat', agresif:'Agresif'};
 function readParticipantForm(){
   const name = participantName.value.trim().replace(/\s+/g,' ');
   const phone = participantPhone.value.trim().replace(/[\s()-]/g,'');
   const riskProfile = participantForm.querySelector('input[name="riskProfile"]:checked')?.value || '';
-  return {name, phone, email:participantEmail.value.trim().toLowerCase(), riskProfile, marketingOptIn:participantMarketingConsent.checked};
+  return {name, phone, riskProfile, marketingOptIn:participantMarketingConsent.checked};
 }
 function validName(name){ return name.length>=2 && name.length<=60 && /\p{L}/u.test(name); }
 function validPhone(phone){ return /^(?:08\d{8,11}|\+?628\d{8,11})$/.test(phone); }
-function validEmail(email){return typeof email==='string' && email.length<=254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);}
-function validParticipant(data){ return !!data && validName(data.name) && validPhone(data.phone) && validEmail(data.email) && Object.hasOwn(riskLabels,data.riskProfile); }
+function validParticipant(data){ return !!data && validName(data.name) && validPhone(data.phone) && Object.hasOwn(riskLabels,data.riskProfile); }
 function hasSavedParticipant(){ return validParticipant(participant) && participant.saved === true && !!participant.registrationId; }
 function normalizePhone(phone){ return phone.startsWith('0') ? '+62'+phone.slice(1) : '+'+phone.replace(/^\+/,''); }
 function registrationId(){
@@ -3226,13 +3331,12 @@ function refreshParticipantForm(){
   participantForm.querySelectorAll('input').forEach(field=>field.disabled=registrationSaving);
   const status=document.getElementById('registrationStatus');
   status.classList.toggle('error',!!registrationFailure);
-  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi nama, nomor HP, email, dan satu profil risiko.');
+  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi nama, nomor HP yang valid, dan satu profil risiko.');
   document.getElementById('btnRegistrationContinue').textContent=registrationSaving ? 'MENYIMPAN…' : registrationFailure ? 'COBA SIMPAN LAGI →' : 'SIMPAN & LANJUT →';
   participantForm.setAttribute('aria-busy',String(registrationSaving));
   for(const [field,ok,msg] of [
     [participantName,validName(data.name),'Isi nama minimal 2 karakter.'],
-    [participantPhone,validPhone(data.phone),'Masukkan nomor HP yang valid, diawali 08 atau +628.'],
-    [participantEmail,validEmail(data.email),'Masukkan alamat email yang valid.']
+    [participantPhone,validPhone(data.phone),'Masukkan nomor HP yang valid, diawali 08 atau +628.']
   ]){
     const show = field.dataset.touched==='true' && !ok;
     field.setAttribute('aria-invalid', String(show));
@@ -3247,13 +3351,13 @@ function onParticipantEdit(){
 }
 participantForm.addEventListener('input',onParticipantEdit);
 participantForm.addEventListener('change',onParticipantEdit);
-[participantName,participantPhone,participantEmail].forEach(field=>field.addEventListener('blur',()=>{
+[participantName,participantPhone].forEach(field=>field.addEventListener('blur',()=>{
   field.dataset.touched='true'; refreshParticipantForm();
 }));
 async function saveParticipant(data){
   if(!supabaseClient) throw new Error('client_unavailable');
   const normalizedPhone=normalizePhone(data.phone);
-  const signature=JSON.stringify([data.name,normalizedPhone,data.email,data.riskProfile,data.marketingOptIn]);
+  const signature=JSON.stringify([data.name,normalizedPhone,data.riskProfile,data.marketingOptIn]);
   // Keep one UUID across retries with unchanged inputs, including an ambiguous network timeout.
   if(!pendingRegistration || pendingRegistration.signature!==signature){
     pendingRegistration={id:registrationId(),signature};
@@ -3266,7 +3370,6 @@ async function saveParticipant(data){
       registration_id:pendingRegistration.id,
       full_name:data.name,
       phone_e164:normalizedPhone,
-      email:data.email,
       risk_profile:data.riskProfile,
       marketing_opt_in:data.marketingOptIn,
       device_id:getCentralDeviceId()
@@ -3291,9 +3394,9 @@ participantForm.addEventListener('submit',async event=>{
   event.preventDefault();
   if(TV_MODE || registrationSaving) return;
   if(!refreshParticipantForm()){
-    participantName.dataset.touched='true'; participantPhone.dataset.touched='true'; participantEmail.dataset.touched='true';
+    participantName.dataset.touched='true'; participantPhone.dataset.touched='true';
     refreshParticipantForm();
-    (!validName(readParticipantForm().name) ? participantName : !validPhone(readParticipantForm().phone) ? participantPhone : !validEmail(readParticipantForm().email) ? participantEmail : participantForm.querySelector('input[name="riskProfile"]')).focus();
+    (!validName(readParticipantForm().name) ? participantName : !validPhone(readParticipantForm().phone) ? participantPhone : participantForm.querySelector('input[name="riskProfile"]')).focus();
     return;
   }
   const data=readParticipantForm();
@@ -3334,7 +3437,7 @@ function showRegistration(clear=false){
   registrationFailure=''; pendingRegistration=null;
   if(clear){
     participantForm.reset();
-    delete participantName.dataset.touched; delete participantPhone.dataset.touched; delete participantEmail.dataset.touched;
+    delete participantName.dataset.touched; delete participantPhone.dataset.touched;
     applyControlMode('drag');
   }
   refreshParticipantForm();
@@ -3348,7 +3451,7 @@ let dlcActive=false, dlcProgress=null, dlcIdentity=null, dlcTrack=null, dlcRound
 let lastJourneyNewHigh=false;
 const dlcTracks={
   kyc:{title:'COMPLETE KYC',cta:'DLC · KYC',reward:'Parfum 10ml + Sticker Pack',fallback:'Jika parfum habis: Danamas Pasti Rp50.000.',description:'Selesaikan KYC, lalu minta crew memeriksa statusnya. Setelah diverifikasi, buka misi pulang ke Bumi.'},
-  transact:{title:'TRANSACT',cta:'DLC · TRANSACT',reward:'Parfum 50ml + merchandise yang tersedia',fallback:'Jika parfum habis: reward Rp100.000.',description:'Tunjukkan transaksi yang memenuhi ketentuan event kepada crew. Setelah diperiksa, buka misi pulang premium.'}
+  transact:{title:'TRANSACT',cta:'DLC · TRANSACT',reward:'Parfum 50ml + merchandise yang tersedia',fallback:'Jika parfum habis: Danamas Pasti Rp100.000.',description:'Tunjukkan transaksi yang memenuhi ketentuan event kepada crew. Setelah diperiksa, buka misi pulang premium.'}
 };
 const bottleIcon='<svg viewBox="0 0 70 90" aria-hidden="true"><defs><linearGradient id="bottleFill" x2="1" y2="1"><stop stop-color="#A855F7"/><stop offset="1" stop-color="#2563EB"/></linearGradient></defs><rect x="25" y="5" width="20" height="14" rx="3" fill="#d6c9fd"/><rect x="20" y="17" width="30" height="8" rx="2" fill="#a78bfa"/><rect x="12" y="25" width="46" height="57" rx="11" fill="url(#bottleFill)" stroke="#d6c9fd" stroke-width="2"/><rect x="18" y="43" width="34" height="21" rx="3" fill="#f1ebff"/><path d="M24 31v43" stroke="#fff" stroke-width="3" opacity=".23"/><text x="35" y="56" font-size="5" text-anchor="middle" fill="#403065">SCENT OF WEALTH</text></svg>';
 function stockText(code){
@@ -3362,7 +3465,7 @@ function renderJourneyRewards(newHigh=lastJourneyNewHigh){
     const record=centralLoaded && !PREVIEW_MODE ? centralHigh().toLocaleString('id-ID') : PREVIEW_MODE ? 'Skor lokal preview' : 'Menunggu leaderboard';
     const recordCount=Number.isInteger(window.simoonRecordBreaks) ? window.simoonRecordBreaks+' kali rekor dipecahkan hari ini' : 'Rekor harian mengikuti leaderboard Galaga';
     mount.innerHTML=`<div class="reward-intro"><p class="dlc-eyebrow">YOUR JOURNEY CONTINUES</p><h2>Hadiahmu. Misi berikutnya.</h2><p>Roket yang sama. Bab berikutnya: perjalanan pulang dari bulan ke Bumi.</p></div>
-      <div class="reward-summary"><div><span>DOWNLOAD + DATA PESERTA</span><b>Sticker Pack</b><small>Tunjukkan download SimInvest ke crew. Selama persediaan ada.</small></div><div class="sticker-art" aria-hidden="true">↗<i>SIMINVEST</i></div></div>
+      <div class="reward-summary"><div><span>DOWNLOAD + DATA PESERTA</span><b>Sticker Pack + Parfum 5ml</b><small>Tunjukkan download SimInvest ke crew. Selama persediaan ada.</small></div><div class="sticker-art" aria-hidden="true">↗<i>SIMINVEST</i></div></div>
       <div class="record-reward"><div class="reward-art small-bottle">${bottleIcon}</div><div><span>BID HIGHEST SCORE · GALAGA</span><b>Parfum 10ml</b><p>Highest score hari ini: <strong>${record}</strong></p><small>${recordCount}. ${stockText('scent10')}</small><p class="record-note">${newHigh?'Skor baru terdeteksi. Minta crew memeriksa rekor dan kelayakan klaim.':'Pecahkan rekor untuk jalur hadiah high score. KYC adalah jalur hadiah tersendiri.'}</p></div></div>
       <div class="dlc-options">${Object.entries(dlcTracks).map(([track,t])=>{
         const progress=dlcProgress?.tracks?.[track];
@@ -3550,7 +3653,7 @@ requestAnimationFrame(loop);
 if(PREVIEW_MODE){
   document.getElementById('localPreviewBadge').classList.remove('hidden');
   if(new URLSearchParams(location.search).get('preview')==='journey'){
-    participant=Object.freeze({name:'PREVIEW',phone:'+6281234567890',email:'preview@example.invalid',riskProfile:'moderat',saved:true,registrationId:'preview-only'});
+    participant=Object.freeze({name:'PREVIEW',phone:'+6281234567890',riskProfile:'moderat',saved:true,registrationId:'preview-only'});
     state=STATE.GAMEOVER;
     showOverScreen([],false);
   }

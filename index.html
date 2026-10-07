@@ -738,10 +738,30 @@
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<link rel="stylesheet" href="journey.css">
 </head>
 <body>
 <div id="stage">
   <canvas id="game"></canvas>
+  <div id="dlcGate" class="overlay hidden dlc-gate" role="dialog" aria-modal="true" aria-labelledby="dlcGateTitle">
+    <form id="dlcPinForm" class="dlc-gate-panel">
+      <img src="assets/siminvest-rocket.png" class="gate-rocket" alt="Roket SimInvest ungu">
+      <p class="dlc-eyebrow">NEXT CHAPTER · RETURN TO EARTH</p>
+      <h2 id="dlcGateTitle">COMPLETE KYC</h2><p id="dlcGateDescription"></p>
+      <p class="gate-reward" id="dlcGateReward"></p>
+      <label for="dlcPin">PIN dari crew</label>
+      <input id="dlcPin" type="password" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" placeholder="• • • •" required>
+      <p id="dlcPinError" role="status" aria-live="polite"></p>
+      <button type="submit" class="btn" id="dlcUnlock">BUKA MISI PULANG</button>
+      <button type="button" class="text-btn" id="dlcGateBack">Kembali ke Journey Ended</button>
+      <p class="gate-footnote">Setelah terbuka, kembalikan HP ke pemain. Pemain yang menekan START.</p>
+    </form>
+  </div>
+  <section id="dlcFlight" class="hidden" aria-label="Misi pulang ke Bumi 3D">
+    <div id="dlcLoading"><div><p role="status">Menyiapkan roket untuk perjalanan pulang…</p><button type="button" class="text-btn" id="dlcLoadBack">Kembali ke Journey Ended</button></div></div>
+    <iframe id="dlcFrame" title="Return to Earth — DLC 3D" allow="autoplay" src="about:blank"></iframe>
+  </section>
+  <div id="localPreviewBadge" class="hidden">PREVIEW · DATA LOKAL · TIDAK ADA KLAIM HADIAH</div>
 
   <button id="muteBtn" aria-label="Mute">🔊</button>
 
@@ -815,7 +835,7 @@
       <div class="registration-brand">SimInvest</div>
       <div class="registration-eyebrow">TO THE MOON · SEBELUM MULAI</div>
       <h1 id="registrationHeading">Kenalan dulu,<br>baru meluncur.</h1>
-      <p class="registration-intro">Isi nama, nomor HP, dan pilih profil risiko kamu untuk melanjutkan ke permainan.</p>
+      <p class="registration-intro">Isi nama, nomor HP, email, dan pilih profil risiko kamu untuk melanjutkan ke permainan.</p>
       <form id="participantForm" novalidate>
         <div class="registration-field">
           <label for="participantName">Nama</label>
@@ -827,6 +847,12 @@
           <input id="participantPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" maxlength="22" required aria-describedby="participantPhoneHint participantPhoneError">
           <p class="field-hint" id="participantPhoneHint">Gunakan nomor HP Indonesia: 08… atau +628…</p>
           <p class="field-error" id="participantPhoneError" aria-live="polite"></p>
+        </div>
+
+        <div class="form-field">
+          <label for="participantEmail">Email</label>
+          <input id="participantEmail" name="email" type="email" autocomplete="email" placeholder="nama@email.com" maxlength="254" required aria-describedby="participantEmailError">
+          <p class="field-error" id="participantEmailError" aria-live="polite"></p>
         </div>
         <fieldset class="risk-field">
           <legend>Profil risiko</legend>
@@ -945,34 +971,34 @@
   </div>
 
   <!-- GAME OVER -->
-  <div id="screenOver" class="overlay hidden">
-    <div class="wordmark t2" style="font-size:clamp(24px,6vw,38px)">JOURNEY ENDED</div>
-    <div class="breakdown" id="overBreakdown"></div>
-    <div class="newhigh hidden" id="newHighTag">NEW HIGH SCORE</div>
-    <button class="btn" id="btnAgain1">PLAY AGAIN</button>
-    <button type="button" class="text-btn change-player">Ganti pemain</button>
-    <div class="board">
-      <div class="board-col">
-        <h3>HIGH SCORE</h3>
-        <ol id="boardScores"></ol>
+  <div id="screenOver" class="overlay hidden journey-screen">
+    <div class="journey-shell">
+      <header class="journey-heading"><div class="wordmark t2">JOURNEY ENDED</div><p>Misi pertama selesai. Perjalananmu masih berlanjut.</p></header>
+      <div class="journey-grid">
+        <section class="journey-score"><div class="breakdown" id="overBreakdown"></div><div class="newhigh hidden" id="newHighTag">NEW HIGH SCORE</div>
+          <button class="btn" id="btnAgain1">PLAY AGAIN</button>
+          <button type="button" class="text-btn change-player">Ganti pemain</button>
+          <div class="board"><div class="board-col"><h3>HIGH SCORE · GALAGA</h3><ol id="boardScores"></ol></div></div>
+        </section>
+        <section class="journey-rewards" aria-label="Hadiah dan misi lanjutan"></section>
       </div>
+      <div class="tagline">Real Growth, Start Here.</div>
     </div>
-    <div class="tagline">Real Growth, Start Here.</div>
   </div>
 
   <!-- MOON SUCCESS -->
-  <div id="screenMoon" class="overlay hidden">
-    <div class="wordmark t1" style="font-size:clamp(26px,6.4vw,42px)">CURE ACQUIRED</div>
-    <div class="wordmark t2" style="font-size:clamp(18px,4.4vw,28px)">YOU MADE IT TO THE MOON</div>
-    <div class="breakdown" id="moonBreakdown"></div>
-    <div class="tagline" style="margin-top:6px;">Real Growth, Start Here.</div>
-    <button class="btn" id="btnAgain2">PLAY AGAIN</button>
-    <button type="button" class="text-btn change-player">Ganti pemain</button>
-    <div class="board">
-      <div class="board-col">
-        <h3>HIGH SCORE</h3>
-        <ol id="boardScores2"></ol>
+  <div id="screenMoon" class="overlay hidden journey-screen">
+    <div class="journey-shell">
+      <header class="journey-heading"><div class="wordmark t2">YOU MADE IT TO THE MOON</div><p>Sekarang waktunya membawa roketmu pulang ke Bumi.</p></header>
+      <div class="journey-grid">
+        <section class="journey-score"><div class="breakdown" id="moonBreakdown"></div>
+          <button class="btn" id="btnAgain2">PLAY AGAIN</button>
+          <button type="button" class="text-btn change-player">Ganti pemain</button>
+          <div class="board"><div class="board-col"><h3>HIGH SCORE · GALAGA</h3><ol id="boardScores2"></ol></div></div>
+        </section>
+        <section class="journey-rewards" aria-label="Hadiah dan misi lanjutan"></section>
       </div>
+      <div class="tagline">Real Growth, Start Here.</div>
     </div>
   </div>
 
@@ -1021,11 +1047,27 @@
 <script>
 (function(){
 "use strict";
+const PREVIEW_MODE = new URLSearchParams(location.search).has('preview');
+function createLocalPreviewClient(){
+  const rows=[];
+  return {
+    from(table){
+      const q={select(){return q;},eq(){return q;},order(){return q;},limit(){return Promise.resolve({data:rows.slice().sort((a,b)=>b.score-a.score),error:null});},
+        insert(payload){
+          if(table==='daily_scores')rows.push({...payload,played_at:new Date().toISOString(),event_date:centralToday()});
+          return {abortSignal(){return Promise.resolve({error:null});},then(resolve){return Promise.resolve({error:null}).then(resolve);}};
+        }
+      };
+      return q;
+    },
+    channel(){return {on(){return this;},subscribe(){return this;}};}
+  };
+}
 
   /* ============ CENTRAL LEADERBOARD / SUPABASE ============ */
   const SUPABASE_URL = 'https://fomrafdtfafvmhnovkrd.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_zYUv9ya7fwqhHCbKhunu_w_4bnFv8QM';
-  const supabaseClient = (window.supabase && window.supabase.createClient)
+  const supabaseClient = PREVIEW_MODE ? createLocalPreviewClient() : (window.supabase && window.supabase.createClient)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
     : null;
 
@@ -1101,7 +1143,7 @@
       const rows=await fetchCentralScores(options.limit||10);
       centralRows=rows;
       centralLoaded=true;
-      setCentralStatus('CENTRAL • LIVE',true);
+      setCentralStatus(PREVIEW_MODE ? 'PREVIEW • LOCAL' : 'CENTRAL • LIVE',true);
       refreshTitleBest();
       renderCentralGameBoards(rows);
       if(TV_MODE) renderTVLeaderboard(rows);
@@ -1180,7 +1222,7 @@
         })
       .subscribe((status)=>{
         if(status==='SUBSCRIBED'){
-          setCentralStatus('CENTRAL • LIVE',true);
+          setCentralStatus(PREVIEW_MODE ? 'PREVIEW • LOCAL' : 'CENTRAL • LIVE',true);
           const u=document.getElementById('tvUpdated');
           if(TV_MODE && u) u.textContent='LIVE • CONNECTED';
         }
@@ -1924,6 +1966,7 @@ function showOverScreen(scores, isNewHigh){
   `;
   document.getElementById('newHighTag').classList.toggle('hidden', !isNewHigh);
   renderBoard(document.getElementById('boardScores'), scores);
+  renderJourneyRewards(isNewHigh);
   refreshTitleBest();
 }
 function showMoonScreen(scores){
@@ -1938,11 +1981,12 @@ function showMoonScreen(scores){
     <div class="row total"><span>TOTAL</span><span>${fmt(score)}</span></div>
   `;
   renderBoard(document.getElementById('boardScores2'), scores);
+  renderJourneyRewards(false);
   refreshTitleBest();
   SFX.cure();
 }
 function hideAllScreens(){
-  ['screenRegistration','screenTitle','screenInstr','screenOver','screenMoon','nameOverlay','controlOverlay'].forEach(id=>{
+  ['screenRegistration','screenTitle','screenInstr','screenOver','screenMoon','nameOverlay','controlOverlay','dlcGate'].forEach(id=>{
     document.getElementById(id).classList.add('hidden');
   });
   refreshControlUI();
@@ -3148,17 +3192,19 @@ let registrationFailure = '';
 const participantForm = document.getElementById('participantForm');
 const participantName = document.getElementById('participantName');
 const participantPhone = document.getElementById('participantPhone');
+const participantEmail = document.getElementById('participantEmail');
 const participantMarketingConsent = document.getElementById('participantMarketingConsent');
 const riskLabels = {konservatif:'Konservatif', moderat:'Moderat', agresif:'Agresif'};
 function readParticipantForm(){
   const name = participantName.value.trim().replace(/\s+/g,' ');
   const phone = participantPhone.value.trim().replace(/[\s()-]/g,'');
   const riskProfile = participantForm.querySelector('input[name="riskProfile"]:checked')?.value || '';
-  return {name, phone, riskProfile, marketingOptIn:participantMarketingConsent.checked};
+  return {name, phone, email:participantEmail.value.trim().toLowerCase(), riskProfile, marketingOptIn:participantMarketingConsent.checked};
 }
 function validName(name){ return name.length>=2 && name.length<=60 && /\p{L}/u.test(name); }
 function validPhone(phone){ return /^(?:08\d{8,11}|\+?628\d{8,11})$/.test(phone); }
-function validParticipant(data){ return !!data && validName(data.name) && validPhone(data.phone) && Object.hasOwn(riskLabels,data.riskProfile); }
+function validEmail(email){return typeof email==='string' && email.length<=254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);}
+function validParticipant(data){ return !!data && validName(data.name) && validPhone(data.phone) && validEmail(data.email) && Object.hasOwn(riskLabels,data.riskProfile); }
 function hasSavedParticipant(){ return validParticipant(participant) && participant.saved === true && !!participant.registrationId; }
 function normalizePhone(phone){ return phone.startsWith('0') ? '+62'+phone.slice(1) : '+'+phone.replace(/^\+/,''); }
 function registrationId(){
@@ -3176,12 +3222,13 @@ function refreshParticipantForm(){
   participantForm.querySelectorAll('input').forEach(field=>field.disabled=registrationSaving);
   const status=document.getElementById('registrationStatus');
   status.classList.toggle('error',!!registrationFailure);
-  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi nama, nomor HP yang valid, dan satu profil risiko.');
+  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi nama, nomor HP, email, dan satu profil risiko.');
   document.getElementById('btnRegistrationContinue').textContent=registrationSaving ? 'MENYIMPAN…' : registrationFailure ? 'COBA SIMPAN LAGI →' : 'SIMPAN & LANJUT →';
   participantForm.setAttribute('aria-busy',String(registrationSaving));
   for(const [field,ok,msg] of [
     [participantName,validName(data.name),'Isi nama minimal 2 karakter.'],
-    [participantPhone,validPhone(data.phone),'Masukkan nomor HP yang valid, diawali 08 atau +628.']
+    [participantPhone,validPhone(data.phone),'Masukkan nomor HP yang valid, diawali 08 atau +628.'],
+    [participantEmail,validEmail(data.email),'Masukkan alamat email yang valid.']
   ]){
     const show = field.dataset.touched==='true' && !ok;
     field.setAttribute('aria-invalid', String(show));
@@ -3196,13 +3243,13 @@ function onParticipantEdit(){
 }
 participantForm.addEventListener('input',onParticipantEdit);
 participantForm.addEventListener('change',onParticipantEdit);
-[participantName,participantPhone].forEach(field=>field.addEventListener('blur',()=>{
+[participantName,participantPhone,participantEmail].forEach(field=>field.addEventListener('blur',()=>{
   field.dataset.touched='true'; refreshParticipantForm();
 }));
 async function saveParticipant(data){
   if(!supabaseClient) throw new Error('client_unavailable');
   const normalizedPhone=normalizePhone(data.phone);
-  const signature=JSON.stringify([data.name,normalizedPhone,data.riskProfile,data.marketingOptIn]);
+  const signature=JSON.stringify([data.name,normalizedPhone,data.email,data.riskProfile,data.marketingOptIn]);
   // Keep one UUID across retries with unchanged inputs, including an ambiguous network timeout.
   if(!pendingRegistration || pendingRegistration.signature!==signature){
     pendingRegistration={id:registrationId(),signature};
@@ -3215,6 +3262,7 @@ async function saveParticipant(data){
       registration_id:pendingRegistration.id,
       full_name:data.name,
       phone_e164:normalizedPhone,
+      email:data.email,
       risk_profile:data.riskProfile,
       marketing_opt_in:data.marketingOptIn,
       device_id:getCentralDeviceId()
@@ -3239,9 +3287,9 @@ participantForm.addEventListener('submit',async event=>{
   event.preventDefault();
   if(TV_MODE || registrationSaving) return;
   if(!refreshParticipantForm()){
-    participantName.dataset.touched='true'; participantPhone.dataset.touched='true';
+    participantName.dataset.touched='true'; participantPhone.dataset.touched='true'; participantEmail.dataset.touched='true';
     refreshParticipantForm();
-    (!validName(readParticipantForm().name) ? participantName : !validPhone(readParticipantForm().phone) ? participantPhone : participantForm.querySelector('input[name="riskProfile"]')).focus();
+    (!validName(readParticipantForm().name) ? participantName : !validPhone(readParticipantForm().phone) ? participantPhone : !validEmail(readParticipantForm().email) ? participantEmail : participantForm.querySelector('input[name="riskProfile"]')).focus();
     return;
   }
   const data=readParticipantForm();
@@ -3272,6 +3320,7 @@ function showRegistration(clear=false){
   if(state===STATE.REGISTRATION && !clear){ refreshParticipantForm(); return; }
   clearInterval(countdownInterval);
   participant=null;
+  dlcProgress=null;dlcIdentity=null;
   state=STATE.REGISTRATION;
   hideAllScreens();
   document.getElementById('hud').classList.add('hidden');
@@ -3281,7 +3330,7 @@ function showRegistration(clear=false){
   registrationFailure=''; pendingRegistration=null;
   if(clear){
     participantForm.reset();
-    delete participantName.dataset.touched; delete participantPhone.dataset.touched;
+    delete participantName.dataset.touched; delete participantPhone.dataset.touched; delete participantEmail.dataset.touched;
     applyControlMode('drag');
   }
   refreshParticipantForm();
@@ -3290,9 +3339,160 @@ function showRegistration(clear=false){
 document.getElementById('btnEditParticipant').addEventListener('click',()=>showRegistration());
 document.querySelectorAll('.change-player').forEach(button=>button.addEventListener('click',()=>showRegistration(true)));
 
+/* ============ JOURNEY ENDED -> RETURN TO EARTH ============ */
+let dlcActive=false, dlcProgress=null, dlcIdentity=null, dlcTrack=null, dlcRound=null, dlcOriginScreen='screenOver';
+let lastJourneyNewHigh=false;
+const dlcTracks={
+  kyc:{title:'COMPLETE KYC',cta:'DLC · KYC',reward:'Parfum 10ml + Sticker Pack',fallback:'Jika parfum habis: Danamas Pasti Rp50.000.',description:'Selesaikan KYC, lalu minta crew memeriksa statusnya. Setelah diverifikasi, buka misi pulang ke Bumi.'},
+  transact:{title:'TRANSACT',cta:'DLC · TRANSACT',reward:'Parfum 50ml + merchandise yang tersedia',fallback:'Jika parfum habis: reward Rp100.000.',description:'Tunjukkan transaksi yang memenuhi ketentuan event kepada crew. Setelah diperiksa, buka misi pulang premium.'}
+};
+const bottleIcon='<svg viewBox="0 0 70 90" aria-hidden="true"><defs><linearGradient id="bottleFill" x2="1" y2="1"><stop stop-color="#A855F7"/><stop offset="1" stop-color="#2563EB"/></linearGradient></defs><rect x="25" y="5" width="20" height="14" rx="3" fill="#d6c9fd"/><rect x="20" y="17" width="30" height="8" rx="2" fill="#a78bfa"/><rect x="12" y="25" width="46" height="57" rx="11" fill="url(#bottleFill)" stroke="#d6c9fd" stroke-width="2"/><rect x="18" y="43" width="34" height="21" rx="3" fill="#f1ebff"/><path d="M24 31v43" stroke="#fff" stroke-width="3" opacity=".23"/><text x="35" y="56" font-size="5" text-anchor="middle" fill="#403065">SCENT OF WEALTH</text></svg>';
+function stockText(code){
+  const s=window.simoonRewardStock?.[code];
+  if(!s || !Number.isInteger(s.remaining) || s.remaining<0) return 'Sisa hadiah: cek ketersediaan ke crew';
+  return 'Sisa parfum '+(code==='scent10'?'10ml':'50ml')+': '+s.remaining+' · snapshot '+new Date(s.updated_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+function renderJourneyRewards(newHigh=lastJourneyNewHigh){
+  lastJourneyNewHigh=!!newHigh;
+  for(const mount of document.querySelectorAll('.journey-rewards')){
+    const record=centralLoaded && !PREVIEW_MODE ? centralHigh().toLocaleString('id-ID') : PREVIEW_MODE ? 'Skor lokal preview' : 'Menunggu leaderboard';
+    const recordCount=Number.isInteger(window.simoonRecordBreaks) ? window.simoonRecordBreaks+' kali rekor dipecahkan hari ini' : 'Rekor harian mengikuti leaderboard Galaga';
+    mount.innerHTML=`<div class="reward-intro"><p class="dlc-eyebrow">YOUR JOURNEY CONTINUES</p><h2>Hadiahmu. Misi berikutnya.</h2><p>Roket yang sama. Bab berikutnya: perjalanan pulang dari bulan ke Bumi.</p></div>
+      <div class="reward-summary"><div><span>DOWNLOAD + DATA PESERTA</span><b>Sticker Pack</b><small>Tunjukkan download SimInvest ke crew. Selama persediaan ada.</small></div><div class="sticker-art" aria-hidden="true">↗<i>SIMINVEST</i></div></div>
+      <div class="record-reward"><div class="reward-art small-bottle">${bottleIcon}</div><div><span>BID HIGHEST SCORE · GALAGA</span><b>Parfum 10ml</b><p>Highest score hari ini: <strong>${record}</strong></p><small>${recordCount}. ${stockText('scent10')}</small><p class="record-note">${newHigh?'Skor baru terdeteksi. Minta crew memeriksa rekor dan kelayakan klaim.':'Pecahkan rekor untuk jalur hadiah high score. KYC adalah jalur hadiah tersendiri.'}</p></div></div>
+      <div class="dlc-options">${Object.entries(dlcTracks).map(([track,t])=>{
+        const progress=dlcProgress?.tracks?.[track];
+        const used=progress?.attempts||0;
+        const run=progress?.runs?.at(-1);
+        return `<article class="dlc-card ${track}"><div class="dlc-card-top"><div class="reward-art">${bottleIcon}<span>${track==='kyc'?'10':'50'}ml</span></div><div><span class="dlc-eyebrow">${track==='kyc'?'01 · ACCOUNT MISSION':'02 · INVESTMENT MISSION'}</span><h3>${t.title}</h3><p class="reward-name">${t.reward}</p></div></div><p>${t.description}</p><small>${t.fallback} Merchandise mengikuti stok crew.</small><div class="dlc-card-status">${stockText(track==='kyc'?'scent10':'scent50')}</div>${run?`<div class="last-dlc-score">RETURN MISSION · ${Math.round(run.score).toLocaleString('id-ID')} PTS</div>`:''}<button type="button" class="btn dlc-open" data-dlc-track="${track}" ${used>=2?'disabled':''}>${used>=2?'2 KESEMPATAN SELESAI':progress?.verified?'LANJUT MISI PULANG':'BUKA '+t.cta}<span>↗</span></button><div class="dlc-attempts">${2-used}/2 kesempatan · Use finger · 3D return flight</div></article>`;
+      }).join('')}</div><p class="journey-claim-note">KYC / transaksi diverifikasi crew. Skor DLC tidak mengurangi hak hadiah dari verifikasi. Hadiah diserahkan sesuai stok; belum dianggap diklaim saat game selesai.</p>`;
+  }
+  if(hasSavedParticipant() && dlcIdentity!==participant.registrationId) loadJourneyProgress().catch(()=>{});
+}
+async function loadJourneyProgress(){
+  if(!hasSavedParticipant()) return false;
+  const current=participant;
+  if(dlcIdentity===current.registrationId && dlcProgress) return true;
+  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(normalizePhone(current.phone)+'|return-to-earth-v1'));
+  if(participant!==current) return false;
+  const digest=Array.from(new Uint8Array(bytes),v=>v.toString(16).padStart(2,'0')).join('');
+  const key=(PREVIEW_MODE?'simoon_preview_return_':'simoon_return_')+digest;
+  let stored=null;
+  try{stored=JSON.parse(localStorage.getItem(key)||'null');}catch{}
+  dlcProgress={key,tracks:{}};
+  for(const track of ['kyc','transact']){
+    const saved=stored?.tracks?.[track];
+    dlcProgress.tracks[track]={verified:false,attempts:Number.isInteger(saved?.attempts)?Math.min(2,Math.max(0,saved.attempts)):0,runs:Array.isArray(saved?.runs)?saved.runs.filter(r=>Number.isFinite(r.score)&&r.score>=0).slice(-2):[]};
+  }
+  dlcIdentity=current.registrationId;
+  renderJourneyRewards(); return true;
+}
+function saveJourneyProgress(){
+  if(!dlcProgress) return;
+  try{localStorage.setItem(dlcProgress.key,JSON.stringify({tracks:Object.fromEntries(Object.entries(dlcProgress.tracks).map(([t,p])=>[t,{attempts:p.attempts,runs:p.runs}]))}));}catch{}
+}
+async function openDLCGate(track){
+  if(dlcActive || !dlcTracks[track] || !['screenOver','screenMoon'].some(id=>!document.getElementById(id).classList.contains('hidden'))) return;
+  if(!hasSavedParticipant()){showRegistration(); return;}
+  try{if(!await loadJourneyProgress()) return;}catch{alert('Browser belum bisa membuka sesi DLC. Coba muat ulang atau gunakan Chrome/Safari terbaru.');return;}
+  if(dlcProgress.tracks[track].attempts>=2) return;
+  dlcOriginScreen=!document.getElementById('screenMoon').classList.contains('hidden')?'screenMoon':'screenOver';
+  dlcTrack=track;
+  if(dlcProgress.tracks[track].verified){prepareDLC();return;}
+  const t=dlcTracks[track];
+  document.getElementById('dlcGateTitle').textContent=t.title;
+  document.getElementById('dlcGateDescription').textContent=t.description;
+  document.getElementById('dlcGateReward').textContent=t.reward+' · '+t.fallback;
+  document.getElementById('dlcPin').value='';
+  document.getElementById('dlcPinError').textContent='';
+  document.getElementById('dlcGate').classList.remove('hidden');
+  document.getElementById('dlcPin').focus({preventScroll:true});
+}
+document.addEventListener('click',event=>{const button=event.target.closest('[data-dlc-track]');if(button&&!button.disabled)openDLCGate(button.dataset.dlcTrack);});
+document.getElementById('dlcGateBack').addEventListener('click',()=>{document.getElementById('dlcGate').classList.add('hidden');document.getElementById('dlcPin').value='';});
+document.getElementById('dlcPinForm').addEventListener('submit',event=>{
+  event.preventDefault();
+  if(!hasSavedParticipant() || !dlcTrack || !dlcProgress || dlcProgress.tracks[dlcTrack].attempts>=2) return;
+  if(document.getElementById('dlcPin').value!=='8888'){document.getElementById('dlcPinError').textContent='PIN belum sesuai. Minta crew memeriksa kembali.';return;}
+  dlcProgress.tracks[dlcTrack].verified=true;
+  document.getElementById('dlcPin').value='';
+  document.getElementById('dlcGate').classList.add('hidden');
+  prepareDLC();
+});
+function prepareDLC(){
+  if(!hasSavedParticipant() || !dlcProgress?.tracks?.[dlcTrack]?.verified || dlcProgress.tracks[dlcTrack].attempts>=2) return;
+  dlcActive=true; dlcRound=null;
+  document.getElementById('dlcFlight').classList.remove('hidden');
+  document.getElementById('dlcLoading').classList.remove('hidden');
+  document.getElementById('dlcFrame').classList.remove('loaded');
+  // Reload isolates the 3D world's previous run and prepares the same purple rocket.
+  document.getElementById('dlcFrame').src='dlc/index.html';
+}
+function sendDLC(type,extra={}){document.getElementById('dlcFrame').contentWindow?.postMessage({type,...extra},location.origin);}
+function returnToJourney(){
+  dlcActive=false; dlcRound=null;
+  document.getElementById('dlcFlight').classList.add('hidden');
+  document.getElementById('dlcFrame').src='about:blank';
+  document.getElementById(dlcOriginScreen).classList.remove('hidden');
+  renderJourneyRewards();
+  document.querySelector('#'+dlcOriginScreen+' [data-dlc-track="'+dlcTrack+'"]')?.focus({preventScroll:true});
+}
+document.getElementById('dlcLoadBack').addEventListener('click',returnToJourney);
+if(PREVIEW_MODE){
+  const badge=document.getElementById('localPreviewBadge');
+  badge.innerHTML='<span>PREVIEW · DATA LOKAL · TIDAK ADA KLAIM HADIAH</span><button id="resetReturnPreview" type="button">RESET DEMO</button>';
+  document.getElementById('resetReturnPreview').addEventListener('click',async()=>{
+    if(!await loadJourneyProgress())return;
+    if(dlcActive)returnToJourney();
+    for(const p of Object.values(dlcProgress.tracks)){p.attempts=0;p.runs=[];p.verified=false;}
+    saveJourneyProgress();renderJourneyRewards();
+  });
+}
+window.addEventListener('message',event=>{
+  const frame=document.getElementById('dlcFrame');
+  if(!dlcActive || event.origin!==location.origin || event.source!==frame.contentWindow || !event.data || typeof event.data!=='object') return;
+  const p=dlcProgress?.tracks?.[dlcTrack];
+  if(event.data.type==='return-ready'){
+    // A child reload abandons its already-counted round; it cannot reclaim that attempt.
+    dlcRound=null;
+    sendDLC('prepare',{track:dlcTrack,remaining:2-p.attempts,preview:PREVIEW_MODE});
+    document.getElementById('dlcLoading').classList.add('hidden');frame.classList.add('loaded');
+  }else if(event.data.type==='return-error'){
+    document.getElementById('dlcLoading').classList.add('hidden');frame.classList.add('loaded');
+  }else if(event.data.type==='request-start'){
+    if(dlcRound || !hasSavedParticipant() || dlcIdentity!==participant.registrationId || !p?.verified || p.attempts>=2) return;
+    p.attempts++; saveJourneyProgress();
+    dlcRound={id:crypto.randomUUID(),settled:false};
+    sendDLC('approved-start',{roundId:dlcRound.id,remaining:2-p.attempts,track:dlcTrack});
+  }else if(event.data.type==='return-finished'){
+    if(!dlcRound || dlcRound.settled || event.data.roundId!==dlcRound.id || !Number.isFinite(event.data.score) || event.data.score<0) return;
+    dlcRound.settled=true;
+    p.runs.push({score:Math.round(event.data.score),success:!!event.data.success});p.runs=p.runs.slice(-2);saveJourneyProgress();
+  }else if(event.data.type==='request-retry'){
+    if(!dlcRound?.settled || p.attempts>=2) return;
+    dlcRound=null;sendDLC('prepare',{track:dlcTrack,remaining:2-p.attempts,preview:PREVIEW_MODE});
+  }else if(event.data.type==='back-to-journey') returnToJourney();
+});
+async function refreshRewardSnapshots(){
+  if(PREVIEW_MODE || !supabaseClient) return;
+  const snapshots=await Promise.allSettled([
+    supabaseClient.from('simoon_reward_available').select('reward_code,remaining,updated_at'),
+    supabaseClient.from('simoon_daily_record_stats').select('record_breaks').eq('event_date',centralToday()).maybeSingle()
+  ]);
+  const stock=snapshots[0],records=snapshots[1];
+  if(stock.status==='fulfilled' && !stock.value.error)window.simoonRewardStock=Object.fromEntries((stock.value.data||[]).map(row=>[row.reward_code,row]));
+  if(records.status==='fulfilled' && !records.value.error)window.simoonRecordBreaks=records.value.data?Number(records.value.data.record_breaks):0;
+  renderJourneyRewards();
+}
+if(!TV_MODE){
+  refreshRewardSnapshots().catch(()=>{});
+  setInterval(()=>{if(!document.hidden) refreshRewardSnapshots().catch(()=>{});},30000);
+}
+
 /* ============ FLOW CONTROL ============ */
 let countdownInterval=null;
 function startFlow(){
+  if(dlcActive) return;
   if(TV_MODE) return;
   if(!hasSavedParticipant()){ showRegistration(); return; }
   if(state!==STATE.TITLE && state!==STATE.GAMEOVER && state!==STATE.MOONSUCCESS) return;
@@ -3343,6 +3543,14 @@ resetGame();
 refreshTitleBest();
 requestAnimationFrame(()=>{ fitTitleToViewport(); requestAnimationFrame(fitTitleToViewport); });
 requestAnimationFrame(loop);
+if(PREVIEW_MODE){
+  document.getElementById('localPreviewBadge').classList.remove('hidden');
+  if(new URLSearchParams(location.search).get('preview')==='journey'){
+    participant=Object.freeze({name:'PREVIEW',phone:'+6281234567890',email:'preview@example.invalid',riskProfile:'moderat',saved:true,registrationId:'preview-only'});
+    state=STATE.GAMEOVER;
+    showOverScreen([],false);
+  }
+}
 
   // Central leaderboard is optional at runtime: gameplay remains usable offline.
   refreshTitleBest();

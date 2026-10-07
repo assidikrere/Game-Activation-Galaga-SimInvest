@@ -24,7 +24,7 @@
     background:var(--bg0);
     font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
     color:var(--ink);
-    touch-action:none;
+    touch-action:pan-y;
     overscroll-behavior:none;
     -webkit-user-select:none; user-select:none;
   }
@@ -1541,7 +1541,11 @@ canvas.addEventListener('touchstart',handleTouchDragStart,{passive:false});
 canvas.addEventListener('touchmove',handleTouchDragMove,{passive:false});
 canvas.addEventListener('touchend',handleTouchDragEnd,{passive:false});
 canvas.addEventListener('touchcancel',handleTouchDragEnd,{passive:false});
-document.getElementById('stage').addEventListener('touchmove',e=>{ e.preventDefault(); },{passive:false});
+document.getElementById('stage').addEventListener('touchmove',e=>{
+  // Never cancel native scrolling on registration, results, or other menus.
+  if(e.target instanceof Element && e.target.closest('.overlay')) return;
+  if(state===STATE.PLAYING && e.cancelable) e.preventDefault();
+},{passive:false});
 
 function setGamePaused(v){
   if(state!==STATE.PLAYING) return;

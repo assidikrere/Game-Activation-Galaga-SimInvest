@@ -25,7 +25,7 @@ const range = (a, b) => a + (b - a) * random();
 
 function syncAttempts() {
   const remaining = MAX_ATTEMPTS - session.attempts;
-  $('attemptNote').textContent = `${remaining} dari 2 kesempatan tersisa untuk jalur ${track.toUpperCase()}.`;
+  $('attemptNote').textContent = `${remaining} dari 2 kesempatan tersisa untuk jalur ${(track==='kyc'?'COMPLETE REGISTRATION':'TRANSACT')}.`;
   $('start').disabled = !renderer || !authorizedSession || remaining === 0;
   $('start').innerHTML = remaining ? `START RETURN FLIGHT <span>↗</span>` : '2 KESEMPATAN SUDAH DIPAKAI';
   $('retry').hidden = remaining === 0;
@@ -315,7 +315,7 @@ function finish(success, explanation) {
   $('dronesStat').textContent = kills;
   $('ringsStat').textContent = rings;
   $('bossStat').textContent = bossWon ? 'CLEAR' : '—';
-  $('bestScore').textContent = `${track.toUpperCase()} · ${MAX_ATTEMPTS-session.attempts}/2 kesempatan tersisa`;
+  $('bestScore').textContent = `${(track==='kyc'?'COMPLETE REGISTRATION':'TRANSACT')} · ${MAX_ATTEMPTS-session.attempts}/2 kesempatan tersisa`;
   $('flightStatus').textContent='RETURN FLIGHT COMPLETE · YOUR JOURNEY CONTINUES';
   parent.postMessage({type:'return-finished',roundId,score:final,success},location.origin);
   syncAttempts();
@@ -563,8 +563,8 @@ window.addEventListener('message',event=>{
     clearWorld();for(let i=0;i<8;i++)spawnAsteroid(true);
     track=m.track;authorizedSession=true;session.attempts=2-m.remaining;state='intro';ship.visible=false;moon.position.z=72;earth.position.z=-145;
     $('intro').hidden=false;$('result').hidden=$('hud').hidden=$('bossHud').hidden=true;
-    $('trackLabel').textContent=track==='kyc'?'KYC VERIFIED · RETURN MISSION':'TRANSACT VERIFIED · PREMIUM RETURN';
-    $('rewardReminder').textContent=track==='kyc'?'KYC sudah dicek crew. Parfum 10ml + Sticker Pack. Jika parfum habis: Danamas Pasti Rp50.000.':'Transaksi sudah dicek crew. Parfum 50ml + merchandise tersedia. Jika parfum habis: Danamas Pasti Rp100.000.';
+    $('trackLabel').textContent=track==='kyc'?'REGISTRATION VERIFIED · RETURN MISSION':'TRANSACT VERIFIED · PREMIUM RETURN';
+    $('rewardReminder').textContent=track==='kyc'?'Complete Registration sudah dicek crew. Parfum 10ml + Sticker Pack.':'Transaksi sudah dicek crew. Parfum 50ml + merchandise tersedia.';
     $('preview').hidden=!m.preview;syncAttempts();
   }else if(m.type==='approved-start'&&state==='intro'&&authorizedSession&&typeof m.roundId==='string'&&Number.isInteger(m.remaining)){
     roundId=m.roundId;session.attempts=2-clamp(m.remaining,0,2);authorizedStart=true;start();

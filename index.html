@@ -847,6 +847,39 @@
 }
 
 </style>
+<style id="meetingStyles">
+.official-attempt-note{font-size:11px;line-height:1.6;color:#bdb5d5;max-width:420px;margin:10px auto;white-space:normal}
+#screenTitle .official-attempt-note{font-size:10px;max-width:360px;margin:7px auto}
+#nameInput{max-width:min(320px,80vw);font-size:20px!important;letter-spacing:0!important;text-transform:none!important}
+.social-follow{font-size:10px;line-height:1.7;color:#b9aed4;margin:10px 0 14px}
+.social-follow b,.social-follow span{display:block}.social-follow a{color:#c9baff;text-decoration:underline;overflow-wrap:anywhere}
+#tvScreen .social-follow{font-size:10px;line-height:1.5;margin:0}
+#tvScreen .tv-name{font-size:clamp(13px,1.4vw,23px);text-transform:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;letter-spacing:0}
+#tvScreen .tv-row.top1 .tv-name{font-size:clamp(14px,1.5vw,24px)}
+/* Full-width guide rows keep the complete offer readable on iPad landscape. */
+@media(min-width:701px){
+ #tvScreen .tv-guide-panel{gap:9px}
+ #tvScreen .tv-reward-basics,#tvScreen .tv-dlc-rewards{display:contents}
+ #tvScreen .tv-reward-card{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-rows:auto auto auto;gap:2px 12px;padding:10px 12px}
+ #tvScreen .tv-reward-card .tv-reward-step{grid-column:1;font-size:8px;letter-spacing:.3px}
+ #tvScreen .tv-reward-card h3{grid-column:1;font-size:12px;line-height:1.25;margin:2px 0}
+ #tvScreen .tv-reward-card>strong{grid-column:1;font-size:13px;line-height:1.3}
+ #tvScreen .tv-reward-card>p{grid-column:2;grid-row:1 / 4;align-self:center;font-size:11px;line-height:1.4;margin:0}
+ #tvScreen .tv-dlc-note p{font-size:10px}
+ #tvScreen .tv-reward-boundary{font-size:9px}
+}
+@media(min-width:701px) and (max-height:720px){
+ #tvScreen .tv-guide-panel{gap:7px}
+ #tvScreen .tv-reward-card{padding:8px 10px}
+ #tvScreen .tv-reward-card>p{font-size:10px}
+ #tvScreen .tv-dlc-note{display:none}
+}
+@media(min-width:701px) and (max-width:900px){
+ #tvScreen .tv-reward-card{grid-template-columns:1fr;gap:2px}
+ #tvScreen .tv-reward-card>p{grid-column:1;grid-row:auto;font-size:10px}
+ #tvScreen .tv-guide-panel{gap:8px}
+}
+</style>
 </head>
 <body>
 <div id="stage">
@@ -855,7 +888,7 @@
     <form id="dlcPinForm" class="dlc-gate-panel">
       <img src="assets/siminvest-rocket.png" class="gate-rocket" alt="Roket SimInvest ungu">
       <p class="dlc-eyebrow">NEXT CHAPTER · RETURN TO EARTH</p>
-      <h2 id="dlcGateTitle">COMPLETE KYC</h2><p id="dlcGateDescription"></p>
+      <h2 id="dlcGateTitle">COMPLETE REGISTRATION</h2><p id="dlcGateDescription"></p>
       <p class="gate-reward" id="dlcGateReward"></p>
       <label for="dlcPin">PIN dari crew</label>
       <input id="dlcPin" type="password" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" placeholder="• • • •" required>
@@ -943,12 +976,12 @@
       <div class="registration-brand">SimInvest</div>
       <div class="registration-eyebrow">TO THE MOON · SEBELUM MULAI</div>
       <h1 id="registrationHeading">Kenalan dulu,<br>baru meluncur.</h1>
-      <p class="registration-intro">Isi nama, nomor HP, dan pilih profil risiko kamu untuk melanjutkan ke permainan.</p>
+      <p class="registration-intro">Isi email, nomor HP, dan pilih profil risiko kamu untuk melanjutkan ke permainan.</p>
       <form id="participantForm" novalidate>
         <div class="registration-field">
-          <label for="participantName">Nama</label>
-          <input id="participantName" name="name" type="text" autocomplete="name" placeholder="Masukkan nama kamu" minlength="2" maxlength="60" required aria-describedby="participantNameError">
-          <p class="field-error" id="participantNameError" aria-live="polite"></p>
+          <label for="participantEmail">Email</label>
+          <input id="participantEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="kamu@email.com" maxlength="254" required aria-describedby="participantEmailError">
+          <p class="field-error" id="participantEmailError" aria-live="polite"></p>
         </div>
         <div class="registration-field">
           <label for="participantPhone">Nomor HP</label>
@@ -972,7 +1005,7 @@
         <p id="registrationStatus" class="registration-status" role="status">Lengkapi semua kolom untuk melanjutkan.</p>
         <button id="btnRegistrationContinue" class="btn" type="submit" disabled>SIMPAN & LANJUT →</button>
         <p class="registration-note">Data pendaftaran disimpan oleh SimInvest. Follow-up promosi hanya untuk peserta yang memilih persetujuan di atas.</p>
-        <p class="registration-note">Kontrol default: gunakan jari untuk menggerakkan roket.</p>
+        <p class="registration-note">Email di leaderboard disamarkan: empat karakter awal + xxxxxxxxxxxx. Dua ronde leaderboard sepanjang event; selanjutnya latihan.</p><p class="registration-note">Kontrol default: gunakan jari untuk menggerakkan roket.</p>
       </form>
     </div>
   </section>
@@ -988,7 +1021,7 @@
     <div class="wordmark t1">SIMINVEST</div>
     <div class="wordmark t2">TO THE MOON</div>
     <div class="sub">The cure is waiting on the Moon.</div>
-    <div class="tagline">Real Growth, Start Here.</div>
+    <div class="tagline">Real Growth Starts Here</div>
     <div class="todaysbest" id="todaysBestBox">
       <div class="lbl">TODAY'S BEST</div>
       <div class="val" id="todaysBestVal">0</div>
@@ -1056,7 +1089,7 @@
       </div>
     </div>
     <button class="btn" id="btnStart" disabled>START</button>
-    <div class="participant-line"><span id="participantSummary"></span><button type="button" class="text-btn" id="btnEditParticipant">Ubah data / ganti pemain</button></div>
+    <p class="official-attempt-note" role="status"></p><div class="participant-line"><span id="participantSummary"></span><button type="button" class="text-btn" id="btnEditParticipant">Ubah data / ganti pemain</button></div>
     </div>
   </div>
 
@@ -1078,13 +1111,13 @@
       <header class="journey-heading"><div class="wordmark t2">JOURNEY ENDED</div><p>Misi pertama selesai. Perjalananmu masih berlanjut.</p></header>
       <div class="journey-grid">
         <section class="journey-score"><div class="breakdown" id="overBreakdown"></div><div class="newhigh hidden" id="newHighTag">NEW HIGH SCORE</div>
-          <button class="btn" id="btnAgain1">PLAY AGAIN</button>
+          <p class="official-attempt-note" role="status"></p><button class="btn" id="btnAgain1">PLAY AGAIN</button>
           <button type="button" class="text-btn change-player">Ganti pemain</button>
-          <div class="board"><div class="board-col"><h3>HIGH SCORE · GALAGA</h3><ol id="boardScores"></ol></div></div>
+          <div class="board"><div class="board-col"><h3>LEADERBOARD HARI INI · EMAIL</h3><ol id="boardScores"></ol></div></div>
         </section>
         <section class="journey-rewards" aria-label="Hadiah dan misi lanjutan"></section>
       </div>
-      <div class="tagline">Real Growth, Start Here.</div>
+      <div class="tagline">Real Growth Starts Here</div>
     </div>
   </div>
 
@@ -1094,32 +1127,32 @@
       <header class="journey-heading"><div class="wordmark t2">YOU MADE IT TO THE MOON</div><p>Sekarang waktunya membawa roketmu pulang ke Bumi.</p></header>
       <div class="journey-grid">
         <section class="journey-score"><div class="breakdown" id="moonBreakdown"></div>
-          <button class="btn" id="btnAgain2">PLAY AGAIN</button>
+          <p class="official-attempt-note" role="status"></p><button class="btn" id="btnAgain2">PLAY AGAIN</button>
           <button type="button" class="text-btn change-player">Ganti pemain</button>
-          <div class="board"><div class="board-col"><h3>HIGH SCORE · GALAGA</h3><ol id="boardScores2"></ol></div></div>
+          <div class="board"><div class="board-col"><h3>LEADERBOARD HARI INI · EMAIL</h3><ol id="boardScores2"></ol></div></div>
         </section>
         <section class="journey-rewards" aria-label="Hadiah dan misi lanjutan"></section>
       </div>
-      <div class="tagline">Real Growth, Start Here.</div>
+      <div class="tagline">Real Growth Starts Here</div>
     </div>
   </div>
 
   <!-- NAME ENTRY -->
   <div id="nameOverlay" class="overlay hidden">
-    <div class="sub" id="nameOverlayTitle">ENTER YOUR NAME</div>
-    <input id="nameInput" maxlength="10" placeholder="PLAYER" autocomplete="off" />
+    <div class="sub" id="nameOverlayTitle">KONFIRMASI SKOR</div>
+    <input id="nameInput" maxlength="16" readonly aria-label="Email disamarkan" autocomplete="off" /><p id="roundSyncStatus" class="official-attempt-note" role="status"></p>
     <button class="btn" id="btnNameOk">CONFIRM</button>
   </div>
 
 
   <!-- TV SPECTATOR MODE: open the same page with ?tv=1 -->
   <div id="tvScreen" class="hidden">
-    <header class="tv-display-topbar"><span class="tv-brand">SimInvest</span><span class="tv-display-tag">REAL GROWTH, START HERE.</span></header>
+    <header class="tv-display-topbar"><span class="tv-brand">SimInvest</span><span class="tv-display-tag">REAL GROWTH STARTS HERE</span></header>
     <div class="tv-main">
       <section class="tv-leaderboard-pane" aria-label="Leaderboard Galaga hari ini">
         <header class="tv-pane-heading"><div><p class="tv-pane-eyebrow">LIVE LEADERBOARD · TOP 10</p><h1 class="tv-title">TO THE MOON</h1></div><div class="tv-date" id="tvDate">TODAY'S LEADERBOARD</div></header>
         <div class="tv-table">
-          <div class="tv-row tv-head"><div>#</div><div style="text-align:left;">PLAYER</div><div style="text-align:right;">SCORE</div></div>
+          <div class="tv-row tv-head"><div>#</div><div style="text-align:left;">EMAIL</div><div style="text-align:right;">SCORE</div></div>
           <div id="tvRows"></div>
         </div>
         <footer class="tv-board-status"><div id="tvFlash">NEW HIGH SCORE</div><div id="tvUpdated">LIVE · CONNECTING...</div></footer>
@@ -1129,18 +1162,19 @@
           <a id="tvGameQrLink" class="tv-qr-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener" aria-label="Buka halaman main SimInvest To The Moon">
         <img id="tvGameQr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA1AAAANQCAYAAAAmG44xAAAZ/UlEQVR4AezBwa1tSY4EsJBQ/rsc0x6M8HNxcPFITv8nAAAA/L82AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJ//lj5uZ8Lva5sXM5Ett86WZyYu2eTEz4Xe1zYuZyYu2eTEzedE2f9nM5C9rm182M3nRNi9mJvyutvnLNgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACf/hSdtw7+bmfxlM5O/rG2+NDP5Utt8aWbypbb5Utu8mJm8aJtf1jZ/2czkRdu8mJm8aJtf1jb8u5kJ/24DAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABw8l/41Mzkl7UN/65tXsxM+Hdtw7+bmXypbf6ymcmX2uaXzUz4u2Ymv6xt+M4GAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADg5L/AH9Y2L2Ymv6xtXsxMvtQ2L2YmX2qbFzOTF23zpZnJL2ubL7XNL5uZvGibF23zl81MXrQN/FUbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAk/8C/LO2+WUzkxdt88va5sXM5JfNTH7ZzOSXtc2LmQm/a2YC/KYNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyX/hU23Dd2YmX2qbF23zYmbyy2YmfKdtftnM5EXb/LK2eTEzedE2L2YmL9rmS23Dd9oG/tUGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADg5L/wZGbC39U2L2YmL9rml81MXrTNi5nJi7Z5MTN50TYvZiZfmpm8aJtfNjN50TYvZiYv2ubFzORF27yYmbxomxczkxdt82Jm8qJtvjQzga9sAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATv7LH9c28K9mJr+sbV7MTL40M3nRNi9mJvy7tvnL2ubFzIS/a2byom2+1DbwqzYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAn/4VPzUx+Wdu8mJm8aJsvtc2LmcmXZiYv2uaXzUy+1DYvZiZfmpn8ZTOTL7XNl2YmL9rmxczkRdv8srb50szkl7XNl2Ymv6xt/rINAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyX/542YmL9rmL5uZvGgbvtM2X5qZvGibL7XNl9rmxczkRdv8spnJi7Z5MTP50szkSzOTF23zpZnJi7b50szkS20Dv2oDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwMv2f/GEzky+1zYuZyV/WNl+ambxomxczkxdtw981M3nRNi9mJr+sbV7MTF60zZdmJi/a5sXM5C9rm182M+E7bcO/2wAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxM/yd8Zmbyy9qG3zUzedE2X5qZ8J22eTEzedE2v2xm8sva5sXM5EXbvJiZvGibFzOTL7XNL5uZfKltXsxMvtQ2/LsNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyfR/8ofNTL7UNi9mJn9Z27yYmbxomy/NTF60zYuZyYu2eTEz+VLb8LtmJi/a5kszkxdt82Jm8sva5sXM5EttA/9qZvKibf6yDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMl/4VMzk1/WNl+amfDvZia/rG1+2czkRdu8mJn8srZ50TZfmpm8aJsXMxP+Xdt8aWbyy9rmxczkRdvAv9oAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcTP8n/LOZyS9rmy/NTPh3bfNiZvKltuE7M5MXbfNiZvKltnkxM3nRNvyumQnfaZtfNjN50TZ8ZwMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHDyX/64mcmLtvnSzOTFzORLbfNiZvKibfh3bfNiZvKltnkxM3nRNn9Z23xpZvKlmclf1jZfmpm8aJsXM5MXbfNiZvKltnkxM+HfzUxetM1ftgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADj5L39c2/Dv2ubFzORF27yYmbxomy/NTH5Z23xpZvKXtc2Lmckva5sXM5Nf1jYvZiZfmpm8aJsvtc2X2ubFzOSXtc2LmcmLtvlS2/DvNgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACf/5Y+bmbxomxczkxdt88va5sXM5Eszky+1zZdmJi/a5pe1zV/WNi9mJvy7tvlS27yYmbxoG/7dzOSXtc2LmcmLtvllM5MXbfOXbQAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE6m/xP+2czkRdu8mJnwu9rmxczkS23zYmbyom2+NDN50TYvZiZ/Wdt8aWbyom1ezEy+1DYvZiZfapsXMxO+0zYvZiZ/Wdvw7zYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAn/+WPm5m8aBv+Xdu8mJl8qW1ezEz+srZ5MTN50TYv2uaXtc2XZia/rG1ezExetM2XZiYv2ubFzOTFzORF27yYmfDvZiZ/WdvwnQ0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJ9H/yh81MflnbvJiZ8O/aht81M3nRNi9mJi/a5sXMhH/XNi9mJr+sbb40M3nRNn/ZzIR/1zZfmpm8aBv+3QYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBk+j/hn81MXrTNl2YmL9rml81M/rK2eTEz+cva5kszky+1zS+bmXypbX7ZzORF27yYmXypbb40M/lS2/yymcmX2uZLM5MXbfOXbQAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE7+C5+amfxlM5MXbfOltnkxM3nRNn9Z23xpZvKibV60zYuZyZdmJi/a5ktt82Jm8sva5sXM5EXbfGlm8qJtXrTNi5nJl2YmL9rmS23zpZnJi7bh320AAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABO/gs/rW1ezEy+1DZ/Wdu8mJn8srb5y2YmL9rml7XNL5uZvGibXzYz+dLM5Ettw79rm182M/llM5MXbfOXbQAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE7+yx83M3nRNl+amXxpZsK/m5l8qW1ezExezExetM2LmcmX2uaXzUz4dzOTF23zy9rmxczkRdu8mJl8qW2+NDP5y9rmSzMTvrMBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA4+S98ambyom3+spnJi7b5ZW3zy9rmxczkl81MvtQ2L2Ym/Lu2+dLM5EXb/LKZyYu2+dLM5C9rmy/NTL7UNi9mJvy7DQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMl/+ePa5sXMhH83M3nRNi9mJvy7tvllbfNiZvKibV7MTF7MTF60zS+bmbxomxczk79sZvKibb40M+Hftc2LmcmX2uZLM5MXbcO/2wAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJz8F560zZdmJr+sbb7UNi9mJl+amXypbV7MTL40M3nRNi9mJi/a5sXMhN/VNi9mJn/ZzORF27yYmXypbf6ytnkxM/llM5MXbfOXbQAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE7+C09mJr+sbV7MTF7MTH5Z23xpZvLL2uZLM5Mvtc1fNjN50TYv2uZLbfNiZvKlmcmLtnkxM3nRNr+sbX7ZzORF27yYmbxomy/NTF60Df9uAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcPJf/riZyZfa5sXM5MXM5Ett82Jm8qJtXsxM+Hczkxdt86JtvjQzedE2f9nM5EXb/LK2eTEz4Ttt86WZyZfa5ktt82Jm8qJtXrTNi5nJi7b5yzYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAn0/8J/2xm8qW2+WUzk7+sbX7ZzORLbfNiZvKltuE7M5MXbfNiZvKibV7MTH5Z23xpZsK/a5sXM5MXbfNiZvLL2oZ/twEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADj5L/y0mcmLtnkxM3nRNi9mJn/ZzORLbfOXtc0vm5m8aJsXM5MXbfOibfhO2/yytvnSzORF23xpZvKibf6ytuE7GwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJP/8sfNTF60zYuZyV82M3nRNi9mJi/a5ktt86WZyYu2eTEzga/MTF60zYuZyV82M3nRNl+ambxomy/NTL40M/nLZiYv2oZ/twEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADj5L39c27yYmXypbX5Z27yYmbxomy/NTPhdM5Mvtc2XZib8rrZ5MTPh37XNi5nJi7b5Utv8spnJl9rmxczkRdv8ZRsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICT/8KTtvllM5MXbfNiZvKibb40M3nRNi9mJl9qm7+sbb40M/nLZiYv2uZF27yYmbxoG/7dzOQvm5n8ZTOTF23zYmbyYmbyom34dxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICT/8KTmQn/rm1ezExetM2LtvllbfOlmcmLtnkxM3kxM3nRNl9qmxczk79sZvLLZib8u7b50szkRdv8spnJi7Z5MTPh79oAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACc/Jc/bmbyom2+NDP5ZTOTF23zYmbypbb5y9qG78xM/rKZyS+bmbxom7+sbX5Z27yYmfxlM5Mvtc2LmQnf2QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxM/yfwR81MXrTNL5uZvGibL81MXrTNL5uZfKltftnM5Je1zYuZyV/WNi9mJi/a5sXM5Ett88tmJi/a5pfNTF60zV+2AQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAOJn+T/6wmQm/q22+NDPh37XNl2Ym/Lu2eTEzedE2L2YmX2obvjMz4d+1zYuZyYu2eTEz+VLbvJiZvGgb/t0GAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADg5L/wpG34dzOTv6xtftnM5MXM5Ett82Jmwr9rm79sZvKltvllM5Mvtc2XZia/rG3+spkJv2sDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABw8l/41Mzkl7XNL5uZ/LKZyYu2+WVt82Jm8qJtXsxMXrTNi5nJi5nJX9Y2X5qZvJiZfKltvtQ2X5qZvGibFzOTFzMT/l3bfGlm8qJt/rINAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyX8B/lnbfKltXsxMftnM5EXb/LKZyZfa5sXM5EXb8O/a5sXM5MXM5C9rmy+1zV82M3nRNl+amfCdDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZAMAAMDJBgAAgJMNAAAAJxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMl/AT4zM/lS27yYmXypbb40M/lS2/C7ZiZ/Wdv8spkJ32mbF23zYmbypbbhOxsAAABONgAAAJxsAAAAONkAAABwsgEAAOBkAwAAwMkGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICT/8Kn2obvtM2Lmckvm5m8aJsXM5MvzUxetM0vm5l8qW1ezExetM0va5sXM5NfNjP5UtsAf9MGAACAkw0AAAAnGwAAAE42AAAAnGwAAAA42QAAAHCyAQAA4GQDAADAyQYAAICTDQAAACcbAAAATjYAAACcbAAAADjZAAAAcLIBAADgZPo/+cNmJvyutvnLZiYv2uaXzUy+1DYvZia/rG3+spnJL2ubL81MvtQ2f9nM5C9rm182M3nRNvy7DQAA/MziyOIAAAGWSURBVF97cEAAMAyAAMjbv/O+BjMAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMPnOFQAAAJ4aAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACYNAAAAEwaAAAAJg0AAACTBgAAgEkDAADApAEAAGDSAAAAMGkAAACY/A6+icvWgLOFAAAAAElFTkSuQmCC" width="848" height="848" alt="QR menuju halaman main SimInvest To The Moon">
       </a>
-          <div class="tv-scan-copy"><p class="tv-pane-eyebrow">CARA MAIN &amp; HADIAH</p><h2 id="tvQrHeading">SCAN &amp; PLAY</h2><p>Scan QR → isi data → mulai main.<br>Geser jari untuk mengendalikan roket.</p><a class="tv-game-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener">Buka permainan ↗</a></div>
+          <div class="tv-scan-copy"><p class="tv-pane-eyebrow">CARA MAIN &amp; HADIAH</p><h2 id="tvQrHeading">SCAN &amp; PLAY</h2><p>Scan QR → isi email &amp; HP → mulai main.<br>Geser jari untuk mengendalikan roket.</p><a class="tv-game-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener">Buka permainan ↗</a></div>
         </section>
         <div class="tv-reward-basics">
-          <article class="tv-reward-card"><span class="tv-reward-step">01 · DOWNLOAD + DATA</span><h3>Download SimInvest</h3><strong>Sticker Pack<br>+ Parfum 5ml</strong><p>Isi data peserta dan tunjukkan download aplikasi ke crew.</p></article>
-          <article class="tv-reward-card record"><span class="tv-reward-step">02 · BID HIGHEST SCORE</span><h3>Pecahkan rekor<br>Galaga hari ini</h3><strong>Parfum 10ml</strong><p>Jalur hadiah tersendiri dari KYC. Crew memeriksa rekor dan klaim.</p></article>
+          <article class="tv-reward-card"><span class="tv-reward-step">01 · DOWNLOAD</span><h3>Download SimInvest</h3><strong>Parfum 5ml + Sticker Pack</strong><p>Isi nomor HP hingga verifikasi email <b>di aplikasi SimInvest</b>, lalu follow IG di bawah.</p></article>
+          <article class="tv-reward-card record"><span class="tv-reward-step">02 · BID HIGHEST SCORE</span><h3>Pecahkan rekor hari ini</h3><strong>Parfum 10ml</strong><p>Jalur hadiah tersendiri. Crew memeriksa rekor dan klaim. Dua ronde leaderboard sepanjang event; berikutnya latihan.</p></article>
         </div>
         <div class="tv-dlc-rewards">
-          <article class="tv-reward-card kyc"><span class="tv-reward-step">03 · COMPLETE KYC</span><h3>Selesaikan KYC</h3><strong>Parfum 10ml<br>+ Sticker Pack</strong><p>Selesaikan KYC dan minta crew memeriksa statusnya.</p><small>Jika parfum habis: <b>Danamas Pasti Rp50.000.</b></small></article>
-          <article class="tv-reward-card transact"><span class="tv-reward-step">04 · TRANSACT</span><h3>Lakukan transaksi</h3><strong>Parfum 50ml<br>+ merchandise tersedia</strong><p>Transaksi mengikuti ketentuan event dan diperiksa crew.</p><small>Jika parfum habis: <b>Danamas Pasti Rp100.000.</b></small></article>
+          <article class="tv-reward-card kyc"><span class="tv-reward-step">03 · COMPLETE REGISTRATION</span><h3>Complete Registration</h3><strong>Parfum 10ml + Sticker Pack</strong><p>Selesaikan opening account dan follow sosial media kita. Tunjukkan statusnya ke crew.</p></article>
+          <article class="tv-reward-card transact"><span class="tv-reward-step">04 · TRANSACT</span><h3>Lakukan transaksi</h3><strong>Parfum 50ml + merchandise tersedia</strong><p>Seluruh Reksa Dana di SimInvest: min. <b>Rp10.000.000</b>.<br>Atau saham, khusus <b>Jumat</b>: min. <b>Rp25.000.000</b>.</p></article>
         </div>
-        <div class="tv-dlc-note"><span>↗</span><p><b>KYC / Transact membuka DLC 3D.</b><br>Roket yang sama, bulan → Bumi. 2 kesempatan per jalur.</p></div>
-        <p class="tv-reward-boundary">Hadiah dan merchandise mengikuti stok. Hak hadiah dari KYC / Transact tidak bergantung pada kemenangan DLC.</p>
+        <div class="social-follow"><b>Wajib follow IG untuk hadiah Download &amp; Complete Registration:</b><span><a href="https://www.instagram.com/Sinarmas_Sekuritas/" target="_blank" rel="noopener">@Sinarmas_Sekuritas</a> · <a href="https://www.instagram.com/Sinarmas_am/" target="_blank" rel="noopener">@Sinarmas_am</a> · <a href="https://www.instagram.com/Sim_Invest/" target="_blank" rel="noopener">@Sim_Invest</a></span></div>
+        <div class="tv-dlc-note"><span>↗</span><p><b>Complete Registration / Transact membuka DLC 3D.</b><br>Roket yang sama, bulan → Bumi. 2 kesempatan per jalur.</p></div>
+        <p class="tv-reward-boundary">Hadiah diperiksa crew. Skor DLC tidak mengurangi hak hadiah dari verifikasi.</p>
       </aside>
     </div>
   </div>
@@ -1155,16 +1189,56 @@
 (function(){
 "use strict";
 const PREVIEW_MODE = new URLSearchParams(location.search).has('preview');
+function maskEmail(email){ return String(email).trim().toLowerCase().slice(0,4)+'xxxxxxxxxxxx'; }
 function createLocalPreviewClient(){
-  const rows=[];
+  // Isolated simulation only: this client is constructed exclusively with ?preview.
+  const sessions=new Map(),rounds=new Map(),submitted=new Map();
+  function seededRows(){
+    let seed=Array.from(centralToday()).reduce((n,c)=>(Math.imul(n,31)+c.charCodeAt(0))>>>0,1);
+    const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+    const prefixes=new Set();
+    const list=Array.from({length:10},(_,i)=>{
+      let prefix;do{prefix='';for(let n=0;n<4;n++)prefix+='abcdefghijklmnopqrstuvwxyz'[Math.floor(rand()*26)];}while(prefixes.has(prefix));
+      prefixes.add(prefix);
+      return {player_name:prefix+'xxxxxxxxxxxx',score:i===0?154657:5000+Math.floor(rand()*145000),
+        event_date:centralToday(),played_at:new Date(2026,9,9,8,0,i).toISOString(),player_id:'preview-'+i};
+    });
+    return list;
+  }
   return {
-    from(table){
-      const q={select(){return q;},eq(){return q;},order(){return q;},limit(){return Promise.resolve({data:rows.slice().sort((a,b)=>b.score-a.score),error:null});},
-        insert(payload){
-          if(table==='daily_scores')rows.push({...payload,played_at:new Date().toISOString(),event_date:centralToday()});
-          return {abortSignal(){return Promise.resolve({error:null});},then(resolve){return Promise.resolve({error:null}).then(resolve);}};
+    async rpc(name,p){
+      try{
+        if(name==='simoon_register_event'){
+          const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(p.p_email+'|'+p.p_phone));
+          const key='simoon_preview_event_'+Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');
+          const saved=JSON.parse(localStorage.getItem(key)||'{"used":0}');
+          sessions.set(p.p_session_token,{key,used:saved.used,display:maskEmail(p.p_email)});
+          return {data:{session_token:p.p_session_token,display_email:maskEmail(p.p_email),officials_used:saved.used,remaining:2-saved.used},error:null};
         }
-      };
+        if(name==='simoon_record_stats')return {data:{record_breaks:0},error:null};
+        const s=sessions.get(p.p_session_token);
+        if(!s)throw new Error('invalid_session');
+        if(name==='simoon_begin_round'){
+          if(rounds.has(p.p_round_id))return {data:rounds.get(p.p_round_id),error:null};
+          s.used=JSON.parse(localStorage.getItem(s.key)||'{"used":0}').used;
+          const eligible=s.used<2;
+          if(eligible){s.used++;localStorage.setItem(s.key,JSON.stringify({used:s.used}));}
+          const round={round_id:p.p_round_id,eligible,ordinal:eligible?s.used:null,remaining:2-s.used,event_date:centralToday()};
+          rounds.set(p.p_round_id,round);return {data:round,error:null};
+        }
+        if(name==='simoon_finish_round'){
+          const round=rounds.get(p.p_round_id);
+          if(!round?.eligible)throw new Error('invalid_round');
+          const old=submitted.get(s.key);
+          const row={player_name:s.display,score:Math.max(old?.score||0,p.p_score),played_at:new Date().toISOString(),event_date:round.event_date,player_id:s.key};
+          submitted.set(s.key,row);
+          return {data:{score:p.p_score,best_score:row.score,ordinal:round.ordinal,remaining:2-s.used,event_date:round.event_date},error:null};
+        }
+        throw new Error('unknown_preview_rpc');
+      }catch(e){return {data:null,error:{message:e.message}};}
+    },
+    from(){
+      const q={select(){return q;},eq(){return q;},order(){return q;},limit(n){return Promise.resolve({data:[...seededRows(),...submitted.values()].sort((a,b)=>b.score-a.score).slice(0,n),error:null});}};
       return q;
     },
     channel(){return {on(){return this;},subscribe(){return this;}};}
@@ -1218,6 +1292,7 @@ function createLocalPreviewClient(){
       el.classList.toggle('online',!!online);
       el.classList.toggle('offline',!online);
       el.style.opacity = (state===STATE.PLAYING || TV_MODE) ? '1' : '0';
+      if(TV_MODE && !online)document.getElementById('tvUpdated').textContent='KONEKSI TERPUTUS · SKOR BELUM DIPERBARUI';
     }
   }
 
@@ -1228,21 +1303,21 @@ function createLocalPreviewClient(){
   }
 
   function centralHigh(){
-    return centralRows.length ? Number(centralRows[0].score)||0 : 0;
+    const todayRows=centralRows.filter(row=>row.event_date===centralToday());
+    return todayRows.length ? Number(todayRows[0].score)||0 : 0;
   }
 
   async function fetchCentralScores(limit=10){
-    if(!supabaseClient) throw new Error('Supabase client unavailable');
-    const today=centralToday();
-    const {data,error}=await supabaseClient
-      .from('daily_scores')
-      .select('player_name,score,played_at,event_date')
-      .eq('event_date',today)
-      .order('score',{ascending:false})
-      .order('played_at',{ascending:true})
-      .limit(limit);
-    if(error) throw error;
-    return data||[];
+    if(!supabaseClient)throw new Error('Supabase client unavailable');
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
+    try{
+      const request=supabaseClient.from('simoon_event_scores')
+        .select('player_name,score,played_at,event_date').eq('event_id','activation-2026')
+        .eq('event_date',centralToday()).order('score',{ascending:false})
+        .order('played_at',{ascending:true}).order('player_id',{ascending:true}).limit(limit);
+      const {data,error}=await (typeof request.abortSignal==='function'?request.abortSignal(controller.signal):request);
+      if(error)throw error;return data||[];
+    }finally{clearTimeout(timer);}
   }
 
   async function refreshCentralLeaderboard(options={}){
@@ -1262,21 +1337,6 @@ function createLocalPreviewClient(){
     }
   }
 
-  async function submitCentralScore(playerName, finalScore){
-    if(!supabaseClient) throw new Error('Supabase client unavailable');
-    const cleanName=(String(playerName||'PLAYER').toUpperCase().trim().slice(0,10)||'PLAYER');
-    const cleanScore=Math.max(0,Math.round(Number(finalScore)||0));
-    const payload={
-      player_name:cleanName,
-      score:cleanScore,
-      device_id:getCentralDeviceId()
-      // event_date / played_at are intentionally omitted:
-      // database defaults define them centrally.
-    };
-    const {error}=await supabaseClient.from('daily_scores').insert(payload);
-    if(error) throw error;
-    return cleanScore;
-  }
 
   function renderTVLeaderboard(rows){
     const wrap=document.getElementById('tvRows');
@@ -1290,16 +1350,16 @@ function createLocalPreviewClient(){
       const rank=document.createElement('div');
       rank.className='tv-rank'; rank.textContent=(i+1);
       const name=document.createElement('div');
-      name.className='tv-name'; name.textContent=r ? String(r.player_name||'PLAYER') : '—';
+      name.className='tv-name'; name.textContent=r ? String(r.player_name||'xxxx'+'xxxxxxxxxxxx') : '—';
       const sc=document.createElement('div');
-      sc.className='tv-score'; sc.textContent=r ? (Number(r.score)||0).toLocaleString() : '';
+      sc.className='tv-score'; sc.textContent=r ? (Number(r.score)||0).toLocaleString('id-ID') : '';
       row.append(rank,name,sc);
       wrap.appendChild(row);
     }
     const d=document.getElementById('tvDate');
-    if(d) d.textContent='TODAY • '+centralDateLabel();
+    if(d) d.textContent=(PREVIEW_MODE?'SIMULASI · ':'TODAY • ')+centralDateLabel();
     const u=document.getElementById('tvUpdated');
-    if(u) u.textContent='LIVE • UPDATED '+new Intl.DateTimeFormat('en-ID',{timeZone:CENTRAL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
+    if(u) u.textContent=(PREVIEW_MODE?'SIMULASI • UPDATED ':'LIVE • UPDATED ')+new Intl.DateTimeFormat('en-ID',{timeZone:CENTRAL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
   }
 
   function tvFlash(text){
@@ -1315,9 +1375,9 @@ function createLocalPreviewClient(){
     if(!supabaseClient) return;
     // A realtime INSERT refreshes every connected player/TV immediately.
     tvRealtimeChannel=supabaseClient
-      .channel('daily-scores-live')
+      .channel('simoon-event-scores-live')
       .on('postgres_changes',
-        {event:'INSERT',schema:'public',table:'daily_scores'},
+        {event:'*',schema:'public',table:'simoon_event_scores'},
         async (payload)=>{
           const before=centralRows.length ? Number(centralRows[0].score)||0 : 0;
           const rows=await refreshCentralLeaderboard();
@@ -1688,8 +1748,7 @@ function addScore(name, score){
 }
 function getHigh(){
   if(centralLoaded) return centralHigh();
-  const list = getScores();
-  return list.length? list[0].score : 0;
+  return 0;
 }
 function renderBoard(ol, list){
   if(!ol) return;
@@ -1698,7 +1757,7 @@ function renderBoard(ol, list){
   for(let i=0;i<rows;i++){
     const li = document.createElement('li');
     const e = list?.[i];
-    li.innerHTML = `<span class="rank">${i+1}.</span><span>${e?e.name:'—'}</span><span>${e?e.score.toLocaleString():''}</span>`;
+    for(const [j,text] of [(i+1)+'.',e?e.name:'—',e?e.score.toLocaleString('id-ID'):''].entries()){ const span=document.createElement('span');span.textContent=text;if(j===0)span.className='rank';li.appendChild(span); }
     ol.appendChild(li);
   }
 }
@@ -2014,51 +2073,15 @@ function showNameEntry(reachedMoon){
   pendingMoon = reachedMoon;
   const overlay = document.getElementById('nameOverlay');
   document.getElementById('nameOverlayTitle').textContent = reachedMoon ? 'CONFIRM YOUR MOON RUN' : 'CONFIRM YOUR SCORE';
-  document.getElementById('nameInput').value=participant ? participant.name.toUpperCase().slice(0,10) : '';
-  document.getElementById('nameInput').readOnly=!!participant;
+  document.getElementById('nameInput').value=participant ? participant.name : '';
+  document.getElementById('nameInput').readOnly=true;
+  document.getElementById('btnNameOk').textContent=currentRound?.eligible?'SIMPAN SKOR':'LIHAT HASIL';
+  document.getElementById('roundSyncStatus').textContent=currentRound?.eligible?'RONDE '+currentRound.ordinal+'/2 · Tekan konfirmasi untuk menyimpan skor.':'LATIHAN · Skor ronde ini tidak masuk leaderboard.';
   hideAllScreens();
   overlay.classList.remove('hidden');
   setTimeout(()=>document.getElementById('nameInput').focus(), 50);
 }
-async function confirmName(){
-  if(centralSubmitting) return;
-  centralSubmitting=true;
 
-  const btn=document.getElementById('btnNameOk');
-  const originalLabel=btn ? btn.textContent : 'CONFIRM';
-  if(btn){ btn.disabled=true; btn.textContent='SYNCING...'; }
-
-  let name = (document.getElementById('nameInput').value||'PLAYER').toUpperCase().trim().slice(0,10);
-  if(!name) name='PLAYER';
-
-  const finalScore=Math.max(0,Math.round(score));
-  const prevHigh=getHigh();
-  let scores=[];
-  let isNewHigh=false;
-
-  try{
-    await submitCentralScore(name,finalScore);
-    await refreshCentralLeaderboard({limit:10});
-    scores=(centralRows||[]).map(r=>({name:r.player_name,score:Number(r.score)||0}));
-    isNewHigh = finalScore>prevHigh && finalScore>0;
-  }catch(error){
-    console.warn('Central submit failed; keeping local fallback:',error);
-    const localScores=addScore(name,finalScore);
-    scores=localScores;
-    isNewHigh=finalScore>=prevHigh && finalScore>0;
-    setCentralStatus('CENTRAL • OFFLINE',false);
-  }
-
-  if(pendingMoon){
-    showMoonScreen(scores);
-  }else{
-    showOverScreen(scores,isNewHigh);
-  }
-
-  document.getElementById('nameOverlay').classList.add('hidden');
-  centralSubmitting=false;
-  if(btn){ btn.disabled=false; btn.textContent=originalLabel; }
-}
 document.getElementById('btnNameOk').addEventListener('click', confirmName);
 document.getElementById('nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') confirmName(); });
 
@@ -3301,19 +3324,19 @@ let registrationSaving = false;
 let pendingRegistration = null;
 let registrationFailure = '';
 const participantForm = document.getElementById('participantForm');
-const participantName = document.getElementById('participantName');
+const participantEmail = document.getElementById('participantEmail');
 const participantPhone = document.getElementById('participantPhone');
 const participantMarketingConsent = document.getElementById('participantMarketingConsent');
 const riskLabels = {konservatif:'Konservatif', moderat:'Moderat', agresif:'Agresif'};
 function readParticipantForm(){
-  const name = participantName.value.trim().replace(/\s+/g,' ');
+  const email = participantEmail.value.trim().toLowerCase();
   const phone = participantPhone.value.trim().replace(/[\s()-]/g,'');
   const riskProfile = participantForm.querySelector('input[name="riskProfile"]:checked')?.value || '';
-  return {name, phone, riskProfile, marketingOptIn:participantMarketingConsent.checked};
+  return {email, phone, riskProfile, marketingOptIn:participantMarketingConsent.checked};
 }
-function validName(name){ return name.length>=2 && name.length<=60 && /\p{L}/u.test(name); }
+function validEmail(email){ return typeof email==='string' && email.length>=5 && email.length<=254 && /^[^\s@]{1,64}@[^\s@.]+(?:\.[^\s@.]+)+$/.test(email); }
 function validPhone(phone){ return /^(?:08\d{8,11}|\+?628\d{8,11})$/.test(phone); }
-function validParticipant(data){ return !!data && validName(data.name) && validPhone(data.phone) && Object.hasOwn(riskLabels,data.riskProfile); }
+function validParticipant(data){ return !!data && validEmail(data.email) && validPhone(data.phone) && Object.hasOwn(riskLabels,data.riskProfile); }
 function hasSavedParticipant(){ return validParticipant(participant) && participant.saved === true && !!participant.registrationId; }
 function normalizePhone(phone){ return phone.startsWith('0') ? '+62'+phone.slice(1) : '+'+phone.replace(/^\+/,''); }
 function registrationId(){
@@ -3331,11 +3354,11 @@ function refreshParticipantForm(){
   participantForm.querySelectorAll('input').forEach(field=>field.disabled=registrationSaving);
   const status=document.getElementById('registrationStatus');
   status.classList.toggle('error',!!registrationFailure);
-  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi nama, nomor HP yang valid, dan satu profil risiko.');
+  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi email, nomor HP yang valid, dan satu profil risiko.');
   document.getElementById('btnRegistrationContinue').textContent=registrationSaving ? 'MENYIMPAN…' : registrationFailure ? 'COBA SIMPAN LAGI →' : 'SIMPAN & LANJUT →';
   participantForm.setAttribute('aria-busy',String(registrationSaving));
   for(const [field,ok,msg] of [
-    [participantName,validName(data.name),'Isi nama minimal 2 karakter.'],
+    [participantEmail,validEmail(data.email),'Masukkan alamat email yang valid.'],
     [participantPhone,validPhone(data.phone),'Masukkan nomor HP yang valid, diawali 08 atau +628.']
   ]){
     const show = field.dataset.touched==='true' && !ok;
@@ -3351,52 +3374,101 @@ function onParticipantEdit(){
 }
 participantForm.addEventListener('input',onParticipantEdit);
 participantForm.addEventListener('change',onParticipantEdit);
-[participantName,participantPhone].forEach(field=>field.addEventListener('blur',()=>{
+[participantEmail,participantPhone].forEach(field=>field.addEventListener('blur',()=>{
   field.dataset.touched='true'; refreshParticipantForm();
 }));
 async function saveParticipant(data){
   if(!supabaseClient) throw new Error('client_unavailable');
   const normalizedPhone=normalizePhone(data.phone);
-  const signature=JSON.stringify([data.name,normalizedPhone,data.riskProfile,data.marketingOptIn]);
-  // Keep one UUID across retries with unchanged inputs, including an ambiguous network timeout.
+  const signature=JSON.stringify([data.email,normalizedPhone,data.riskProfile,data.marketingOptIn]);
   if(!pendingRegistration || pendingRegistration.signature!==signature){
     pendingRegistration={id:registrationId(),signature};
   }
+  const {data:result,error}=await eventRpc('simoon_register_event',{
+    p_session_token:pendingRegistration.id,p_email:data.email,p_phone:normalizedPhone,
+    p_risk:data.riskProfile,p_marketing:data.marketingOptIn,p_device:getCentralDeviceId()
+  });
+  if(error)throw error;
+  if(!result?.session_token || !Number.isInteger(result.remaining))throw new Error('invalid_registration_response');
+  officialRemaining=result.remaining;
+  currentRound=null;pendingRoundId=null;
+  return {...data,name:result.display_email,phone:normalizedPhone,registrationId:pendingRegistration.id,
+    sessionToken:result.session_token,saved:true};
+}
+
+let officialRemaining=2,currentRound=null,pendingRoundId=null,roundStarting=false;
+async function eventRpc(name,args){
   const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),20000);
+  const timer=setTimeout(()=>controller.abort(),20000);
   try{
-    // Do not append .select(): the game has no read access to contact records.
-    const {error}=await supabaseClient.from(PARTICIPANT_TABLE).insert({
-      registration_id:pendingRegistration.id,
-      full_name:data.name,
-      phone_e164:normalizedPhone,
-      risk_profile:data.riskProfile,
-      marketing_opt_in:data.marketingOptIn,
-      device_id:getCentralDeviceId()
-    }).abortSignal(controller.signal);
-    if(error){
-      // This setup's only UNIQUE constraint is the client-generated registration UUID.
-      // A repeated UUID confirms an earlier retry was already committed, without reading PII.
-      const alreadySaved=error.code==='23505' && String(error.message||'').includes('simoon_participants_pkey');
-      if(!alreadySaved) throw error;
-    }
-    return {...data,phone:normalizedPhone,registrationId:pendingRegistration.id,saved:true};
-  }finally{
-    clearTimeout(timeout);
+    const request=supabaseClient.rpc(name,args);
+    return await (typeof request.abortSignal==='function'?request.abortSignal(controller.signal):request);
+  }finally{clearTimeout(timer);}
+}
+function updateOfficialLabels(message=''){
+  for(const node of document.querySelectorAll('.official-attempt-note')){
+    node.textContent=message || (officialRemaining>0
+      ? officialRemaining+'/2 ronde leaderboard tersisa sepanjang event. Ronde mulai memakai jatah saat START.'
+      : 'Jatah leaderboard selesai. Main berikutnya adalah latihan; skor tidak masuk leaderboard.');
+  }
+  for(const id of ['btnStart','btnAgain1','btnAgain2']){
+    const btn=document.getElementById(id);
+    btn.disabled=roundStarting || !hasSavedParticipant();
+    btn.textContent=roundStarting?'MENYIAPKAN RONDE…':officialRemaining===0?'MAIN LATIHAN':id==='btnStart'?'START':'PLAY AGAIN';
   }
 }
+async function submitCentralScore(_display,finalScore){
+  if(!currentRound?.eligible)return null;
+  const {data,error}=await eventRpc('simoon_finish_round',{
+    p_session_token:participant.sessionToken,p_round_id:currentRound.round_id,
+    p_score:Math.max(0,Math.round(Number(finalScore)||0))
+  });
+  if(error)throw error;
+  if(!data || !Number.isInteger(data.best_score))throw new Error('invalid_score_response');
+  officialRemaining=data.remaining;
+  return data;
+}
+
+async function confirmName(){
+  if(centralSubmitting || !hasSavedParticipant() || !currentRound)return;
+  centralSubmitting=true;
+  const btn=document.getElementById('btnNameOk');
+  btn.disabled=true;btn.textContent='MENYIMPAN…';
+  const finalScore=Math.max(0,Math.round(score)),prevHigh=centralHigh();
+  let result=null;
+  try{
+    result=await submitCentralScore(participant.name,finalScore);
+  }catch(error){
+    // Keep the same round/token and immutable score for safe, idempotent retries.
+    document.getElementById('roundSyncStatus').textContent='Skor belum tersimpan. Periksa koneksi dan tekan COBA SIMPAN LAGI. Jatah ronde ini sudah dipakai saat START.';
+    centralSubmitting=false;btn.disabled=false;btn.textContent='COBA SIMPAN LAGI';return;
+  }
+  await refreshCentralLeaderboard({limit:10});
+  const rows=(centralRows||[]).map(r=>({name:r.player_name,score:Number(r.score)||0}));
+  const isNewHigh=!!result && centralLoaded && finalScore>prevHigh && finalScore>0;
+  if(pendingMoon)showMoonScreen(rows);else showOverScreen(rows,isNewHigh);
+  document.getElementById('nameOverlay').classList.add('hidden');
+  const message=result
+    ? 'RONDE '+result.ordinal+'/2 · Skor tersimpan. Skor terbaikmu hari ini: '+result.best_score.toLocaleString('id-ID')+'.'
+    : 'LATIHAN · Skor '+finalScore.toLocaleString('id-ID')+' tidak masuk leaderboard.';
+  updateOfficialLabels(message);
+  currentRound=null;pendingRoundId=null;
+  centralSubmitting=false;btn.disabled=false;btn.textContent='LIHAT HASIL';
+}
+
 function registrationErrorMessage(error){
-  if(['42P01','PGRST205'].includes(error.code)) return 'Pendaftaran belum tersedia. Hubungi petugas untuk mengaktifkannya.';
+  if(error.message?.includes('registration_contact_mismatch')) return 'Email atau nomor HP sudah dipakai dengan pasangan data berbeda. Gunakan data awal yang sama atau hubungi crew.';
+  if(['42P01','PGRST205','PGRST202'].includes(error.code)) return 'Pendaftaran belum tersedia. Hubungi petugas untuk mengaktifkannya.';
   if(['42501','PGRST301'].includes(error.code)) return 'Pendaftaran belum bisa disimpan. Hubungi petugas untuk memeriksa akses.';
   return 'Data belum terkonfirmasi tersimpan. Periksa koneksi, lalu coba simpan lagi. Isian kamu tetap ada.';
 }
 participantForm.addEventListener('submit',async event=>{
   event.preventDefault();
-  if(TV_MODE || registrationSaving) return;
+  if(TV_MODE || registrationSaving || roundStarting || centralSubmitting) return;
   if(!refreshParticipantForm()){
-    participantName.dataset.touched='true'; participantPhone.dataset.touched='true';
+    participantEmail.dataset.touched='true'; participantPhone.dataset.touched='true';
     refreshParticipantForm();
-    (!validName(readParticipantForm().name) ? participantName : !validPhone(readParticipantForm().phone) ? participantPhone : participantForm.querySelector('input[name="riskProfile"]')).focus();
+    (!validEmail(readParticipantForm().email) ? participantEmail : !validPhone(readParticipantForm().phone) ? participantPhone : participantForm.querySelector('input[name="riskProfile"]')).focus();
     return;
   }
   const data=readParticipantForm();
@@ -3412,6 +3484,7 @@ participantForm.addEventListener('submit',async event=>{
     document.getElementById('screenTitle').classList.remove('hidden');
     refreshControlUI();
     requestAnimationFrame(fitTitleToViewport);
+    updateOfficialLabels();
     document.getElementById('btnStart').focus({preventScroll:true});
   }catch(error){
     // Show only a friendly error, never log contact details or raw database responses.
@@ -3423,7 +3496,7 @@ participantForm.addEventListener('submit',async event=>{
   }
 });
 function showRegistration(clear=false){
-  if(TV_MODE || registrationSaving) return;
+  if(TV_MODE || registrationSaving || roundStarting || centralSubmitting) return;
   if(state===STATE.REGISTRATION && !clear){ refreshParticipantForm(); return; }
   clearInterval(countdownInterval);
   participant=null;
@@ -3437,11 +3510,11 @@ function showRegistration(clear=false){
   registrationFailure=''; pendingRegistration=null;
   if(clear){
     participantForm.reset();
-    delete participantName.dataset.touched; delete participantPhone.dataset.touched;
+    delete participantEmail.dataset.touched; delete participantPhone.dataset.touched;
     applyControlMode('drag');
   }
   refreshParticipantForm();
-  participantName.focus({preventScroll:true});
+  participantEmail.focus({preventScroll:true});
 }
 document.getElementById('btnEditParticipant').addEventListener('click',()=>showRegistration());
 document.querySelectorAll('.change-player').forEach(button=>button.addEventListener('click',()=>showRegistration(true)));
@@ -3450,8 +3523,8 @@ document.querySelectorAll('.change-player').forEach(button=>button.addEventListe
 let dlcActive=false, dlcProgress=null, dlcIdentity=null, dlcTrack=null, dlcRound=null, dlcOriginScreen='screenOver';
 let lastJourneyNewHigh=false;
 const dlcTracks={
-  kyc:{title:'COMPLETE KYC',cta:'DLC · KYC',reward:'Parfum 10ml + Sticker Pack',fallback:'Jika parfum habis: Danamas Pasti Rp50.000.',description:'Selesaikan KYC, lalu minta crew memeriksa statusnya. Setelah diverifikasi, buka misi pulang ke Bumi.'},
-  transact:{title:'TRANSACT',cta:'DLC · TRANSACT',reward:'Parfum 50ml + merchandise yang tersedia',fallback:'Jika parfum habis: Danamas Pasti Rp100.000.',description:'Tunjukkan transaksi yang memenuhi ketentuan event kepada crew. Setelah diperiksa, buka misi pulang premium.'}
+  kyc:{title:'COMPLETE REGISTRATION',cta:'DLC · REGISTRATION',reward:'Parfum 10ml + Sticker Pack',fallback:'',description:'Selesaikan opening account dan follow sosial media kita untuk mendapatkan Parfum 10ml + Sticker Pack. Crew memeriksa status Complete Registration sebelum membuka DLC.'},
+  transact:{title:'TRANSACT',cta:'DLC · TRANSACT',reward:'Parfum 50ml + merchandise yang tersedia',fallback:'',description:'Transaksi Reksa Dana minimal Rp10.000.000, berlaku untuk semua produk Reksa Dana di SimInvest. Atau khusus hari Jumat, transaksi saham minimal Rp25.000.000. Dapatkan Parfum 50ml + merchandise tersedia setelah diperiksa crew.'}
 };
 const bottleIcon='<svg viewBox="0 0 70 90" aria-hidden="true"><defs><linearGradient id="bottleFill" x2="1" y2="1"><stop stop-color="#A855F7"/><stop offset="1" stop-color="#2563EB"/></linearGradient></defs><rect x="25" y="5" width="20" height="14" rx="3" fill="#d6c9fd"/><rect x="20" y="17" width="30" height="8" rx="2" fill="#a78bfa"/><rect x="12" y="25" width="46" height="57" rx="11" fill="url(#bottleFill)" stroke="#d6c9fd" stroke-width="2"/><rect x="18" y="43" width="34" height="21" rx="3" fill="#f1ebff"/><path d="M24 31v43" stroke="#fff" stroke-width="3" opacity=".23"/><text x="35" y="56" font-size="5" text-anchor="middle" fill="#403065">SCENT OF WEALTH</text></svg>';
 function stockText(code){
@@ -3465,14 +3538,14 @@ function renderJourneyRewards(newHigh=lastJourneyNewHigh){
     const record=centralLoaded && !PREVIEW_MODE ? centralHigh().toLocaleString('id-ID') : PREVIEW_MODE ? 'Skor lokal preview' : 'Menunggu leaderboard';
     const recordCount=Number.isInteger(window.simoonRecordBreaks) ? window.simoonRecordBreaks+' kali rekor dipecahkan hari ini' : 'Rekor harian mengikuti leaderboard Galaga';
     mount.innerHTML=`<div class="reward-intro"><p class="dlc-eyebrow">YOUR JOURNEY CONTINUES</p><h2>Hadiahmu. Misi berikutnya.</h2><p>Roket yang sama. Bab berikutnya: perjalanan pulang dari bulan ke Bumi.</p></div>
-      <div class="reward-summary"><div><span>DOWNLOAD + DATA PESERTA</span><b>Sticker Pack + Parfum 5ml</b><small>Tunjukkan download SimInvest ke crew. Selama persediaan ada.</small></div><div class="sticker-art" aria-hidden="true">↗<i>SIMINVEST</i></div></div>
-      <div class="record-reward"><div class="reward-art small-bottle">${bottleIcon}</div><div><span>BID HIGHEST SCORE · GALAGA</span><b>Parfum 10ml</b><p>Highest score hari ini: <strong>${record}</strong></p><small>${recordCount}. ${stockText('scent10')}</small><p class="record-note">${newHigh?'Skor baru terdeteksi. Minta crew memeriksa rekor dan kelayakan klaim.':'Pecahkan rekor untuk jalur hadiah high score. KYC adalah jalur hadiah tersendiri.'}</p></div></div>
+      <div class="reward-summary"><div><span>DOWNLOAD SIMINVEST</span><b>Sticker Pack + Parfum 5ml</b><small>Download SimInvest, isi nomor HP hingga verifikasi email di aplikasi SimInvest, lalu follow IG @Sinarmas_Sekuritas, @Sinarmas_am, dan @Sim_Invest. Tunjukkan ke crew untuk mendapat Parfum 5ml + Sticker Pack.</small></div><div class="sticker-art" aria-hidden="true">↗<i>SIMINVEST</i></div></div>
+      <div class="social-follow"><b>Wajib follow IG untuk hadiah Download &amp; Complete Registration:</b><span><a href="https://www.instagram.com/Sinarmas_Sekuritas/" target="_blank" rel="noopener">@Sinarmas_Sekuritas</a> · <a href="https://www.instagram.com/Sinarmas_am/" target="_blank" rel="noopener">@Sinarmas_am</a> · <a href="https://www.instagram.com/Sim_Invest/" target="_blank" rel="noopener">@Sim_Invest</a></span></div><div class="record-reward"><div class="reward-art small-bottle">${bottleIcon}</div><div><span>BID HIGHEST SCORE · GALAGA</span><b>Parfum 10ml</b><p>Highest score hari ini: <strong>${record}</strong></p><small>${recordCount}. ${stockText('scent10')}</small><p class="record-note">${newHigh?'Skor baru terdeteksi. Minta crew memeriksa rekor dan kelayakan klaim.':'Pecahkan rekor untuk jalur hadiah high score. Complete Registration adalah jalur hadiah tersendiri.'}</p></div></div>
       <div class="dlc-options">${Object.entries(dlcTracks).map(([track,t])=>{
         const progress=dlcProgress?.tracks?.[track];
         const used=progress?.attempts||0;
         const run=progress?.runs?.at(-1);
-        return `<article class="dlc-card ${track}"><div class="dlc-card-top"><div class="reward-art">${bottleIcon}<span>${track==='kyc'?'10':'50'}ml</span></div><div><span class="dlc-eyebrow">${track==='kyc'?'01 · ACCOUNT MISSION':'02 · INVESTMENT MISSION'}</span><h3>${t.title}</h3><p class="reward-name">${t.reward}</p></div></div><p>${t.description}</p><small>${t.fallback} Merchandise mengikuti stok crew.</small><div class="dlc-card-status">${stockText(track==='kyc'?'scent10':'scent50')}</div>${run?`<div class="last-dlc-score">RETURN MISSION · ${Math.round(run.score).toLocaleString('id-ID')} PTS</div>`:''}<button type="button" class="btn dlc-open" data-dlc-track="${track}" ${used>=2?'disabled':''}>${used>=2?'2 KESEMPATAN SELESAI':progress?.verified?'LANJUT MISI PULANG':'BUKA '+t.cta}<span>↗</span></button><div class="dlc-attempts">${2-used}/2 kesempatan · Use finger · 3D return flight</div></article>`;
-      }).join('')}</div><p class="journey-claim-note">KYC / transaksi diverifikasi crew. Skor DLC tidak mengurangi hak hadiah dari verifikasi. Hadiah diserahkan sesuai stok; belum dianggap diklaim saat game selesai.</p>`;
+        return `<article class="dlc-card ${track}"><div class="dlc-card-top"><div class="reward-art">${bottleIcon}<span>${track==='kyc'?'10':'50'}ml</span></div><div><span class="dlc-eyebrow">${track==='kyc'?'01 · ACCOUNT MISSION':'02 · INVESTMENT MISSION'}</span><h3>${t.title}</h3><p class="reward-name">${t.reward}</p></div></div><p>${t.description}</p><div class="dlc-card-status">${stockText(track==='kyc'?'scent10':'scent50')}</div>${run?`<div class="last-dlc-score">RETURN MISSION · ${Math.round(run.score).toLocaleString('id-ID')} PTS</div>`:''}<button type="button" class="btn dlc-open" data-dlc-track="${track}" ${used>=2?'disabled':''}>${used>=2?'2 KESEMPATAN SELESAI':progress?.verified?'LANJUT MISI PULANG':'BUKA '+t.cta}<span>↗</span></button><div class="dlc-attempts">${2-used}/2 kesempatan · Use finger · 3D return flight</div></article>`;
+      }).join('')}</div><p class="journey-claim-note">Complete Registration / transaksi diverifikasi crew. Skor DLC tidak mengurangi hak hadiah dari verifikasi. Hadiah diserahkan sesuai stok; belum dianggap diklaim saat game selesai.</p>`;
   }
   if(hasSavedParticipant() && dlcIdentity!==participant.registrationId) loadJourneyProgress().catch(()=>{});
 }
@@ -3509,7 +3582,7 @@ async function openDLCGate(track){
   const t=dlcTracks[track];
   document.getElementById('dlcGateTitle').textContent=t.title;
   document.getElementById('dlcGateDescription').textContent=t.description;
-  document.getElementById('dlcGateReward').textContent=t.reward+' · '+t.fallback;
+  document.getElementById('dlcGateReward').textContent=t.reward;
   document.getElementById('dlcPin').value='';
   document.getElementById('dlcPinError').textContent='';
   document.getElementById('dlcGate').classList.remove('hidden');
@@ -3584,7 +3657,7 @@ async function refreshRewardSnapshots(){
   if(PREVIEW_MODE || !supabaseClient) return;
   const snapshots=await Promise.allSettled([
     supabaseClient.from('simoon_reward_available').select('reward_code,remaining,updated_at'),
-    supabaseClient.from('simoon_daily_record_stats').select('record_breaks').eq('event_date',centralToday()).maybeSingle()
+    supabaseClient.rpc('simoon_record_stats',{p_date:centralToday()})
   ]);
   const stock=snapshots[0],records=snapshots[1];
   if(stock.status==='fulfilled' && !stock.value.error)window.simoonRewardStock=Object.fromEntries((stock.value.data||[]).map(row=>[row.reward_code,row]));
@@ -3598,42 +3671,48 @@ if(!TV_MODE){
 
 /* ============ FLOW CONTROL ============ */
 let countdownInterval=null;
-function startFlow(){
-  if(dlcActive) return;
-  if(TV_MODE) return;
-  if(!hasSavedParticipant()){ showRegistration(); return; }
-  if(state!==STATE.TITLE && state!==STATE.GAMEOVER && state!==STATE.MOONSUCCESS) return;
+async function startFlow(){
+  if(dlcActive || TV_MODE || roundStarting || centralSubmitting)return;
+  if(!hasSavedParticipant()){showRegistration();return;}
+  if(state!==STATE.TITLE && state!==STATE.GAMEOVER && state!==STATE.MOONSUCCESS)return;
+  roundStarting=true;updateOfficialLabels();
+  const startingParticipant=participant;
+  pendingRoundId=pendingRoundId||registrationId();
+  try{
+    const {data,error}=await eventRpc('simoon_begin_round',{
+      p_session_token:participant.sessionToken,p_round_id:pendingRoundId
+    });
+    if(error)throw error;
+    if(participant!==startingParticipant){roundStarting=false;return;}
+    if(!data?.round_id || typeof data.eligible!=='boolean')throw new Error('invalid_round_response');
+    currentRound=data;officialRemaining=data.remaining;
+  }catch(error){
+    roundStarting=false;
+    updateOfficialLabels('Ronde belum terkonfirmasi. Periksa koneksi lalu tekan START lagi.');
+    return;
+  }
+  roundStarting=false;updateOfficialLabels();
   ensureAudio();
-  if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
+  if(audioCtx && audioCtx.state==='suspended')audioCtx.resume();
   hideAllScreens();
   document.getElementById('screenInstr').classList.remove('hidden');
-  state = STATE.INSTR;
-  refreshControlUI();
+  state=STATE.INSTR;refreshControlUI();
+  document.getElementById('countdownText').textContent=currentRound.eligible?'RONDE '+currentRound.ordinal+'/2':'LATIHAN';
   let n=3;
-  document.getElementById('countdownText').textContent = n;
   clearInterval(countdownInterval);
-  countdownInterval = setInterval(()=>{
+  countdownInterval=setInterval(()=>{
     n--;
-    if(n<=0){
-      clearInterval(countdownInterval);
-      launchGame();
-    } else {
-      document.getElementById('countdownText').textContent = n;
-    }
+    if(n<=0){clearInterval(countdownInterval);launchGame();}
+    else document.getElementById('countdownText').textContent=(currentRound.eligible?'RONDE '+currentRound.ordinal+'/2':'LATIHAN')+' · '+n;
   },700);
 }
 function launchGame(){
-  if(TV_MODE) return;
-  if(!hasSavedParticipant()){ showRegistration(); return; }
-  hideAllScreens();
-  resetGame();
-  gamePaused=false;
-  state = STATE.PLAYING;
+  if(TV_MODE || !currentRound)return;
+  if(!hasSavedParticipant()){showRegistration();return;}
+  hideAllScreens();resetGame();gamePaused=false;state=STATE.PLAYING;
   document.getElementById('hud').classList.remove('hidden');
-  document.getElementById('moonWrap').classList.remove('hidden');
-  refreshControlUI();
+  document.getElementById('moonWrap').classList.remove('hidden');refreshControlUI();
 }
-
 
 document.getElementById('btnStart').addEventListener('click', startFlow);
 document.getElementById('btnAgain1').addEventListener('click', startFlow);
@@ -3652,10 +3731,9 @@ requestAnimationFrame(()=>{ fitTitleToViewport(); requestAnimationFrame(fitTitle
 requestAnimationFrame(loop);
 if(PREVIEW_MODE){
   document.getElementById('localPreviewBadge').classList.remove('hidden');
+  if(TV_MODE)document.querySelector('.tv-leaderboard-pane .tv-pane-eyebrow').textContent='SIMULASI LEADERBOARD · TOP 10';
   if(new URLSearchParams(location.search).get('preview')==='journey'){
-    participant=Object.freeze({name:'PREVIEW',phone:'+6281234567890',riskProfile:'moderat',saved:true,registrationId:'preview-only'});
-    state=STATE.GAMEOVER;
-    showOverScreen([],false);
+    (async()=>{participant=Object.freeze(await saveParticipant({email:'preview@example.invalid',phone:'+6281234567890',riskProfile:'moderat',marketingOptIn:false}));state=STATE.GAMEOVER;showOverScreen(centralRows.map(r=>({name:r.player_name,score:r.score})),false);updateOfficialLabels();})().catch(()=>{});
   }
 }
 

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>SimInvest — To The Moon</title>
+<meta name="siminvest-release" content="director-review-20261104">
 <style>
   :root{
     --purple:#7C3AED;
@@ -880,6 +881,75 @@
  #tvScreen .tv-guide-panel{gap:8px}
 }
 </style>
+
+<style id="directorReviewStyles">
+/* Game outcome is deliberately separate from the participant's selected risk profile. */
+.journey-profile{--profile-color:#7dd3fc;width:min(100%,680px);margin:0 auto 18px;padding:18px 22px;border:1px solid color-mix(in srgb,var(--profile-color) 40%,transparent);border-radius:18px;background:linear-gradient(120deg,#17102ddd,#091620dd);text-align:left;box-sizing:border-box}
+.journey-profile[data-category="konservatif"]{--profile-color:#7dd3fc}
+.journey-profile[data-category="moderat"]{--profile-color:#c4b5fd}
+.journey-profile[data-category="agresif"]{--profile-color:#fcd68a}
+.journey-profile .profile-eyebrow{color:var(--profile-color);font-size:10px;font-weight:800;letter-spacing:1.8px;margin:0 0 8px}
+.journey-profile h2{font-size:clamp(20px,3vw,30px);line-height:1.2;color:#fff;margin:0 0 10px;letter-spacing:-.5px}
+.journey-profile h2 strong{color:var(--profile-color)}
+.journey-profile .profile-progress{font-size:14px;line-height:1.5;color:#ddd5ee;margin:0 0 10px}
+.journey-profile .profile-disclaimer{font-size:10px;line-height:1.6;color:#b5abc9;margin:10px 0 0}
+.profile-track{height:6px;border-radius:6px;overflow:hidden;background:#ffffff15}
+.profile-track span{display:block;height:100%;background:var(--profile-color);border-radius:6px}
+#nameOverlay{padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));gap:10px}
+#nameOverlay .journey-profile{flex:none;margin:0;max-width:540px}
+#nameOverlay #roundSyncStatus{max-width:540px;flex:none}
+#nameOverlay #btnNameOk,#nameOverlay #nameInput{flex:none}
+#tvScreen .tv-guide-panel.tv-motion-panel{overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:12px;min-height:0}
+#tvScreen .tv-motion-heading{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#tvScreen .tv-motion-heading h2{margin:0;color:#eee8ff;font-size:clamp(12px,1.1vw,19px);letter-spacing:1px}
+#tvScreen .tv-motion-heading span{font-size:9px;color:#a89bbc;letter-spacing:1px;white-space:nowrap}
+#tvScreen .tv-row{grid-template-columns:clamp(34px,3.2vw,60px) minmax(0,1fr) clamp(112px,11vw,185px)}
+#tvScreen .tv-video-stage{position:relative;min-height:0;flex:1;overflow:hidden;border-radius:12px;background:radial-gradient(ellipse,#21123c,#080711 80%);isolation:isolate}
+#tvSilVideo,#tvVideoPoster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:transparent}
+#tvVideoPoster{z-index:1}
+#tvScreen .tv-video-action{position:absolute;z-index:2;left:50%;bottom:16px;transform:translateX(-50%);max-width:90%;padding:11px 18px;border:1px solid #c4b5fd77;border-radius:24px;background:#18102feF;color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;line-height:1.3;white-space:nowrap}
+#tvVideoStatus{position:absolute;z-index:2;left:10px;right:10px;top:10px;margin:0;padding:8px 10px;border-radius:8px;background:#080711dd;color:#d5c9ee;font-size:11px;text-align:center}
+#tvScreen .tv-motion-panel .tv-scan-zone{flex:none;margin:0;padding:0;border:0;gap:14px}
+#tvScreen .tv-motion-panel .tv-qr-link{width:clamp(86px,7.5vw,120px);margin:0;flex:none}
+#tvScreen .tv-motion-panel .tv-scan-copy h2{font-size:clamp(17px,1.6vw,25px);margin:0 0 5px}
+#tvScreen .tv-motion-panel .tv-scan-copy>p{font-size:clamp(10px,.85vw,13px);line-height:1.5;margin:0}
+#tvScreen .tv-motion-panel .tv-game-link{font-size:10px;margin-top:5px}
+@media(min-width:701px) and (max-height:600px){
+ #tvScreen{padding:10px 16px;gap:8px}
+ #tvScreen .tv-main{flex:1;min-height:0}
+ #tvScreen .tv-title{font-size:25px}
+ #tvScreen .tv-leaderboard-pane{gap:8px}
+ #tvScreen .tv-row.tv-head{min-height:24px}
+ #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{font-size:16px}
+ #tvScreen .tv-row.top1 .tv-name,#tvScreen .tv-row.top1 .tv-score{font-size:18px}
+ #tvScreen .tv-motion-panel .tv-qr-link{width:76px}
+ #tvScreen .tv-motion-panel{gap:7px}
+ #tvScreen .tv-motion-heading span{display:none}
+}
+@media(orientation:portrait),(max-width:700px){
+ #tvScreen{overflow-y:auto;touch-action:pan-y;padding:18px 14px}
+ #tvScreen .tv-main{display:flex;flex-direction:column;flex:none;min-height:0;gap:20px}
+ #tvScreen .tv-leaderboard-pane{min-height:510px;flex:none}
+ #tvScreen #tvRows{min-height:370px}
+ #tvScreen .tv-row{min-height:36px;grid-template-columns:28px minmax(0,1fr) 100px}
+ #tvScreen .tv-guide-panel.tv-motion-panel{flex:none;min-height:0;overflow:hidden}
+ #tvScreen .tv-video-stage{flex:none;height:min(112vw,780px)}
+ #tvScreen .tv-motion-panel .tv-scan-copy>p{font-size:11px}
+ #tvScreen .tv-motion-panel .tv-game-link{display:inline-block}
+}
+@media(max-width:600px){
+ .journey-profile{padding:16px;margin-bottom:14px;border-radius:14px}
+ .journey-profile h2{font-size:23px}
+ #nameOverlay .journey-profile h2{font-size:22px}
+}
+@media(max-height:540px){
+ #nameOverlay{justify-content:flex-start}
+ #nameOverlay .journey-profile{padding:12px 16px}
+ #nameOverlay .journey-profile h2{font-size:20px;margin-bottom:6px}
+ #nameOverlay .journey-profile .profile-progress{font-size:12px;margin-bottom:6px}
+ #nameOverlay .journey-profile .profile-disclaimer{font-size:9px;margin-top:6px}
+}
+</style>
 </head>
 <body>
 <div id="stage">
@@ -1109,6 +1179,7 @@
   <div id="screenOver" class="overlay hidden journey-screen">
     <div class="journey-shell">
       <header class="journey-heading"><div class="wordmark t2">JOURNEY ENDED</div><p>Misi pertama selesai. Perjalananmu masih berlanjut.</p></header>
+      <section class="journey-profile hidden" data-round-profile role="status" aria-live="polite"></section>
       <div class="journey-grid">
         <section class="journey-score"><div class="breakdown" id="overBreakdown"></div><div class="newhigh hidden" id="newHighTag">NEW HIGH SCORE</div>
           <p class="official-attempt-note" role="status"></p><button class="btn" id="btnAgain1">PLAY AGAIN</button>
@@ -1125,6 +1196,7 @@
   <div id="screenMoon" class="overlay hidden journey-screen">
     <div class="journey-shell">
       <header class="journey-heading"><div class="wordmark t2">YOU MADE IT TO THE MOON</div><p>Sekarang waktunya membawa roketmu pulang ke Bumi.</p></header>
+      <section class="journey-profile hidden" data-round-profile role="status" aria-live="polite"></section>
       <div class="journey-grid">
         <section class="journey-score"><div class="breakdown" id="moonBreakdown"></div>
           <p class="official-attempt-note" role="status"></p><button class="btn" id="btnAgain2">PLAY AGAIN</button>
@@ -1139,6 +1211,7 @@
 
   <!-- NAME ENTRY -->
   <div id="nameOverlay" class="overlay hidden">
+    <section class="journey-profile hidden" data-round-profile role="status" aria-live="polite"></section>
     <div class="sub" id="nameOverlayTitle">KONFIRMASI SKOR</div>
     <input id="nameInput" maxlength="16" readonly aria-label="Email disamarkan" autocomplete="off" /><p id="roundSyncStatus" class="official-attempt-note" role="status"></p>
     <button class="btn" id="btnNameOk">CONFIRM</button>
@@ -1157,24 +1230,20 @@
         </div>
         <footer class="tv-board-status"><div id="tvFlash">NEW HIGH SCORE</div><div id="tvUpdated">LIVE · CONNECTING...</div></footer>
       </section>
-      <aside class="tv-guide-panel" aria-labelledby="tvQrHeading">
+      <aside class="tv-guide-panel tv-motion-panel" aria-labelledby="tvSilHeading">
+        <header class="tv-motion-heading"><h2 id="tvSilHeading">SIMINVEST INVESTORS LEAGUE</h2><span>SEASON 2</span></header>
+        <div class="tv-video-stage">
+          <video id="tvSilVideo" data-src="assets/sil-s2-teaser-web.mp4" data-poster="assets/sil-s2-poster.jpg" muted loop playsinline preload="none" aria-label="Teaser SimInvest Investors League Season 2"></video>
+          <img id="tvVideoPoster" class="hidden" alt="SimInvest Investors League Season 2" data-src="assets/sil-s2-poster.jpg">
+          <p id="tvVideoStatus" class="hidden" role="status"></p>
+          <button id="tvVideoPlay" class="tv-video-action hidden" type="button">PUTAR VIDEO</button>
+        </div>
         <section class="tv-scan-zone" aria-labelledby="tvQrHeading">
           <a id="tvGameQrLink" class="tv-qr-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener" aria-label="Buka halaman main SimInvest To The Moon">
         <img id="tvGameQr" src="data:image/png;base64,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" width="848" height="848" alt="QR menuju halaman main SimInvest To The Moon">
       </a>
-          <div class="tv-scan-copy"><p class="tv-pane-eyebrow">CARA MAIN &amp; HADIAH</p><h2 id="tvQrHeading">SCAN &amp; PLAY</h2><p>Scan QR → isi email &amp; HP → mulai main.<br>Geser jari untuk mengendalikan roket.</p><a class="tv-game-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener">Buka permainan ↗</a></div>
+          <div class="tv-scan-copy"><h2 id="tvQrHeading">SCAN &amp; PLAY</h2><p>Scan QR → isi email &amp; HP → mulai main.<br>Geser jari untuk mengendalikan roket.</p><a class="tv-game-link" href="https://assidikrere.github.io/Game-Activation-Galaga-SimInvest/" target="_blank" rel="noopener">Buka permainan ↗</a></div>
         </section>
-        <div class="tv-reward-basics">
-          <article class="tv-reward-card"><span class="tv-reward-step">01 · DOWNLOAD</span><h3>Download SimInvest</h3><strong>Parfum 5ml + Sticker Pack</strong><p>Isi nomor HP hingga verifikasi email <b>di aplikasi SimInvest</b>, lalu follow IG di bawah.</p></article>
-          <article class="tv-reward-card record"><span class="tv-reward-step">02 · BID HIGHEST SCORE</span><h3>Pecahkan rekor hari ini</h3><strong>Parfum 10ml</strong><p>Jalur hadiah tersendiri. Crew memeriksa rekor dan klaim. Dua ronde leaderboard sepanjang event; berikutnya latihan.</p></article>
-        </div>
-        <div class="tv-dlc-rewards">
-          <article class="tv-reward-card kyc"><span class="tv-reward-step">03 · COMPLETE REGISTRATION</span><h3>Complete Registration</h3><strong>Parfum 10ml + Sticker Pack</strong><p>Selesaikan opening account dan follow sosial media kita. Tunjukkan statusnya ke crew.</p></article>
-          <article class="tv-reward-card transact"><span class="tv-reward-step">04 · TRANSACT</span><h3>Lakukan transaksi</h3><strong>Parfum 50ml + merchandise tersedia</strong><p>Seluruh Reksa Dana di SimInvest: min. <b>Rp10.000.000</b>.<br>Atau saham, khusus <b>Jumat</b>: min. <b>Rp25.000.000</b>.</p></article>
-        </div>
-        <div class="social-follow"><b>Wajib follow IG untuk hadiah Download &amp; Complete Registration:</b><span><a href="https://www.instagram.com/Sinarmas_Sekuritas/" target="_blank" rel="noopener">@Sinarmas_Sekuritas</a> · <a href="https://www.instagram.com/Sinarmas_am/" target="_blank" rel="noopener">@Sinarmas_am</a> · <a href="https://www.instagram.com/Sim_Invest/" target="_blank" rel="noopener">@Sim_Invest</a></span></div>
-        <div class="tv-dlc-note"><span>↗</span><p><b>Complete Registration / Transact membuka DLC 3D.</b><br>Roket yang sama, bulan → Bumi. 2 kesempatan per jalur.</p></div>
-        <p class="tv-reward-boundary">Hadiah diperiksa crew. Skor DLC tidak mengurangi hak hadiah dari verifikasi.</p>
       </aside>
     </div>
   </div>
@@ -1259,6 +1328,8 @@ function createLocalPreviewClient(){
   let centralLoaded = false;
   let centralSubmitting = false;
   let tvRealtimeChannel = null;
+  let centralLastSuccessAt = null, centralRefreshInFlight = null;
+  let tvRowsSignature = null, tvBoardDay = null;
 
   function getCentralDeviceId(){
     try{
@@ -1321,45 +1392,102 @@ function createLocalPreviewClient(){
   }
 
   async function refreshCentralLeaderboard(options={}){
-    try{
-      const rows=await fetchCentralScores(options.limit||10);
-      centralRows=rows;
-      centralLoaded=true;
-      setCentralStatus(PREVIEW_MODE ? 'PREVIEW • LOCAL' : 'CENTRAL • LIVE',true);
-      refreshTitleBest();
-      renderCentralGameBoards(rows);
-      if(TV_MODE) renderTVLeaderboard(rows);
-      return rows;
-    }catch(error){
-      console.warn('Central leaderboard fetch failed:',error);
-      setCentralStatus('CENTRAL • OFFLINE',false);
-      return null;
-    }
+    if(centralRefreshInFlight) return centralRefreshInFlight;
+    centralRefreshInFlight=(async()=>{
+      const requestedDay=centralToday();
+      try{
+        const rows=await fetchCentralScores(options.limit||10);
+        if(requestedDay!==centralToday()) return null;
+        centralRows=rows;
+        centralLoaded=true;
+        centralLastSuccessAt=new Date();
+        setCentralStatus(PREVIEW_MODE ? 'PREVIEW • LOCAL' : 'CENTRAL • LIVE',true);
+        refreshTitleBest();
+        renderCentralGameBoards(rows);
+        if(TV_MODE) renderTVLeaderboard(rows);
+        return rows;
+      }catch(error){
+        console.warn('Central leaderboard fetch failed:',error);
+        setCentralStatus('CENTRAL • OFFLINE',false);
+        return null;
+      }finally{centralRefreshInFlight=null;}
+    })();
+    return centralRefreshInFlight;
   }
-
 
   function renderTVLeaderboard(rows){
     const wrap=document.getElementById('tvRows');
     if(!wrap) return;
-    wrap.innerHTML='';
     const list=(rows||[]).slice(0,10);
-    for(let i=0;i<10;i++){
-      const r=list[i];
-      const row=document.createElement('div');
-      row.className='tv-row'+(i===0?' top1':'');
-      const rank=document.createElement('div');
-      rank.className='tv-rank'; rank.textContent=(i+1);
-      const name=document.createElement('div');
-      name.className='tv-name'; name.textContent=r ? String(r.player_name||'xxxx'+'xxxxxxxxxxxx') : '—';
-      const sc=document.createElement('div');
-      sc.className='tv-score'; sc.textContent=r ? (Number(r.score)||0).toLocaleString('id-ID') : '';
-      row.append(rank,name,sc);
-      wrap.appendChild(row);
+    const day=centralToday();
+    const signature=JSON.stringify([day,list.map(r=>[r.player_name,Number(r.score)||0])]);
+    if(signature!==tvRowsSignature){
+      const fragment=document.createDocumentFragment();
+      for(let i=0;i<10;i++){
+        const r=list[i],row=document.createElement('div');
+        row.className='tv-row'+(i===0?' top1':'');
+        const rank=document.createElement('div');
+        rank.className='tv-rank';rank.textContent=i+1;
+        const name=document.createElement('div');
+        name.className='tv-name';name.textContent=r?String(r.player_name||'xxxxxxxxxxxxxxxx'):'—';
+        const sc=document.createElement('div');
+        sc.className='tv-score';sc.textContent=r?(Number(r.score)||0).toLocaleString('id-ID'):'';
+        row.append(rank,name,sc);fragment.appendChild(row);
+      }
+      wrap.replaceChildren(fragment);tvRowsSignature=signature;
     }
-    const d=document.getElementById('tvDate');
-    if(d) d.textContent=(PREVIEW_MODE?'SIMULASI · ':'TODAY • ')+centralDateLabel();
-    const u=document.getElementById('tvUpdated');
-    if(u) u.textContent=(PREVIEW_MODE?'SIMULASI • UPDATED ':'LIVE • UPDATED ')+new Intl.DateTimeFormat('en-ID',{timeZone:CENTRAL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
+    tvBoardDay=day;
+    document.getElementById('tvDate').textContent=(PREVIEW_MODE?'SIMULASI · ':'TODAY • ')+centralDateLabel();
+    if(centralLastSuccessAt){
+      document.getElementById('tvUpdated').textContent=(PREVIEW_MODE?'SIMULASI • UPDATED ':'LIVE • UPDATED ')+new Intl.DateTimeFormat('en-ID',{timeZone:CENTRAL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(centralLastSuccessAt);
+    }
+  }
+
+  function checkTVDate(){
+    if(!TV_MODE || tvBoardDay===centralToday()) return;
+    centralRows=[];centralLoaded=false;centralLastSuccessAt=null;
+    renderTVLeaderboard([]);refreshTitleBest();
+    document.getElementById('tvUpdated').textContent='HARI BARU · MEMUAT SKOR...';
+    refreshCentralLeaderboard({limit:10});
+  }
+
+  function setupTVVideo(){
+    if(!TV_MODE) return;
+    const video=document.getElementById('tvSilVideo');
+    const poster=document.getElementById('tvVideoPoster');
+    const button=document.getElementById('tvVideoPlay');
+    const status=document.getElementById('tvVideoStatus');
+    let waitingTimer=null,playPending=false;
+    const clearWaiting=()=>{clearTimeout(waitingTimer);waitingTimer=null;};
+    const fallback=(message,retry=false)=>{
+      status.textContent=message;status.classList.remove('hidden');
+      poster.classList.remove('hidden');button.classList.remove('hidden');
+      button.textContent=retry?'COBA PUTAR LAGI':'PUTAR VIDEO';
+    };
+    const play=async(reload=false)=>{
+      if(document.hidden || playPending) return;
+      playPending=true;
+      try{
+        video.muted=true;
+        if(reload)video.load();
+        await video.play();
+      }catch(error){
+        if(!document.hidden)fallback(error.name==='NotAllowedError'?'Ketuk untuk memulai video.':'Video belum dapat diputar. Leaderboard tetap aktif.',!!video.error);
+      }finally{playPending=false;}
+    };
+    video.muted=true;video.defaultMuted=true;video.loop=true;video.playsInline=true;
+    video.poster=video.dataset.poster;poster.src=poster.dataset.src;
+    video.addEventListener('playing',()=>{clearWaiting();poster.classList.add('hidden');button.classList.add('hidden');status.classList.add('hidden');});
+    video.addEventListener('error',()=>{clearWaiting();fallback('Video tidak tersedia. Leaderboard tetap aktif.',true);});
+    const wait=()=>{clearWaiting();waitingTimer=setTimeout(()=>fallback('Video sedang memuat. Ketuk untuk mencoba lagi.',true),15000);};
+    video.addEventListener('waiting',wait);video.addEventListener('stalled',wait);
+    video.addEventListener('pause',()=>{if(!document.hidden && !video.ended && !video.error)fallback('Video dijeda. Ketuk untuk melanjutkan.');});
+    button.addEventListener('click',()=>{clearWaiting();play(!!video.error || video.readyState<2);});
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){clearWaiting();video.pause();}else{checkTVDate();play();}
+    });
+    window.addEventListener('online',()=>{if(video.error)play(true);});
+    video.src=video.dataset.src;video.preload='auto';play();
   }
 
   function tvFlash(text){
@@ -1391,7 +1519,7 @@ function createLocalPreviewClient(){
         if(status==='SUBSCRIBED'){
           setCentralStatus(PREVIEW_MODE ? 'PREVIEW • LOCAL' : 'CENTRAL • LIVE',true);
           const u=document.getElementById('tvUpdated');
-          if(TV_MODE && u) u.textContent='LIVE • CONNECTED';
+          if(TV_MODE && u && !centralLastSuccessAt) u.textContent='LIVE • CONNECTED · MEMUAT SKOR...';
         }
       });
 
@@ -1416,6 +1544,9 @@ function createLocalPreviewClient(){
     document.getElementById('muteBtn')?.style.setProperty('display','none');
     document.getElementById('game')?.style.setProperty('display','none');
     document.getElementById('tvScreen')?.classList.remove('hidden');
+    renderTVLeaderboard(centralRows);
+    setupTVVideo();
+    setInterval(checkTVDate,1000);
     return true;
   }
 
@@ -1785,7 +1916,36 @@ let cinematicT=0, curePlayed=false;
 let gamePaused=false;
 const TOTAL_TIME = 82; // seconds of ideal survival to reach 100% Moon progress (density scaling, not raw speed, is what makes this hard)
 
+
+let roundOutcome=null,roundSequence=0;
+function classifyJourneyProgress(value){
+  if(!Number.isFinite(value))return null;
+  // Remove floating-point noise only; never classify the integer shown in the HUD.
+  const progress=Number(Math.max(0,Math.min(100,value)).toFixed(9));
+  const category=progress<=30?'konservatif':progress<=70?'moderat':'agresif';
+  return {progress,category};
+}
+function captureRoundOutcome(reachedMoon){
+  if(roundOutcome)return roundOutcome;
+  const result=classifyJourneyProgress(reachedMoon?100:moonPct());
+  if(result)roundOutcome=Object.freeze({...result,reachedMoon:!!reachedMoon});
+  return roundOutcome;
+}
+function renderRoundOutcome(){
+  for(const mount of document.querySelectorAll('[data-round-profile]')){
+    mount.classList.toggle('hidden',!roundOutcome);
+    if(!roundOutcome){mount.replaceChildren();delete mount.dataset.category;continue;}
+    const {category,progress,reachedMoon}=roundOutcome;
+    const labels={konservatif:'Konservatif',moderat:'Moderat',agresif:'Agresif'};
+    const progressText=new Intl.NumberFormat('id-ID',{maximumFractionDigits:2}).format(progress);
+    const boundaryHint=category==='moderat'?' · lebih dari 30% hingga 70%':category==='agresif'?' · lebih dari 70%':' · hingga 30%';
+    mount.dataset.category=category;
+    mount.innerHTML=`<p class="profile-eyebrow">HASIL PERMAINAN${reachedMoon?' · MISI BERHASIL':''}</p><h2>Kamu masuk kategori <strong>${labels[category]}</strong> di permainan ini.</h2><p class="profile-progress">${reachedMoon?'Kamu berhasil mencapai bulan!':'Perjalananmu mencapai'} <b>${progressText}%</b>${reachedMoon?'':' menuju bulan.'}<small>${boundaryHint}</small></p><div class="profile-track" aria-hidden="true"><span style="width:${progress}%"></span></div><p class="profile-disclaimer">Kategori ini berdasarkan hasil permainan dan bukan penilaian profil risiko investasi.</p>`;
+  }
+}
+
 function resetGame(){
+  roundSequence++;roundOutcome=null;renderRoundOutcome();
   player = { x: W/2, y: H*0.60, w: 32, h: 56, vx:0, vy:0, alive:true, tilt:0, pitch:0 };
   projectiles = []; asteroids = []; satellites = []; particles = []; powerups = []; bombBlasts = []; enemyProjectiles = []; coinRain = []; blackHoles = [];
   miniBear=null; finalBoss=null; bearMiniSpawned=false; finalBossSpawned=false; stockSplitEnd=0;
@@ -2059,6 +2219,8 @@ function updateEvents(dt){
 function fmt(n){ return Math.round(n).toLocaleString(); }
 
 function endRun(reachedMoon){
+  if(state===STATE.GAMEOVER)return;
+  captureRoundOutcome(reachedMoon);
   state = STATE.GAMEOVER;
   document.getElementById('hud').classList.add('hidden');
   document.getElementById('moonWrap').classList.add('hidden');
@@ -2070,6 +2232,7 @@ function endRun(reachedMoon){
 }
 let pendingMoon=false;
 function showNameEntry(reachedMoon){
+  renderRoundOutcome();
   pendingMoon = reachedMoon;
   const overlay = document.getElementById('nameOverlay');
   document.getElementById('nameOverlayTitle').textContent = reachedMoon ? 'CONFIRM YOUR MOON RUN' : 'CONFIRM YOUR SCORE';
@@ -2088,6 +2251,7 @@ document.getElementById('nameInput').addEventListener('keydown', e=>{ if(e.key==
 function showOverScreen(scores, isNewHigh){
   hideAllScreens();
   document.getElementById('screenOver').classList.remove('hidden');
+  renderRoundOutcome();
   document.getElementById('overBreakdown').innerHTML = `
     <div class="row"><span>DISTANCE</span><span>+${fmt(sDistance)}</span></div>
     <div class="row"><span>ASTEROIDS</span><span>+${fmt(sAsteroids)}</span></div>
@@ -2106,6 +2270,7 @@ function showOverScreen(scores, isNewHigh){
 function showMoonScreen(scores){
   hideAllScreens();
   document.getElementById('screenMoon').classList.remove('hidden');
+  renderRoundOutcome();
   document.getElementById('moonBreakdown').innerHTML = `
     <div class="row"><span>DISTANCE</span><span>${fmt(sDistance)}</span></div>
     <div class="row"><span>ASTEROIDS</span><span>+${fmt(sAsteroids)}</span></div>
@@ -2137,7 +2302,9 @@ function haptic(pattern){
 }
 
 function killPlayer(){
-  if(!player.alive) return;
+  if(state!==STATE.PLAYING || !player.alive) return;
+  captureRoundOutcome(false);
+  const killedRound=roundSequence;
   resetNoHit();
   player.alive=false;
   SFX.explosion();
@@ -2145,7 +2312,7 @@ function killPlayer(){
   shakeMag = Math.max(shakeMag, 9);
   addParticles(player.x,player.y,'#ff8a65',26,180,0.7);
   addParticles(player.x,player.y,'#ffd76a',16,120,0.6);
-  setTimeout(()=>{ if(state===STATE.PLAYING) endRun(false); }, 650);
+  setTimeout(()=>{ if(roundSequence===killedRound && state===STATE.PLAYING) endRun(false); }, 650);
 }
 
 function applyPowerup(type){
@@ -2818,6 +2985,7 @@ function update(dt){
 
 /* ============ CINEMATIC / MOON SUCCESS ============ */
 function beginCinematic(){
+  captureRoundOutcome(true);
   state=STATE.CINEMATIC; cinematicT=0; curePlayed=false; shieldEnd=Date.now()+999999; SFX.moon();
 }
 function updateCinematic(dt){
@@ -3301,12 +3469,8 @@ function draw(dt){
 
 /* ============ MAIN LOOP ============ */
 function loop(ts){
-  if(TV_MODE){
-    // TV mode is a pure leaderboard display; the game simulation stays stopped.
-    renderTVLeaderboard(centralRows);
-    requestAnimationFrame(loop);
-    return;
-  }
+  // TV uses event-driven leaderboard updates and native video playback, no game animation loop.
+  if(TV_MODE) return;
   if(!lastTime) lastTime = ts;
   let dt = (ts-lastTime)/1000;
   dt = Math.min(dt, 0.05);
@@ -3497,6 +3661,7 @@ participantForm.addEventListener('submit',async event=>{
 });
 function showRegistration(clear=false){
   if(TV_MODE || registrationSaving || roundStarting || centralSubmitting) return;
+  roundOutcome=null;renderRoundOutcome();
   if(state===STATE.REGISTRATION && !clear){ refreshParticipantForm(); return; }
   clearInterval(countdownInterval);
   participant=null;
@@ -3732,8 +3897,20 @@ requestAnimationFrame(loop);
 if(PREVIEW_MODE){
   document.getElementById('localPreviewBadge').classList.remove('hidden');
   if(TV_MODE)document.querySelector('.tv-leaderboard-pane .tv-pane-eyebrow').textContent='SIMULASI LEADERBOARD · TOP 10';
-  if(new URLSearchParams(location.search).get('preview')==='journey'){
-    (async()=>{participant=Object.freeze(await saveParticipant({email:'preview@example.invalid',phone:'+6281234567890',riskProfile:'moderat',marketingOptIn:false}));state=STATE.GAMEOVER;showOverScreen(centralRows.map(r=>({name:r.player_name,score:r.score})),false);updateOfficialLabels();})().catch(()=>{});
+  const previewScene=new URLSearchParams(location.search).get('preview');
+  const previewProgress={konservatif:20,moderat:50,agresif:85,moon:100};
+  if(!TV_MODE && (previewScene==='journey' || Object.hasOwn(previewProgress,previewScene))){
+    (async()=>{
+      participant=Object.freeze(await saveParticipant({email:'preview@example.invalid',phone:'+6281234567890',riskProfile:'moderat',marketingOptIn:false}));
+      if(Object.hasOwn(previewProgress,previewScene)){
+        elapsed=TOTAL_TIME*previewProgress[previewScene]/100;
+        captureRoundOutcome(previewScene==='moon');
+      }
+      state=previewScene==='moon'?STATE.MOONSUCCESS:STATE.GAMEOVER;
+      const rows=centralRows.map(r=>({name:r.player_name,score:r.score}));
+      if(previewScene==='moon')showMoonScreen(rows);else showOverScreen(rows,false);
+      updateOfficialLabels();
+    })().catch(()=>{});
   }
 }
 

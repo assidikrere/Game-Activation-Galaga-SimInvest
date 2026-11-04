@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>SimInvest — To The Moon</title>
-<meta name="siminvest-release" content="layout-download-v3-20261104">
+<meta name="siminvest-release" content="layout-download-v3-2-20261104">
 <script>
 (function(){
   'use strict';
@@ -3803,7 +3803,7 @@ function renderInvestorEducation(){
       <div class="product-section-heading"><h2>Kenali pilihan investasinya</h2><span>Sinarmas Asset Management · SimInvest</span></div>
       <div class="product-grid">${profile.products.map(card).join('')}</div>
       ${profile.alternative?`<details class="product-alternative"><summary>${roundOutcome.category==='moderat'?'Pilihan berbasis syariah':'Lihat pilihan pasar uang lainnya'}</summary>${card(profile.alternative)}</details>`:''}
-      <div class="education-cta"><p>Saham dan reksa dana dalam satu aplikasi.</p><a class="btn investment-cta" href="?download=1" target="_blank" rel="noopener noreferrer"><span class="cta-label">Unduh SimInvest</span><span class="cta-arrow" aria-hidden="true">↗</span></a><small>Tersedia di App Store dan Google Play.</small></div>
+      <div class="education-cta"><p>Saham dan reksa dana dalam satu aplikasi.</p><a class="btn investment-cta" href="https://siminvest.id/" target="_blank" rel="noopener noreferrer"><span class="cta-label">Klik di sini untuk kenal SimInvest</span><span class="cta-arrow" aria-hidden="true">↗</span></a><small>Pelajari produk dan fitur di situs resmi SimInvest.</small></div>
       <details class="education-note"><summary>Catatan investasi & sumber</summary><p>Hasil permainan bersifat hiburan dan bukan penilaian profil risiko investasi. Sesuaikan keputusan dengan tujuan, kondisi keuangan, dan profil risiko investasi kamu. Investasi mengandung risiko; nilai investasi dapat turun. Baca prospektus dan fund fact sheet. Kinerja masa lalu tidak menjamin kinerja masa depan.</p><a href="${educationSources.profiles}" target="_blank" rel="noopener noreferrer">Panduan profil risiko SimInvest ↗</a></details>`;
   }
   for(const node of document.querySelectorAll('[data-final-score]'))node.textContent=Math.max(0,Math.round(Number(score)||0)).toLocaleString('id-ID');

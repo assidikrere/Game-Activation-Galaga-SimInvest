@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>SimInvest — To The Moon</title>
-<meta name="siminvest-release" content="director-review-20261104">
+<meta name="siminvest-release" content="product-education-v2-20261104">
 <style>
   :root{
     --purple:#7C3AED;
@@ -580,7 +580,7 @@
   .registration-panel h1{ font-size:clamp(28px,7vw,38px); line-height:1.1; margin:0 0 10px; }
   .registration-intro{ color:var(--dim); font-size:14px; line-height:1.55; margin:0 0 24px; }
   .registration-field{ margin-bottom:17px; }
-  .registration-field label,.risk-field legend{ display:block; font-size:13px; font-weight:700; margin-bottom:8px; }
+  .registration-field label{ display:block; font-size:13px; font-weight:700; margin-bottom:8px; }
   .registration-field input{
     display:block; width:100%; border:1px solid #514568; border-radius:12px;
     padding:13px 14px; font:16px inherit; font-size:16px; color:var(--ink);
@@ -592,17 +592,6 @@
   .field-hint{ color:var(--dim); font-size:11px; margin:7px 0 0; line-height:1.4; }
   .field-error{ color:#ffb4c0; font-size:12px; margin:6px 0 0; min-height:0; }
   .field-error:empty{ display:none; }
-  .risk-field{ border:0; margin:0; padding:0; min-width:0; }
-  .risk-options{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-  .risk-option{ position:relative; cursor:pointer; }
-  .risk-option input{ position:absolute; inset:0; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
-  .risk-option span{
-    display:flex; align-items:center; justify-content:center; min-height:58px; padding:12px 4px;
-    border:1px solid #514568; border-radius:12px; background:rgba(255,255,255,.035);
-    font-size:12px; font-weight:700; color:var(--ink); transition:background .15s,border-color .15s;
-  }
-  .risk-option input:checked+span{ border-color:#a68dff; background:rgba(124,58,237,.27); box-shadow:0 0 0 1px #a68dff; }
-  .risk-option input:focus-visible+span{ outline:2px solid var(--skyblue); outline-offset:3px; }
   .crm-consent{ display:flex; align-items:flex-start; gap:10px; margin-top:18px; font-size:12px; line-height:1.55; color:var(--ink); cursor:pointer; }
   .crm-consent input{ flex-shrink:0; width:18px; height:18px; margin:2px 0 0; accent-color:var(--violet); }
   .crm-consent input:focus-visible{ outline:2px solid var(--skyblue); outline-offset:3px; }
@@ -622,7 +611,7 @@
   #screenTitle .title-logo.brand-white-word{ filter:brightness(0) invert(1); clip-path:inset(76% 0 0 0); pointer-events:none; }
   #screenTitle .wordmark.t1{ color:#fff; background:none; -webkit-text-fill-color:#fff; }
   @media(max-width:700px){ #screenTitle .brand-logo-stack .title-logo{ width:min(26vw,100px); height:auto; max-height:none; } }
-  @media(max-width:360px){ .risk-options{ gap:6px; } .risk-option span{ font-size:11px; } }
+  @media(max-width:360px){ }
   @media(max-height:520px){
     #screenRegistration{ padding-top:16px; padding-bottom:16px; }
     .registration-eyebrow{ margin-top:12px; }
@@ -739,9 +728,9 @@
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<link rel="stylesheet" href="journey.css">
+
 <style id="tvDisplayStyles">
-/* Public display: equal leaderboard and reward-guide halves. */
+/* Public display: daily leaderboard beside SIL motion video. */
 #tvScreen{padding:clamp(16px,2.4vh,30px) clamp(18px,2.2vw,40px);align-items:stretch;gap:14px;text-align:left}
 #tvScreen .tv-display-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex:none}
 #tvScreen .tv-brand{color:#fff;font-size:clamp(20px,2vw,30px);letter-spacing:-.7px;text-transform:none}
@@ -764,25 +753,8 @@
 #tvScreen .tv-guide-panel{min-width:0;min-height:0;display:flex;flex-direction:column;gap:clamp(9px,1.3vh,16px);padding:clamp(14px,1.5vw,24px);border:1px solid #9b71d840;border-radius:20px;background:linear-gradient(150deg,#7c3aed18,#0a132233);overflow:auto;touch-action:pan-y;overscroll-behavior:contain}
 #tvScreen .tv-guide-heading h2{font-size:clamp(23px,2.2vw,35px);line-height:1.1;letter-spacing:-.6px;margin:7px 0;color:#fff}
 #tvScreen .tv-guide-heading>p:last-child{font-size:clamp(11px,1vw,15px);color:#b6aecb;margin:0;line-height:1.5}
-#tvScreen .tv-reward-basics,#tvScreen .tv-dlc-rewards{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
-#tvScreen .tv-reward-card{min-width:0;border:1px solid #b69de127;background:#ffffff03;border-radius:12px;padding:clamp(10px,1vw,16px)}
-#tvScreen .tv-reward-card.record{border-color:#ffd76a35;background:#ffd76a05}
-#tvScreen .tv-reward-card.kyc{border-color:#a855f74a;background:#7c3aed0c}
-#tvScreen .tv-reward-card.transact{border-color:#10b98148;background:#10b98107}
-#tvScreen .tv-reward-step{font-size:clamp(8px,.7vw,11px);font-weight:800;letter-spacing:.7px;color:#bda7ee;display:block}
-#tvScreen .record .tv-reward-step{color:#e3c379}
-#tvScreen .transact .tv-reward-step{color:#81d7bb}
-#tvScreen .tv-reward-card h3{font-size:clamp(12px,1.15vw,18px);line-height:1.35;margin:7px 0;color:#fff}
-#tvScreen .tv-reward-card>strong{display:block;font-size:clamp(14px,1.35vw,21px);line-height:1.3;color:#e7d7ff}
 #tvScreen .record>strong{color:#ffd76a}
 #tvScreen .transact>strong{color:#8ee5c8}
-#tvScreen .tv-reward-card p{font-size:clamp(10px,.86vw,13px);line-height:1.55;color:#b7afc9;margin:8px 0 0}
-#tvScreen .tv-reward-card small{display:block;font-size:clamp(10px,.8vw,12px);line-height:1.45;color:#c5b9d8;margin-top:8px}
-#tvScreen .tv-reward-card small b{font-weight:600;color:#eee5ff}
-#tvScreen .tv-dlc-note{display:flex;align-items:center;gap:10px;color:#baa9df;padding:0 3px}
-#tvScreen .tv-dlc-note>span{font-size:24px;color:#8ed9c8}
-#tvScreen .tv-dlc-note p{margin:0;font-size:clamp(10px,.8vw,12px);line-height:1.5}
-#tvScreen .tv-dlc-note b{color:#d8c8fa;font-weight:600}
 #tvScreen .tv-scan-zone{margin-top:0;display:flex;align-items:center;gap:clamp(12px,1.5vw,22px);padding:0 0 12px;border-bottom:1px solid #ffffff16}
 #tvScreen .tv-qr-link{display:block;flex:none;width:clamp(140px,14vw,220px);margin:0;border-radius:10px;background:#fff}
 #tvScreen .tv-qr-link img{width:100%;height:auto;display:block}
@@ -791,7 +763,6 @@
 #tvScreen .tv-scan-copy>p:not(.tv-pane-eyebrow){font-size:clamp(10px,.9vw,14px);line-height:1.5;margin:7px 0;color:#b8b3cf}
 #tvScreen .tv-scan-copy .tv-scan-crew{color:#d6c8ef}
 #tvScreen .tv-game-link{font-size:clamp(10px,.85vw,13px);display:inline-block;margin-top:5px;color:#9dddcf;text-decoration:underline}
-#tvScreen .tv-reward-boundary{font-size:clamp(9px,.75vw,11px);line-height:1.5;color:#a29ab7;margin:0}
 @media(min-width:701px) and (max-height:720px){
   #tvScreen{padding:14px 20px;gap:10px}
   #tvScreen .tv-brand{font-size:20px}
@@ -804,16 +775,10 @@
   #tvScreen .tv-guide-panel{padding:12px;gap:8px;border-radius:16px}
   #tvScreen .tv-guide-heading h2{font-size:23px;margin:5px 0}
   #tvScreen .tv-guide-heading>p:last-child{font-size:10px}
-  #tvScreen .tv-reward-card{padding:9px}
-  #tvScreen .tv-reward-card h3{font-size:12px;margin:3px 0}
-  #tvScreen .tv-reward-card>strong{font-size:14px}
-  #tvScreen .tv-reward-card p,#tvScreen .tv-reward-card small{font-size:10px;margin-top:3px;line-height:1.4}
   #tvScreen .tv-qr-link{width:128px}
   #tvScreen .tv-scan-zone{padding-bottom:8px;gap:12px}
   #tvScreen .tv-scan-copy h2{font-size:22px;margin:5px 0}
   #tvScreen .tv-scan-copy>p:not(.tv-pane-eyebrow){font-size:10px;margin:5px 0}
-  #tvScreen .tv-reward-boundary{font-size:9px;line-height:1.4}
-  #tvScreen .tv-dlc-note p{font-size:9px;line-height:1.4}
 }
 @media(min-width:701px) and (max-width:900px){
   #tvScreen{padding:20px 16px}
@@ -824,7 +789,6 @@
   #tvScreen .tv-name,#tvScreen .tv-score,#tvScreen .tv-rank{font-size:18px}
   #tvScreen .tv-row.top1 .tv-name,#tvScreen .tv-row.top1 .tv-score{font-size:21px}
   #tvScreen .tv-guide-heading h2{font-size:23px}
-  #tvScreen .tv-reward-card{padding:10px}
   #tvScreen .tv-qr-link{width:128px}
   #tvScreen .tv-scan-zone{gap:10px}
   #tvScreen .tv-scan-copy h2{font-size:20px}
@@ -852,38 +816,22 @@
 .official-attempt-note{font-size:11px;line-height:1.6;color:#bdb5d5;max-width:420px;margin:10px auto;white-space:normal}
 #screenTitle .official-attempt-note{font-size:10px;max-width:360px;margin:7px auto}
 #nameInput{max-width:min(320px,80vw);font-size:20px!important;letter-spacing:0!important;text-transform:none!important}
-.social-follow{font-size:10px;line-height:1.7;color:#b9aed4;margin:10px 0 14px}
-.social-follow b,.social-follow span{display:block}.social-follow a{color:#c9baff;text-decoration:underline;overflow-wrap:anywhere}
-#tvScreen .social-follow{font-size:10px;line-height:1.5;margin:0}
 #tvScreen .tv-name{font-size:clamp(13px,1.4vw,23px);text-transform:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;letter-spacing:0}
 #tvScreen .tv-row.top1 .tv-name{font-size:clamp(14px,1.5vw,24px)}
 /* Full-width guide rows keep the complete offer readable on iPad landscape. */
 @media(min-width:701px){
  #tvScreen .tv-guide-panel{gap:9px}
- #tvScreen .tv-reward-basics,#tvScreen .tv-dlc-rewards{display:contents}
- #tvScreen .tv-reward-card{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-rows:auto auto auto;gap:2px 12px;padding:10px 12px}
- #tvScreen .tv-reward-card .tv-reward-step{grid-column:1;font-size:8px;letter-spacing:.3px}
- #tvScreen .tv-reward-card h3{grid-column:1;font-size:12px;line-height:1.25;margin:2px 0}
- #tvScreen .tv-reward-card>strong{grid-column:1;font-size:13px;line-height:1.3}
- #tvScreen .tv-reward-card>p{grid-column:2;grid-row:1 / 4;align-self:center;font-size:11px;line-height:1.4;margin:0}
- #tvScreen .tv-dlc-note p{font-size:10px}
- #tvScreen .tv-reward-boundary{font-size:9px}
 }
 @media(min-width:701px) and (max-height:720px){
  #tvScreen .tv-guide-panel{gap:7px}
- #tvScreen .tv-reward-card{padding:8px 10px}
- #tvScreen .tv-reward-card>p{font-size:10px}
- #tvScreen .tv-dlc-note{display:none}
 }
 @media(min-width:701px) and (max-width:900px){
- #tvScreen .tv-reward-card{grid-template-columns:1fr;gap:2px}
- #tvScreen .tv-reward-card>p{grid-column:1;grid-row:auto;font-size:10px}
  #tvScreen .tv-guide-panel{gap:8px}
 }
 </style>
 
 <style id="directorReviewStyles">
-/* Game outcome is deliberately separate from the participant's selected risk profile. */
+/* Game outcome is an educational category, not an investment risk assessment. */
 .journey-profile{--profile-color:#7dd3fc;width:min(100%,680px);margin:0 auto 18px;padding:18px 22px;border:1px solid color-mix(in srgb,var(--profile-color) 40%,transparent);border-radius:18px;background:linear-gradient(120deg,#17102ddd,#091620dd);text-align:left;box-sizing:border-box}
 .journey-profile[data-category="konservatif"]{--profile-color:#7dd3fc}
 .journey-profile[data-category="moderat"]{--profile-color:#c4b5fd}
@@ -950,29 +898,12 @@
  #nameOverlay .journey-profile .profile-disclaimer{font-size:9px;margin-top:6px}
 }
 </style>
+<link rel="stylesheet" href="education.css?v=20261104-v2">
 </head>
 <body>
 <div id="stage">
   <canvas id="game"></canvas>
-  <div id="dlcGate" class="overlay hidden dlc-gate" role="dialog" aria-modal="true" aria-labelledby="dlcGateTitle">
-    <form id="dlcPinForm" class="dlc-gate-panel">
-      <img src="assets/siminvest-rocket.png" class="gate-rocket" alt="Roket SimInvest ungu">
-      <p class="dlc-eyebrow">NEXT CHAPTER · RETURN TO EARTH</p>
-      <h2 id="dlcGateTitle">COMPLETE REGISTRATION</h2><p id="dlcGateDescription"></p>
-      <p class="gate-reward" id="dlcGateReward"></p>
-      <label for="dlcPin">PIN dari crew</label>
-      <input id="dlcPin" type="password" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" placeholder="• • • •" required>
-      <p id="dlcPinError" role="status" aria-live="polite"></p>
-      <button type="submit" class="btn" id="dlcUnlock">BUKA MISI PULANG</button>
-      <button type="button" class="text-btn" id="dlcGateBack">Kembali ke Journey Ended</button>
-      <p class="gate-footnote">Setelah terbuka, kembalikan HP ke pemain. Pemain yang menekan START.</p>
-    </form>
-  </div>
-  <section id="dlcFlight" class="hidden" aria-label="Misi pulang ke Bumi 3D">
-    <div id="dlcLoading"><div><p role="status">Menyiapkan roket untuk perjalanan pulang…</p><button type="button" class="text-btn" id="dlcLoadBack">Kembali ke Journey Ended</button></div></div>
-    <iframe id="dlcFrame" title="Return to Earth — DLC 3D" allow="autoplay" src="about:blank"></iframe>
-  </section>
-  <div id="localPreviewBadge" class="hidden">PREVIEW · DATA LOKAL · TIDAK ADA KLAIM HADIAH</div>
+  <div id="localPreviewBadge" class="hidden"><span>PREVIEW · DATA SIMULASI LOKAL</span><button id="resetGamePreview" type="button">ULANGI DEMO</button></div>
 
   <button id="muteBtn" aria-label="Mute">🔊</button>
 
@@ -1046,7 +977,7 @@
       <div class="registration-brand">SimInvest</div>
       <div class="registration-eyebrow">TO THE MOON · SEBELUM MULAI</div>
       <h1 id="registrationHeading">Kenalan dulu,<br>baru meluncur.</h1>
-      <p class="registration-intro">Isi email, nomor HP, dan pilih profil risiko kamu untuk melanjutkan ke permainan.</p>
+      <p class="registration-intro">Isi email dan nomor HP kamu untuk melanjutkan ke permainan.</p>
       <form id="participantForm" novalidate>
         <div class="registration-field">
           <label for="participantEmail">Email</label>
@@ -1059,14 +990,6 @@
           <p class="field-hint" id="participantPhoneHint">Gunakan nomor HP Indonesia: 08… atau +628…</p>
           <p class="field-error" id="participantPhoneError" aria-live="polite"></p>
         </div>
-        <fieldset class="risk-field">
-          <legend>Profil risiko</legend>
-          <div class="risk-options">
-            <label class="risk-option"><input type="radio" name="riskProfile" value="konservatif" required><span>Konservatif</span></label>
-            <label class="risk-option"><input type="radio" name="riskProfile" value="moderat" required><span>Moderat</span></label>
-            <label class="risk-option"><input type="radio" name="riskProfile" value="agresif" required><span>Agresif</span></label>
-          </div>
-        </fieldset>
         <label class="crm-consent" for="participantMarketingConsent">
           <input id="participantMarketingConsent" name="marketingConsent" type="checkbox">
           <span>Saya bersedia dihubungi SimInvest melalui telepon atau WhatsApp untuk informasi dan promosi produk investasi.</span>
@@ -1147,7 +1070,7 @@
           <div class="k-effect">CLEAR SCREEN</div>
         </div>
       </div>
-      <div class="knowledge-note">*Claim berlaku sesuai periode, syarat, dan ketentuan yang berlaku.</div>
+
     </div>
 
     <div class="title-control-picker" id="titleControlPicker">
@@ -1176,37 +1099,41 @@
   </div>
 
   <!-- GAME OVER -->
-  <div id="screenOver" class="overlay hidden journey-screen">
-    <div class="journey-shell">
-      <header class="journey-heading"><div class="wordmark t2">JOURNEY ENDED</div><p>Misi pertama selesai. Perjalananmu masih berlanjut.</p></header>
-      <section class="journey-profile hidden" data-round-profile role="status" aria-live="polite"></section>
-      <div class="journey-grid">
-        <section class="journey-score"><div class="breakdown" id="overBreakdown"></div><div class="newhigh hidden" id="newHighTag">NEW HIGH SCORE</div>
-          <p class="official-attempt-note" role="status"></p><button class="btn" id="btnAgain1">PLAY AGAIN</button>
-          <button type="button" class="text-btn change-player">Ganti pemain</button>
-          <div class="board"><div class="board-col"><h3>LEADERBOARD HARI INI · EMAIL</h3><ol id="boardScores"></ol></div></div>
+  <div id="screenOver" class="overlay hidden result-screen">
+    <main class="result-shell">
+      <header class="result-heading"><span class="result-brand">SimInvest <small>TO THE MOON</small></span><p>PERJALANAN SELESAI</p><h1>Kenali langkah investasimu berikutnya.</h1></header>
+      <div class="result-grid">
+        <section class="result-summary" aria-label="Hasil ronde">
+          <section class="journey-profile hidden" data-round-profile role="status" aria-live="polite"></section>
+          <div class="result-score"><span>SKOR AKHIR</span><strong data-final-score>0</strong><div class="newhigh hidden" id="newHighTag">NEW HIGH SCORE</div></div>
+          <p class="official-attempt-note" role="status"></p>
+          <div class="result-actions"><button class="btn" id="btnAgain1" type="button">PLAY AGAIN</button><button type="button" class="text-btn change-player">Ganti pemain</button></div>
+          <details class="result-details"><summary>Rincian skor</summary><div class="breakdown" id="overBreakdown"></div></details>
+          <details class="result-details"><summary>Leaderboard hari ini</summary><div class="board"><ol id="boardScores"></ol></div></details>
         </section>
-        <section class="journey-rewards" aria-label="Hadiah dan misi lanjutan"></section>
+        <section class="investor-education" data-investor-education aria-label="Kenali investor dan pilihan investasi"></section>
       </div>
-      <div class="tagline">Real Growth Starts Here</div>
-    </div>
+      <p class="result-footer">Real Growth Starts Here</p>
+    </main>
   </div>
 
   <!-- MOON SUCCESS -->
-  <div id="screenMoon" class="overlay hidden journey-screen">
-    <div class="journey-shell">
-      <header class="journey-heading"><div class="wordmark t2">YOU MADE IT TO THE MOON</div><p>Sekarang waktunya membawa roketmu pulang ke Bumi.</p></header>
-      <section class="journey-profile hidden" data-round-profile role="status" aria-live="polite"></section>
-      <div class="journey-grid">
-        <section class="journey-score"><div class="breakdown" id="moonBreakdown"></div>
-          <p class="official-attempt-note" role="status"></p><button class="btn" id="btnAgain2">PLAY AGAIN</button>
-          <button type="button" class="text-btn change-player">Ganti pemain</button>
-          <div class="board"><div class="board-col"><h3>LEADERBOARD HARI INI · EMAIL</h3><ol id="boardScores2"></ol></div></div>
+  <div id="screenMoon" class="overlay hidden result-screen">
+    <main class="result-shell">
+      <header class="result-heading"><span class="result-brand">SimInvest <small>TO THE MOON</small></span><p>MISI BERHASIL · 100%</p><h1>Kamu berhasil mencapai bulan.</h1></header>
+      <div class="result-grid">
+        <section class="result-summary" aria-label="Hasil ronde">
+          <section class="journey-profile hidden" data-round-profile role="status" aria-live="polite"></section>
+          <div class="result-score"><span>SKOR AKHIR</span><strong data-final-score>0</strong></div>
+          <p class="official-attempt-note" role="status"></p>
+          <div class="result-actions"><button class="btn" id="btnAgain2" type="button">PLAY AGAIN</button><button type="button" class="text-btn change-player">Ganti pemain</button></div>
+          <details class="result-details"><summary>Rincian skor</summary><div class="breakdown" id="moonBreakdown"></div></details>
+          <details class="result-details"><summary>Leaderboard hari ini</summary><div class="board"><ol id="boardScores2"></ol></div></details>
         </section>
-        <section class="journey-rewards" aria-label="Hadiah dan misi lanjutan"></section>
+        <section class="investor-education" data-investor-education aria-label="Kenali investor dan pilihan investasi"></section>
       </div>
-      <div class="tagline">Real Growth Starts Here</div>
-    </div>
+      <p class="result-footer">Real Growth Starts Here</p>
+    </main>
   </div>
 
   <!-- NAME ENTRY -->
@@ -1284,7 +1211,6 @@ function createLocalPreviewClient(){
           sessions.set(p.p_session_token,{key,used:saved.used,display:maskEmail(p.p_email)});
           return {data:{session_token:p.p_session_token,display_email:maskEmail(p.p_email),officials_used:saved.used,remaining:2-saved.used},error:null};
         }
-        if(name==='simoon_record_stats')return {data:{record_breaks:0},error:null};
         const s=sessions.get(p.p_session_token);
         if(!s)throw new Error('invalid_session');
         if(name==='simoon_begin_round'){
@@ -2231,7 +2157,15 @@ function endRun(reachedMoon){
   showNameEntry(reachedMoon);
 }
 let pendingMoon=false;
+function clearGameplayMessages(){
+  for(const id of ['activePowerups','powerTag','comboTag','eventBanner','nearMissTag']){
+    const el=document.getElementById(id);
+    if(el){el.style.opacity='0';if(id==='activePowerups')el.replaceChildren();}
+  }
+  activePowerupSignature='';
+}
 function showNameEntry(reachedMoon){
+  clearGameplayMessages();
   renderRoundOutcome();
   pendingMoon = reachedMoon;
   const overlay = document.getElementById('nameOverlay');
@@ -2249,6 +2183,7 @@ document.getElementById('btnNameOk').addEventListener('click', confirmName);
 document.getElementById('nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') confirmName(); });
 
 function showOverScreen(scores, isNewHigh){
+  clearGameplayMessages();
   hideAllScreens();
   document.getElementById('screenOver').classList.remove('hidden');
   renderRoundOutcome();
@@ -2264,10 +2199,11 @@ function showOverScreen(scores, isNewHigh){
   `;
   document.getElementById('newHighTag').classList.toggle('hidden', !isNewHigh);
   renderBoard(document.getElementById('boardScores'), scores);
-  renderJourneyRewards(isNewHigh);
+  renderInvestorEducation();
   refreshTitleBest();
 }
 function showMoonScreen(scores){
+  clearGameplayMessages();
   hideAllScreens();
   document.getElementById('screenMoon').classList.remove('hidden');
   renderRoundOutcome();
@@ -2280,12 +2216,12 @@ function showMoonScreen(scores){
     <div class="row total"><span>TOTAL</span><span>${fmt(score)}</span></div>
   `;
   renderBoard(document.getElementById('boardScores2'), scores);
-  renderJourneyRewards(false);
+  renderInvestorEducation();
   refreshTitleBest();
   SFX.cure();
 }
 function hideAllScreens(){
-  ['screenRegistration','screenTitle','screenInstr','screenOver','screenMoon','nameOverlay','controlOverlay','dlcGate'].forEach(id=>{
+  ['screenRegistration','screenTitle','screenInstr','screenOver','screenMoon','nameOverlay','controlOverlay'].forEach(id=>{
     document.getElementById(id).classList.add('hidden');
   });
   refreshControlUI();
@@ -2478,6 +2414,8 @@ let activePowerupSignature='';
 function updateActivePowerups(now=Date.now()){
   const el=document.getElementById('activePowerups');
   if(!el) return;
+  if(state!==STATE.PLAYING){el.replaceChildren();activePowerupSignature='';el.style.opacity='0';return;}
+  el.style.opacity='1';
   const items=[];
   const left=(end)=>Math.max(0,(end-now)/1000);
   if(now<turboEnd) items.push({name:'TURBO',sec:left(turboEnd),color:'#C59CFF'});
@@ -3491,16 +3429,14 @@ const participantForm = document.getElementById('participantForm');
 const participantEmail = document.getElementById('participantEmail');
 const participantPhone = document.getElementById('participantPhone');
 const participantMarketingConsent = document.getElementById('participantMarketingConsent');
-const riskLabels = {konservatif:'Konservatif', moderat:'Moderat', agresif:'Agresif'};
 function readParticipantForm(){
   const email = participantEmail.value.trim().toLowerCase();
   const phone = participantPhone.value.trim().replace(/[\s()-]/g,'');
-  const riskProfile = participantForm.querySelector('input[name="riskProfile"]:checked')?.value || '';
-  return {email, phone, riskProfile, marketingOptIn:participantMarketingConsent.checked};
+  return {email, phone, marketingOptIn:participantMarketingConsent.checked};
 }
 function validEmail(email){ return typeof email==='string' && email.length>=5 && email.length<=254 && /^[^\s@]{1,64}@[^\s@.]+(?:\.[^\s@.]+)+$/.test(email); }
 function validPhone(phone){ return /^(?:08\d{8,11}|\+?628\d{8,11})$/.test(phone); }
-function validParticipant(data){ return !!data && validEmail(data.email) && validPhone(data.phone) && Object.hasOwn(riskLabels,data.riskProfile); }
+function validParticipant(data){ return !!data && validEmail(data.email) && validPhone(data.phone); }
 function hasSavedParticipant(){ return validParticipant(participant) && participant.saved === true && !!participant.registrationId; }
 function normalizePhone(phone){ return phone.startsWith('0') ? '+62'+phone.slice(1) : '+'+phone.replace(/^\+/,''); }
 function registrationId(){
@@ -3518,7 +3454,7 @@ function refreshParticipantForm(){
   participantForm.querySelectorAll('input').forEach(field=>field.disabled=registrationSaving);
   const status=document.getElementById('registrationStatus');
   status.classList.toggle('error',!!registrationFailure);
-  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi email, nomor HP yang valid, dan satu profil risiko.');
+  status.textContent = registrationSaving ? 'Menyimpan data pendaftaran…' : registrationFailure || (valid ? 'Sudah lengkap. Data akan disimpan sebelum kamu melanjutkan.' : 'Lengkapi email dan nomor HP yang valid.');
   document.getElementById('btnRegistrationContinue').textContent=registrationSaving ? 'MENYIMPAN…' : registrationFailure ? 'COBA SIMPAN LAGI →' : 'SIMPAN & LANJUT →';
   participantForm.setAttribute('aria-busy',String(registrationSaving));
   for(const [field,ok,msg] of [
@@ -3544,13 +3480,13 @@ participantForm.addEventListener('change',onParticipantEdit);
 async function saveParticipant(data){
   if(!supabaseClient) throw new Error('client_unavailable');
   const normalizedPhone=normalizePhone(data.phone);
-  const signature=JSON.stringify([data.email,normalizedPhone,data.riskProfile,data.marketingOptIn]);
+  const signature=JSON.stringify([data.email,normalizedPhone,data.marketingOptIn]);
   if(!pendingRegistration || pendingRegistration.signature!==signature){
     pendingRegistration={id:registrationId(),signature};
   }
   const {data:result,error}=await eventRpc('simoon_register_event',{
     p_session_token:pendingRegistration.id,p_email:data.email,p_phone:normalizedPhone,
-    p_risk:data.riskProfile,p_marketing:data.marketingOptIn,p_device:getCentralDeviceId()
+    p_risk:null,p_marketing:data.marketingOptIn,p_device:getCentralDeviceId()
   });
   if(error)throw error;
   if(!result?.session_token || !Number.isInteger(result.remaining))throw new Error('invalid_registration_response');
@@ -3632,7 +3568,7 @@ participantForm.addEventListener('submit',async event=>{
   if(!refreshParticipantForm()){
     participantEmail.dataset.touched='true'; participantPhone.dataset.touched='true';
     refreshParticipantForm();
-    (!validEmail(readParticipantForm().email) ? participantEmail : !validPhone(readParticipantForm().phone) ? participantPhone : participantForm.querySelector('input[name="riskProfile"]')).focus();
+    (!validEmail(readParticipantForm().email) ? participantEmail : participantPhone).focus();
     return;
   }
   const data=readParticipantForm();
@@ -3643,7 +3579,7 @@ participantForm.addEventListener('submit',async event=>{
     participant = Object.freeze(await saveParticipant(data));
     hideAllScreens();
     state=STATE.TITLE;
-    document.getElementById('participantSummary').textContent = participant.name+' · '+riskLabels[participant.riskProfile];
+    document.getElementById('participantSummary').textContent = participant.name;
     document.getElementById('btnStart').disabled=false;
     document.getElementById('screenTitle').classList.remove('hidden');
     refreshControlUI();
@@ -3661,11 +3597,10 @@ participantForm.addEventListener('submit',async event=>{
 });
 function showRegistration(clear=false){
   if(TV_MODE || registrationSaving || roundStarting || centralSubmitting) return;
-  roundOutcome=null;renderRoundOutcome();
+  roundOutcome=null;renderRoundOutcome();clearGameplayMessages();
   if(state===STATE.REGISTRATION && !clear){ refreshParticipantForm(); return; }
   clearInterval(countdownInterval);
   participant=null;
-  dlcProgress=null;dlcIdentity=null;
   state=STATE.REGISTRATION;
   hideAllScreens();
   document.getElementById('hud').classList.add('hidden');
@@ -3684,160 +3619,68 @@ function showRegistration(clear=false){
 document.getElementById('btnEditParticipant').addEventListener('click',()=>showRegistration());
 document.querySelectorAll('.change-player').forEach(button=>button.addEventListener('click',()=>showRegistration(true)));
 
-/* ============ JOURNEY ENDED -> RETURN TO EARTH ============ */
-let dlcActive=false, dlcProgress=null, dlcIdentity=null, dlcTrack=null, dlcRound=null, dlcOriginScreen='screenOver';
-let lastJourneyNewHigh=false;
-const dlcTracks={
-  kyc:{title:'COMPLETE REGISTRATION',cta:'DLC · REGISTRATION',reward:'Parfum 10ml + Sticker Pack',fallback:'',description:'Selesaikan opening account dan follow sosial media kita untuk mendapatkan Parfum 10ml + Sticker Pack. Crew memeriksa status Complete Registration sebelum membuka DLC.'},
-  transact:{title:'TRANSACT',cta:'DLC · TRANSACT',reward:'Parfum 50ml + merchandise yang tersedia',fallback:'',description:'Transaksi Reksa Dana minimal Rp10.000.000, berlaku untuk semua produk Reksa Dana di SimInvest. Atau khusus hari Jumat, transaksi saham minimal Rp25.000.000. Dapatkan Parfum 50ml + merchandise tersedia setelah diperiksa crew.'}
+/* ============ INVESTOR EDUCATION ============ */
+const educationSources={
+  profiles:'https://help.siminvest.id/kenali-profil-risiko/',
+  rupiahPlus:'https://www.banksinarmas.com/id/personal/produk/reksadana/danamas-rupiah-plus&lang=id',
+  pasti:'https://www.banksinarmas.com/id/personal/produk/reksadana/danamas-pasti',
+  stabil:'https://www.banksinarmas.com/id/personal/produk/reksadana/danamas-stabil&lang=en&lang=id',
+  syariah:'https://media.bareksa.com/uploads/file_doc/2026/06/ACOFSFS_factsheet.pdf',
+  sahamAI:'https://www.youtube.com/watch?v=71ZH7vlxfM4',
+  fees:'https://www.sinarmassekuritas.co.id/fee-transaksi-saham-terbaru-di-sinarmas-sekuritas',
+  siminvest:'https://siminvest.id/'
 };
-const bottleIcon='<svg viewBox="0 0 70 90" aria-hidden="true"><defs><linearGradient id="bottleFill" x2="1" y2="1"><stop stop-color="#A855F7"/><stop offset="1" stop-color="#2563EB"/></linearGradient></defs><rect x="25" y="5" width="20" height="14" rx="3" fill="#d6c9fd"/><rect x="20" y="17" width="30" height="8" rx="2" fill="#a78bfa"/><rect x="12" y="25" width="46" height="57" rx="11" fill="url(#bottleFill)" stroke="#d6c9fd" stroke-width="2"/><rect x="18" y="43" width="34" height="21" rx="3" fill="#f1ebff"/><path d="M24 31v43" stroke="#fff" stroke-width="3" opacity=".23"/><text x="35" y="56" font-size="5" text-anchor="middle" fill="#403065">SCENT OF WEALTH</text></svg>';
-function stockText(code){
-  const s=window.simoonRewardStock?.[code];
-  if(!s || !Number.isInteger(s.remaining) || s.remaining<0) return 'Sisa hadiah: cek ketersediaan ke crew';
-  return 'Sisa parfum '+(code==='scent10'?'10ml':'50ml')+': '+s.remaining+' · snapshot '+new Date(s.updated_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-}
-function renderJourneyRewards(newHigh=lastJourneyNewHigh){
-  lastJourneyNewHigh=!!newHigh;
-  for(const mount of document.querySelectorAll('.journey-rewards')){
-    const record=centralLoaded && !PREVIEW_MODE ? centralHigh().toLocaleString('id-ID') : PREVIEW_MODE ? 'Skor lokal preview' : 'Menunggu leaderboard';
-    const recordCount=Number.isInteger(window.simoonRecordBreaks) ? window.simoonRecordBreaks+' kali rekor dipecahkan hari ini' : 'Rekor harian mengikuti leaderboard Galaga';
-    mount.innerHTML=`<div class="reward-intro"><p class="dlc-eyebrow">YOUR JOURNEY CONTINUES</p><h2>Hadiahmu. Misi berikutnya.</h2><p>Roket yang sama. Bab berikutnya: perjalanan pulang dari bulan ke Bumi.</p></div>
-      <div class="reward-summary"><div><span>DOWNLOAD SIMINVEST</span><b>Sticker Pack + Parfum 5ml</b><small>Download SimInvest, isi nomor HP hingga verifikasi email di aplikasi SimInvest, lalu follow IG @Sinarmas_Sekuritas, @Sinarmas_am, dan @Sim_Invest. Tunjukkan ke crew untuk mendapat Parfum 5ml + Sticker Pack.</small></div><div class="sticker-art" aria-hidden="true">↗<i>SIMINVEST</i></div></div>
-      <div class="social-follow"><b>Wajib follow IG untuk hadiah Download &amp; Complete Registration:</b><span><a href="https://www.instagram.com/Sinarmas_Sekuritas/" target="_blank" rel="noopener">@Sinarmas_Sekuritas</a> · <a href="https://www.instagram.com/Sinarmas_am/" target="_blank" rel="noopener">@Sinarmas_am</a> · <a href="https://www.instagram.com/Sim_Invest/" target="_blank" rel="noopener">@Sim_Invest</a></span></div><div class="record-reward"><div class="reward-art small-bottle">${bottleIcon}</div><div><span>BID HIGHEST SCORE · GALAGA</span><b>Parfum 10ml</b><p>Highest score hari ini: <strong>${record}</strong></p><small>${recordCount}. ${stockText('scent10')}</small><p class="record-note">${newHigh?'Skor baru terdeteksi. Minta crew memeriksa rekor dan kelayakan klaim.':'Pecahkan rekor untuk jalur hadiah high score. Complete Registration adalah jalur hadiah tersendiri.'}</p></div></div>
-      <div class="dlc-options">${Object.entries(dlcTracks).map(([track,t])=>{
-        const progress=dlcProgress?.tracks?.[track];
-        const used=progress?.attempts||0;
-        const run=progress?.runs?.at(-1);
-        return `<article class="dlc-card ${track}"><div class="dlc-card-top"><div class="reward-art">${bottleIcon}<span>${track==='kyc'?'10':'50'}ml</span></div><div><span class="dlc-eyebrow">${track==='kyc'?'01 · ACCOUNT MISSION':'02 · INVESTMENT MISSION'}</span><h3>${t.title}</h3><p class="reward-name">${t.reward}</p></div></div><p>${t.description}</p><div class="dlc-card-status">${stockText(track==='kyc'?'scent10':'scent50')}</div>${run?`<div class="last-dlc-score">RETURN MISSION · ${Math.round(run.score).toLocaleString('id-ID')} PTS</div>`:''}<button type="button" class="btn dlc-open" data-dlc-track="${track}" ${used>=2?'disabled':''}>${used>=2?'2 KESEMPATAN SELESAI':progress?.verified?'LANJUT MISI PULANG':'BUKA '+t.cta}<span>↗</span></button><div class="dlc-attempts">${2-used}/2 kesempatan · Use finger · 3D return flight</div></article>`;
-      }).join('')}</div><p class="journey-claim-note">Complete Registration / transaksi diverifikasi crew. Skor DLC tidak mengurangi hak hadiah dari verifikasi. Hadiah diserahkan sesuai stok; belum dianggap diklaim saat game selesai.</p>`;
+const educationProfiles={
+  konservatif:{
+    label:'Konservatif',eyebrow:'KENALI GAYA INVESTASI',headline:'Utamakan kestabilan. Mulai dengan memahami risikonya.',
+    description:'Investor konservatif umumnya lebih berhati-hati menghadapi fluktuasi dan mengutamakan kestabilan nilai investasi. Reksa dana pasar uang dapat menjadi salah satu jenis produk untuk dipelajari.',
+    chips:['Fluktuasi relatif rendah','Fokus kestabilan','Kenali likuiditas'],
+    products:[
+      {name:'Danamas Rupiah Plus',kind:'REKSA DANA PASAR UANG',icon:'01',pitch:'Kenali pengelolaan dana melalui instrumen pasar uang dan efek utang berjangka pendek.',detail:'Kebijakan produk menempatkan 100% pada instrumen pasar uang dan/atau efek utang dengan jatuh tempo kurang dari satu tahun. Tetap ada risiko kredit, likuiditas, dan perubahan nilai investasi.',source:'rupiahPlus'},
+      {name:'Danamas Rupiah',kind:'REKSA DANA PASAR UANG',icon:'02',pitch:'Alternatif pasar uang dari Sinarmas Asset Management untuk mengenal investasi dengan fluktuasi relatif lebih rendah.',detail:'Pelajari kebijakan investasi, biaya, dan waktu pencairan pada prospektus serta fund fact sheet terbaru. Risiko lebih rendah tidak berarti bebas risiko.',source:'profiles'}
+    ],alternative:{name:'Simas Kas Prima',kind:'ALTERNATIF PASAR UANG',pitch:'Pilihan pasar uang lain yang tercantum dalam panduan profil risiko SimInvest. Periksa informasi produk dan ketersediaannya di aplikasi.',source:'profiles'},
+    cta:'Kenali reksa dana di SimInvest'
+  },
+  moderat:{
+    label:'Moderat',eyebrow:'KENALI GAYA INVESTASI',headline:'Cari keseimbangan antara pertumbuhan dan risiko.',
+    description:'Investor moderat bersedia menerima fluktuasi dalam batas tertentu untuk mengejar potensi pertumbuhan. Reksa dana pendapatan tetap dapat dipelajari untuk tujuan investasi menengah hingga panjang.',
+    chips:['Seimbangkan risiko','Tujuan menengah–panjang','Kenali efek utang'],
+    products:[
+      {name:'Danamas Pasti',kind:'REKSA DANA PENDAPATAN TETAP',icon:'01',pitch:'Kenali potensi pendapatan melalui pengelolaan portofolio yang berfokus pada efek utang.',detail:'Nama “Pasti” adalah nama produk. Nilai investasi dan hasilnya tidak dijamin. Pelajari risiko pasar, kredit penerbit, dan likuiditas pada dokumen produk.',source:'pasti'},
+      {name:'Danamas Stabil',kind:'REKSA DANA PENDAPATAN TETAP',icon:'02',pitch:'Pengelolaan profesional dan diversifikasi efek utang untuk mengenal investasi pendapatan tetap.',detail:'Kebijakan produk menempatkan 80%–100% pada efek utang. Nilai investasi tetap dapat naik atau turun; “Stabil” tidak berarti imbal hasil tetap atau modal terjamin.',source:'stabil'}
+    ],alternative:{name:'Simas Syariah Pendapatan Tetap',kind:'ALTERNATIF BERBASIS SYARIAH',pitch:'Kenali pendapatan tetap sesuai prinsip syariah dengan kebijakan utama pada sukuk. Tetap terdapat risiko pasar, kredit, dan likuiditas.',source:'syariah'},
+    cta:'Jelajahi pilihan di SimInvest'
+  },
+  agresif:{
+    label:'Agresif',eyebrow:'KENALI GAYA INVESTASI',headline:'Kejar pertumbuhan jangka panjang. Pahami fluktuasinya.',
+    description:'Investor agresif umumnya bersedia menghadapi fluktuasi dan potensi kerugian yang lebih besar untuk mengejar pertumbuhan jangka panjang. Reksa dana saham dan saham dapat menjadi bahan eksplorasi.',
+    chips:['Potensi pertumbuhan','Fluktuasi lebih tinggi','Orientasi jangka panjang'],
+    products:[
+      {name:'Simas Danamas Saham',kind:'REKSA DANA SAHAM',icon:'AI',pitch:'Kenali pengelolaan investasi saham dengan dukungan analisis Artificial Intelligence (AI).',detail:'Publikasi resmi Sinarmas Sekuritas pada 2024 menjelaskan penggunaan AI dalam analisis dan pemilihan saham untuk rebalancing portofolio. Dukungan AI tidak menjamin keuntungan atau menghilangkan risiko pasar.',source:'sahamAI'},
+      {name:'Saham di SimInvest',kind:'TRANSAKSI SAHAM',icon:'↗',pitch:'Jelajahi transaksi saham dengan fee kompetitif dan dukungan informasi pasar di SimInvest.',detail:'Saham memiliki risiko fluktuasi harga dan kerugian modal. Lihat rincian fee serta ketentuan yang berlaku melalui kanal resmi SimInvest sebelum bertransaksi.',source:'fees'}
+    ],alternative:null,cta:'Jelajahi saham & reksa dana di SimInvest'
   }
-  if(hasSavedParticipant() && dlcIdentity!==participant.registrationId) loadJourneyProgress().catch(()=>{});
-}
-async function loadJourneyProgress(){
-  if(!hasSavedParticipant()) return false;
-  const current=participant;
-  if(dlcIdentity===current.registrationId && dlcProgress) return true;
-  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(normalizePhone(current.phone)+'|return-to-earth-v1'));
-  if(participant!==current) return false;
-  const digest=Array.from(new Uint8Array(bytes),v=>v.toString(16).padStart(2,'0')).join('');
-  const key=(PREVIEW_MODE?'simoon_preview_return_':'simoon_return_')+digest;
-  let stored=null;
-  try{stored=JSON.parse(localStorage.getItem(key)||'null');}catch{}
-  dlcProgress={key,tracks:{}};
-  for(const track of ['kyc','transact']){
-    const saved=stored?.tracks?.[track];
-    dlcProgress.tracks[track]={verified:false,attempts:Number.isInteger(saved?.attempts)?Math.min(2,Math.max(0,saved.attempts)):0,runs:Array.isArray(saved?.runs)?saved.runs.filter(r=>Number.isFinite(r.score)&&r.score>=0).slice(-2):[]};
+};
+function renderInvestorEducation(){
+  const profile=roundOutcome?educationProfiles[roundOutcome.category]:null;
+  for(const mount of document.querySelectorAll('[data-investor-education]')){
+    if(!profile){mount.replaceChildren();continue;}
+    mount.dataset.category=roundOutcome.category;
+    const card=p=>`<article class="product-card"><div class="product-card-top"><span class="product-icon" aria-hidden="true">${p.icon||'+'}</span><p class="education-eyebrow">${p.kind}</p></div><h3>${p.name}</h3><p>${p.pitch}</p><details class="product-details"><summary>Pelajari produk & risikonya</summary><p>${p.detail||p.pitch}</p><a href="${educationSources[p.source]}" target="_blank" rel="noopener noreferrer">Informasi sumber ↗</a></details></article>`;
+    mount.innerHTML=`<header class="education-heading"><p class="education-eyebrow">${profile.eyebrow} · ${profile.label.toUpperCase()}</p><h2>${profile.headline}</h2><p>${profile.description}</p><div class="education-chips">${profile.chips.map(c=>`<span>${c}</span>`).join('')}</div></header>
+      <div class="product-section-heading"><h2>Kenali pilihan investasinya</h2><span>Sinarmas Asset Management · SimInvest</span></div>
+      <div class="product-grid">${profile.products.map(card).join('')}</div>
+      ${profile.alternative?`<details class="product-alternative"><summary>${roundOutcome.category==='moderat'?'Pilihan berbasis syariah':'Lihat pilihan pasar uang lainnya'}</summary>${card(profile.alternative)}</details>`:''}
+      <div class="education-cta"><p>Saham dan reksa dana, dalam satu aplikasi.</p><a class="btn investment-cta" href="${educationSources.siminvest}" target="_blank" rel="noopener noreferrer">${profile.cta} <span aria-hidden="true">↗</span></a><small>Membuka situs resmi SimInvest. Periksa ketersediaan produk dan informasi terbaru di aplikasi.</small></div>
+      <details class="education-note"><summary>Catatan investasi & sumber</summary><p>Hasil permainan bersifat hiburan dan bukan penilaian profil risiko investasi. Sesuaikan keputusan dengan tujuan, kondisi keuangan, dan profil risiko investasi kamu. Investasi mengandung risiko; nilai investasi dapat turun. Baca prospektus dan fund fact sheet. Kinerja masa lalu tidak menjamin kinerja masa depan.</p><a href="${educationSources.profiles}" target="_blank" rel="noopener noreferrer">Panduan profil risiko SimInvest ↗</a></details>`;
   }
-  dlcIdentity=current.registrationId;
-  renderJourneyRewards(); return true;
-}
-function saveJourneyProgress(){
-  if(!dlcProgress) return;
-  try{localStorage.setItem(dlcProgress.key,JSON.stringify({tracks:Object.fromEntries(Object.entries(dlcProgress.tracks).map(([t,p])=>[t,{attempts:p.attempts,runs:p.runs}]))}));}catch{}
-}
-async function openDLCGate(track){
-  if(dlcActive || !dlcTracks[track] || !['screenOver','screenMoon'].some(id=>!document.getElementById(id).classList.contains('hidden'))) return;
-  if(!hasSavedParticipant()){showRegistration(); return;}
-  try{if(!await loadJourneyProgress()) return;}catch{alert('Browser belum bisa membuka sesi DLC. Coba muat ulang atau gunakan Chrome/Safari terbaru.');return;}
-  if(dlcProgress.tracks[track].attempts>=2) return;
-  dlcOriginScreen=!document.getElementById('screenMoon').classList.contains('hidden')?'screenMoon':'screenOver';
-  dlcTrack=track;
-  if(dlcProgress.tracks[track].verified){prepareDLC();return;}
-  const t=dlcTracks[track];
-  document.getElementById('dlcGateTitle').textContent=t.title;
-  document.getElementById('dlcGateDescription').textContent=t.description;
-  document.getElementById('dlcGateReward').textContent=t.reward;
-  document.getElementById('dlcPin').value='';
-  document.getElementById('dlcPinError').textContent='';
-  document.getElementById('dlcGate').classList.remove('hidden');
-  document.getElementById('dlcPin').focus({preventScroll:true});
-}
-document.addEventListener('click',event=>{const button=event.target.closest('[data-dlc-track]');if(button&&!button.disabled)openDLCGate(button.dataset.dlcTrack);});
-document.getElementById('dlcGateBack').addEventListener('click',()=>{document.getElementById('dlcGate').classList.add('hidden');document.getElementById('dlcPin').value='';});
-document.getElementById('dlcPinForm').addEventListener('submit',event=>{
-  event.preventDefault();
-  if(!hasSavedParticipant() || !dlcTrack || !dlcProgress || dlcProgress.tracks[dlcTrack].attempts>=2) return;
-  if(document.getElementById('dlcPin').value!=='8888'){document.getElementById('dlcPinError').textContent='PIN belum sesuai. Minta crew memeriksa kembali.';return;}
-  dlcProgress.tracks[dlcTrack].verified=true;
-  document.getElementById('dlcPin').value='';
-  document.getElementById('dlcGate').classList.add('hidden');
-  prepareDLC();
-});
-function prepareDLC(){
-  if(!hasSavedParticipant() || !dlcProgress?.tracks?.[dlcTrack]?.verified || dlcProgress.tracks[dlcTrack].attempts>=2) return;
-  dlcActive=true; dlcRound=null;
-  document.getElementById('dlcFlight').classList.remove('hidden');
-  document.getElementById('dlcLoading').classList.remove('hidden');
-  document.getElementById('dlcFrame').classList.remove('loaded');
-  // Reload isolates the 3D world's previous run and prepares the same purple rocket.
-  document.getElementById('dlcFrame').src='dlc/index.html';
-}
-function sendDLC(type,extra={}){document.getElementById('dlcFrame').contentWindow?.postMessage({type,...extra},location.origin);}
-function returnToJourney(){
-  dlcActive=false; dlcRound=null;
-  document.getElementById('dlcFlight').classList.add('hidden');
-  document.getElementById('dlcFrame').src='about:blank';
-  document.getElementById(dlcOriginScreen).classList.remove('hidden');
-  renderJourneyRewards();
-  document.querySelector('#'+dlcOriginScreen+' [data-dlc-track="'+dlcTrack+'"]')?.focus({preventScroll:true});
-}
-document.getElementById('dlcLoadBack').addEventListener('click',returnToJourney);
-if(PREVIEW_MODE){
-  const badge=document.getElementById('localPreviewBadge');
-  badge.innerHTML='<span>PREVIEW · DATA LOKAL · TIDAK ADA KLAIM HADIAH</span><button id="resetReturnPreview" type="button">RESET DEMO</button>';
-  document.getElementById('resetReturnPreview').addEventListener('click',async()=>{
-    if(!await loadJourneyProgress())return;
-    if(dlcActive)returnToJourney();
-    for(const p of Object.values(dlcProgress.tracks)){p.attempts=0;p.runs=[];p.verified=false;}
-    saveJourneyProgress();renderJourneyRewards();
-  });
-}
-window.addEventListener('message',event=>{
-  const frame=document.getElementById('dlcFrame');
-  if(!dlcActive || event.origin!==location.origin || event.source!==frame.contentWindow || !event.data || typeof event.data!=='object') return;
-  const p=dlcProgress?.tracks?.[dlcTrack];
-  if(event.data.type==='return-ready'){
-    // A child reload abandons its already-counted round; it cannot reclaim that attempt.
-    dlcRound=null;
-    sendDLC('prepare',{track:dlcTrack,remaining:2-p.attempts,preview:PREVIEW_MODE});
-    document.getElementById('dlcLoading').classList.add('hidden');frame.classList.add('loaded');
-  }else if(event.data.type==='return-error'){
-    document.getElementById('dlcLoading').classList.add('hidden');frame.classList.add('loaded');
-  }else if(event.data.type==='request-start'){
-    if(dlcRound || !hasSavedParticipant() || dlcIdentity!==participant.registrationId || !p?.verified || p.attempts>=2) return;
-    p.attempts++; saveJourneyProgress();
-    dlcRound={id:crypto.randomUUID(),settled:false};
-    sendDLC('approved-start',{roundId:dlcRound.id,remaining:2-p.attempts,track:dlcTrack});
-  }else if(event.data.type==='return-finished'){
-    if(!dlcRound || dlcRound.settled || event.data.roundId!==dlcRound.id || !Number.isFinite(event.data.score) || event.data.score<0) return;
-    dlcRound.settled=true;
-    p.runs.push({score:Math.round(event.data.score),success:!!event.data.success});p.runs=p.runs.slice(-2);saveJourneyProgress();
-  }else if(event.data.type==='request-retry'){
-    if(!dlcRound?.settled || p.attempts>=2) return;
-    dlcRound=null;sendDLC('prepare',{track:dlcTrack,remaining:2-p.attempts,preview:PREVIEW_MODE});
-  }else if(event.data.type==='back-to-journey') returnToJourney();
-});
-async function refreshRewardSnapshots(){
-  if(PREVIEW_MODE || !supabaseClient) return;
-  const snapshots=await Promise.allSettled([
-    supabaseClient.from('simoon_reward_available').select('reward_code,remaining,updated_at'),
-    supabaseClient.rpc('simoon_record_stats',{p_date:centralToday()})
-  ]);
-  const stock=snapshots[0],records=snapshots[1];
-  if(stock.status==='fulfilled' && !stock.value.error)window.simoonRewardStock=Object.fromEntries((stock.value.data||[]).map(row=>[row.reward_code,row]));
-  if(records.status==='fulfilled' && !records.value.error)window.simoonRecordBreaks=records.value.data?Number(records.value.data.record_breaks):0;
-  renderJourneyRewards();
-}
-if(!TV_MODE){
-  refreshRewardSnapshots().catch(()=>{});
-  setInterval(()=>{if(!document.hidden) refreshRewardSnapshots().catch(()=>{});},30000);
+  for(const node of document.querySelectorAll('[data-final-score]'))node.textContent=Math.max(0,Math.round(Number(score)||0)).toLocaleString('id-ID');
 }
 
 /* ============ FLOW CONTROL ============ */
 let countdownInterval=null;
 async function startFlow(){
-  if(dlcActive || TV_MODE || roundStarting || centralSubmitting)return;
+  if(TV_MODE || roundStarting || centralSubmitting)return;
   if(!hasSavedParticipant()){showRegistration();return;}
   if(state!==STATE.TITLE && state!==STATE.GAMEOVER && state!==STATE.MOONSUCCESS)return;
   roundStarting=true;updateOfficialLabels();
@@ -3895,13 +3738,17 @@ refreshTitleBest();
 requestAnimationFrame(()=>{ fitTitleToViewport(); requestAnimationFrame(fitTitleToViewport); });
 requestAnimationFrame(loop);
 if(PREVIEW_MODE){
+  document.getElementById('resetGamePreview').addEventListener('click',()=>{
+    try{for(const key of Object.keys(localStorage)){if(key.startsWith('simoon_preview_event_'))localStorage.removeItem(key);}}catch{}
+    location.reload();
+  });
   document.getElementById('localPreviewBadge').classList.remove('hidden');
   if(TV_MODE)document.querySelector('.tv-leaderboard-pane .tv-pane-eyebrow').textContent='SIMULASI LEADERBOARD · TOP 10';
   const previewScene=new URLSearchParams(location.search).get('preview');
   const previewProgress={konservatif:20,moderat:50,agresif:85,moon:100};
   if(!TV_MODE && (previewScene==='journey' || Object.hasOwn(previewProgress,previewScene))){
     (async()=>{
-      participant=Object.freeze(await saveParticipant({email:'preview@example.invalid',phone:'+6281234567890',riskProfile:'moderat',marketingOptIn:false}));
+      participant=Object.freeze(await saveParticipant({email:'preview@example.invalid',phone:'+6281234567890',marketingOptIn:false}));
       if(Object.hasOwn(previewProgress,previewScene)){
         elapsed=TOTAL_TIME*previewProgress[previewScene]/100;
         captureRoundOutcome(previewScene==='moon');
